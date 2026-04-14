@@ -52,6 +52,8 @@ use App\Http\Controllers\Admin\UserRoleController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\AdminAvailabilityController;
 
+use App\Http\Controllers\InstallPreviewController;
+
 /*
 |--------------------------------------------------------------------------
 | INSTALL WIZARD — runs only when site is not yet installed
@@ -781,12 +783,17 @@ Route::get('/admin/install-test/{step?}', function (string $step = 'index') {
 })->middleware(['web', 'admin']);
 
 /*
+/*
 |--------------------------------------------------------------------------
-| INSTALLER PREVIEW — admin only, safe to use on live site
+| INSTALLER PREVIEW — admin only, safe on live site, no data written
 |--------------------------------------------------------------------------
 */
-Route::middleware(['web', 'admin'])->group(function () {
-    Route::get('/admin/installer-preview/{step?}', function (string $step = 'index') {
-        return view('install.index', ['step' => $step, 'groupName' => 'Preview Group']);
-    })->name('install.preview');
+Route::middleware(['web', 'admin'])->prefix('admin/installer-preview')->name('install.preview.')->group(function () {
+    Route::get('/',      [InstallPreviewController::class, 'index'])    ->name('index');
+    Route::get('/step1', [InstallPreviewController::class, 'step1'])    ->name('step1');
+    Route::get('/step2', [InstallPreviewController::class, 'step2'])    ->name('step2');
+    Route::get('/step3', [InstallPreviewController::class, 'step3'])    ->name('step3');
+    Route::post('/step1',[InstallPreviewController::class, 'step1Post'])->name('step1.post');
+    Route::post('/step2',[InstallPreviewController::class, 'step2Post'])->name('step2.post');
+    Route::post('/complete',[InstallPreviewController::class, 'complete'])->name('complete');
 });

@@ -136,6 +136,13 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
 </head>
 <body>
 
+
+@if(isset($preview) && $preview)
+<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#f59e0b,#d97706);color:#fff;text-align:center;padding:.5rem 1rem;font-size:.78rem;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,.3)">
+    ⚠ PREVIEW MODE — No data will be saved. Forms submit to a dry-run endpoint.
+</div>
+<div style="height:36px"></div>
+@endif
 <div class="iz-bg">
     <div class="iz-bg-grid"></div>
     <div class="iz-bg-glow"></div>
@@ -205,7 +212,7 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
         </div>
         <div class="iz-card-foot">
             <span style="font-size:.72rem;color:#9ca3af">RAYNET CMS · Built for RAYNET UK</span>
-            <a href="{{ route('install.step1') }}" class="iz-btn iz-btn-primary">
+            <a href="{{ route('install.preview.step1') }}" class="iz-btn iz-btn-primary">
                 Get Started
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
@@ -223,7 +230,7 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
             </div>
             <div class="iz-card-sub">This information appears throughout your site. You can change everything later in Admin → Settings.</div>
         </div>
-        <form method="POST" action="{{ route('install.step1.post') }}">
+        <form method="POST" action="{{ route('install.preview.step1.post') }}">
             @csrf
             <div class="iz-card-body">
 
@@ -323,7 +330,23 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
             </div>
             <div class="iz-card-sub">This will be the first administrator. More admins can be added later from the admin panel.</div>
         </div>
-        <form method="POST" action="{{ route('install.step2.post') }}">
+    
+        @if(isset($dryRun))
+        <div style="margin:0 1.75rem 1.25rem;background:#f8fafc;border:1px solid #e5e7eb;overflow:hidden">
+            <div style="padding:.6rem 1rem;background:#1a6b3c;color:#fff;font-size:.72rem;font-weight:bold;text-transform:uppercase;letter-spacing:.08em">
+                ✓ {{ $dryRun['title'] }}
+            </div>
+            <div style="padding:.75rem 1rem">
+                @foreach($dryRun['items'] as $item)
+                <div style="display:flex;gap:1rem;padding:.3rem 0;border-bottom:1px solid #f3f4f6;font-size:.8rem">
+                    <span style="font-family:ui-monospace,monospace;font-weight:bold;color:#003366;min-width:180px;flex-shrink:0">{{ $item['key'] }}</span>
+                    <span style="color:#374151">{{ $item['value'] }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+    <form method="POST" action="{{ route('install.preview.step2.post') }}">
             @csrf
             <div class="iz-card-body">
 
@@ -377,7 +400,7 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
 
             </div>
             <div class="iz-card-foot">
-                <a href="{{ route('install.step1') }}" class="iz-btn iz-btn-ghost">
+                <a href="{{ route('install.preview.step1') }}" class="iz-btn iz-btn-ghost">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                     Back
                 </a>
@@ -417,7 +440,23 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
         </div>
         <div class="iz-card-foot">
             <span style="font-size:.72rem;color:#9ca3af">RAYNET CMS · Powered by RAYNET Liverpool</span>
-            <form method="POST" action="{{ route('install.complete') }}">
+        
+        @if(isset($dryRun))
+        <div style="margin:0 1.75rem 1.25rem;background:#f8fafc;border:1px solid #e5e7eb;overflow:hidden">
+            <div style="padding:.6rem 1rem;background:#1a6b3c;color:#fff;font-size:.72rem;font-weight:bold;text-transform:uppercase;letter-spacing:.08em">
+                ✓ {{ $dryRun['title'] }}
+            </div>
+            <div style="padding:.75rem 1rem">
+                @foreach($dryRun['items'] as $item)
+                <div style="display:flex;gap:1rem;padding:.3rem 0;border-bottom:1px solid #f3f4f6;font-size:.8rem">
+                    <span style="font-family:ui-monospace,monospace;font-weight:bold;color:#003366;min-width:180px;flex-shrink:0">{{ $item['key'] }}</span>
+                    <span style="color:#374151">{{ $item['value'] }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+    <form method="POST" action="{{ route('install.preview.complete') }}">
                 @csrf
                 <button type="submit" class="iz-btn iz-btn-success">
                     ✓ Launch My Site
