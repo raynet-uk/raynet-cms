@@ -1,220 +1,285 @@
-📘 Liverpool RAYNET — Laravel 12 Web Platform
+<div align="center">
 
-Project README & Development Roadmap
+![RAYNET UK](https://www.raynet-uk.net/technical/graphics/raynet-uk.gif)
 
-This repository contains the next-generation Liverpool RAYNET web platform, built in Laravel 12 with a clean modular architecture, feature-branch workflow, and a long-term multi-milestone roadmap.
+<br>
 
-This document captures the full project structure, purpose of each branch, and the official milestone plan — so future development is always aligned, traceable, and organised.
+# RAYNET CMS
 
-⸻
+### The complete web platform for RAYNET UK groups
 
-🚀 1. Project Scope
+<br>
 
-The platform provides:
-	•	Member login system with callsign authentication
-	•	Admin panel (operators, events, roles, alert status)
-	•	Member dashboard
-	•	Events & calendar engine
-	•	Propagation & space-weather engine
-	•	Checkpoint magazine library
-	•	KPI / status cards
-	•	JSON & ICS feeds
-	•	Future integration with SignalSafe services
+[![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
+[![License](https://img.shields.io/badge/License-GPL--2.0-003366?style=flat-square)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![RAYNET UK](https://img.shields.io/badge/RAYNET-UK%20Affiliated-C8102E?style=flat-square)](https://www.raynet-uk.net)
+[![Modules](https://img.shields.io/badge/Module%20Repo-raynet--cms--modules-003366?style=flat-square&logo=github)](https://github.com/raynet-uk/raynet-cms-modules)
 
-Everything is developed using a strict feature-branch workflow.
+<br>
 
-⸻
+> **Built by RAYNET Liverpool — for every RAYNET UK group**
+>
+> *A professional, fully-featured website platform designed specifically for the needs of volunteer emergency communications groups. Replaces ageing static sites and generic WordPress installs with something purpose-built for RAYNET.*
 
-🧭 2. Official Feature Branches
+<br>
 
-These branches exist (or must be created) one per subsystem.
-No development is done directly on main.
+---
 
-Core Backend
+</div>
 
-Branch	Purpose
-feature/propagation-engine	Space-weather ingestion, SignalSafe JSON, cron generation, Condx API
-feature/status-block	RAYNET alert status cards & global banner
-feature/member-dashboard	Fully featured member dashboard (cards, alerts, events, profile)
-feature/admin-ui-refactor	Table redesign, navigation, admin UX improvements
-feature/calendar-ics	ICS export engine, event feeds, calendar endpoints
-feature/memberships	Membership tracking, renewal dates, roles, permissions
+## ✨ Features
 
-Publishing / Media
+<table>
+<tr>
+<td width="50%">
 
-Branch	Purpose
-feature/checkpoint-library	Checkpoint magazine upload, PDF viewer, archive
-feature/newsletter-library	Newsletter system (HTML/PDF), archive, categories
+**🖥️ Content Management**
+- Divi-style visual page builder
+- Source code editor with syntax highlighting
+- Automatic backups before every save
+- Page URL management with auto-route generation
+- One-click module install & update system
 
-Radio & Operational Tools
+**👥 Member Management**
+- Registration with admin approval workflow
+- Callsign verification and formatting
+- Role-based access control
+- Member availability self-reporting
+- Digital profile with avatar upload
 
-Branch	Purpose
-feature/kpi-slider	Conversion of Concrete KPI blocks → Laravel components
-feature/dmr-viewer	Live DMR talkgroup / hotspot viewer
-feature/frequency-lists	Editable RAYNET frequency pages (HF/VHF/UHF + bandplans)
-feature/call-out-cascade	Call-out engine, escalation tree, SMS/email broadcast
+</td>
+<td width="50%">
 
+**📅 Operations**
+- Event scheduling with RSVPs
+- Operator assignment and briefing system
+- Live alert status widget
+- Operational map (APRS, Meshtastic, weather, flood)
+- DMR network dashboard and last heard log
 
-⸻
+**🎓 Training & Admin**
+- Full LMS with courses, quizzes, certificates
+- SCORM content support
+- Committee readiness matrix & LRF
+- SSO / OAuth 2.0 for connected tools
+- Super admin panel with session management
 
-🧩 3. Eight-Milestone Development Plan
+</td>
+</tr>
+</table>
 
-These are the canonical project milestones you approved — stored here for long-term reference.
+---
 
-Milestone 1 – Core Framework & Auth
+## 📋 Requirements
 
-✔ Laravel 12 installed
-✔ Breeze login
-✔ Email/callsign login
-✔ Admin user model
-✔ Basic home page
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| PHP | 8.2 or higher | 8.2 or 8.3 recommended |
+| MySQL / MariaDB | 5.7+ / 10.3+ | |
+| Composer | Any recent version | |
+| Web Server | Apache or Nginx | |
+| SSL Certificate | Required | Free via Let's Encrypt |
+| **Hosting** | **VPS recommended** | **cPanel shared hosting also supported** |
 
-Milestone 2 – Events System (Core)
+> ✅ **Works on cPanel shared hosting** — a VPS is recommended for best performance and control, but not required.
 
-✔ Events CRUD
-✔ Event types
-✔ Slugs + multi-day support
-✔ Export/import (CSV)
-✔ Seeder for sample events
+---
 
-Milestone 3 – Status Engine (Completed)
+## 🚀 Installation
 
-✔ RAYNET alert status
-✔ Global banner
-✔ Admin control panel
-✔ Status card component
-✔ Live injection into homepage
+### Step 1 — Get the files
 
-Milestone 3.1 – RAYNET Alert Status Block (Addon)
+```bash
+git clone https://github.com/raynet-uk/raynet-cms.git
+cd raynet-cms
+```
 
-✔ Status card
-✔ Status colour logic
-✔ Integration with admin settings
+Or download the ZIP from GitHub and extract to your web root.
 
-Milestone 3.2 – Frequency Block (Addon)
+### Step 2 — Install dependencies
 
-✔ Frequency list tables
-✔ JSON structure for later dynamic updates
+```bash
+# Standard
+composer install --no-dev --optimize-autoloader
 
-Milestone 4 – Member Dashboard Framework
+# cPanel shared hosting (if composer isn't in PATH)
+php composer.phar install --no-dev --optimize-autoloader
+```
 
-✔ Member landing page
-✔ Profile view
-✔ Operator integration
-✔ Auth middleware
-(Enhancements ongoing under feature/member-dashboard)
+### Step 3 — Configure your environment
 
-Milestone 5 – Consent Forms + Policy Acknowledgements
+```bash
+cp .env.example .env
+```
 
-Pending: digital signatures / audit log
+Edit `.env` with your details:
 
-Milestone 6 – UK Propagation Brief Engine
+```env
+APP_URL=https://yourgroup.net
+DB_DATABASE=your_database
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+MAIL_HOST=mail.yourgroup.net
+MAIL_FROM_ADDRESS=noreply@yourgroup.net
+```
 
-✔ Backend design
-✔ Conversion map from Concrete CMS
-🚧 Implemented in feature/kpi-slider & feature/propagation-engine
+### Step 4 — Finalise setup
 
-Milestone 7 – Space-Weather Slider Components
+```bash
+php artisan key:generate
+php artisan migrate --force
+php artisan storage:link
+```
 
-Kp slider, SFI, MUF, HF/VHF blocks → Laravel Blade components
+### Step 5 — Run the installation wizard
 
-Milestone 8 – Deployment & API Output
+Visit your domain in a browser. You'll be automatically redirected to `/install` where the wizard will guide you through:
 
-To Krystal.io with:
-	•	Static asset build
-	•	Queue worker
-	•	Cron for propagation engine
-	•	JSON+ICS public feeds
+| Step | What it does |
+|------|-------------|
+| **Group Details** | Name, callsign, region, group number, contact email |
+| **Admin Account** | Creates your first administrator account |
+| **Complete** | Finalises the installation and launches your site |
 
-⸻
+**That's it. Your RAYNET CMS site is live. 📻**
 
-🗂 4. Branch → Milestone Mapping
+---
 
-Branch	Linked Milestones
-feature/kpi-slider	M6, M7
-feature/propagation-engine	M6, M8
-feature/status-block	M3, M3.1
-feature/member-dashboard	M4
-feature/admin-ui-refactor	M4, M8
-feature/calendar-ics	M2, M8
-feature/memberships	M5
-feature/checkpoint-library	Publishing system (future milestone)
-feature/newsletter-library	Publishing system (future milestone)
-feature/dmr-viewer	Future radio milestone
-feature/frequency-lists	M3.2
-feature/call-out-cascade	Future call-out milestone
+## 🏠 Hosting
 
+**A VPS (Virtual Private Server) is recommended** — it gives you full control, better performance, and makes running scheduled tasks (queue workers, cron jobs) straightforward.
 
-⸻
+**cPanel shared hosting also works** and is what many RAYNET groups already have. Here's what you need to know for shared hosting:
 
-📡 5. Propagation Block Conversion (Concrete → Laravel)
+**Point your domain to the `public/` folder**
 
-This maps how each old block becomes a Laravel component.
+In cPanel → Domains, set your document root to point at the `public/` subdirectory. If you can't change the document root, add this to your root `.htaccess`:
 
-Concrete Block	Laravel Component	Branch
-Kp Slider	<x-kpi-card>	feature/kpi-slider
-SFI Meter	<x-kpi-card>	feature/kpi-slider
-MUF(3000) Widget	<x-kpi-card> or <x-outlook-card>	feature/kpi-slider
-HF Conditions	<x-outlook-card>	feature/kpi-slider
-VHF Tropo Outlook	<x-outlook-card>	feature/kpi-slider
-UK Propagation Brief	<x-condx-summary-card>	feature/propagation-engine
+```apache
+RewriteEngine On
+RewriteRule ^(.*)$ public/$1 [L]
+```
 
+**Use `php composer.phar` if `composer` isn't available:**
 
-⸻
+```bash
+php composer.phar install --no-dev
+```
 
-🌐 6. Required Environment Variables
+**Run artisan commands via SSH terminal — not from a browser.**
 
-CONDX_JSON_URL="https://signalsafe.uk/feeds/condx.json"
-CONDX_CACHE_TTL=10
-CONDX_SHOW_ADVANCED=false
+---
 
+## 🔌 Module System
 
-⸻
+RAYNET CMS has a built-in module system — extend your site's functionality with one click.
 
-🔧 7. Development Workflow
+```
+Admin Panel → Module Manager → Upload Module or Check for Updates
+```
 
-git checkout main
-git pull
-git checkout -b feature/my-task
-# develop
-git push -u origin feature/my-task
-# open PR
+Official modules are published to the **[RAYNET CMS Module Repository](https://github.com/raynet-uk/raynet-cms-modules)**.
 
-Main is protected — no direct development permitted.
+Modules are versioned ZIP files with automatic update notifications — your site checks GitHub for new versions and lets you update with a single button click.
 
-⸻
+**Building a module?** See the [module repository README](https://github.com/raynet-uk/raynet-cms-modules#module-zip-structure) for the structure and `module.json` format.
 
-🧪 8. Testing
-	•	PHPUnit for services
-	•	Pest optional
-	•	UI tested manually in local dev
+---
 
-More structured tests will be added in Milestone 8.
+## 🔄 Updating
 
-⸻
+```bash
+git pull origin main
+php artisan migrate --force
+php artisan view:clear && php artisan cache:clear
+```
 
-🚀 9. Deployment
+---
 
-Final deployment will target Krystal.io (Laravel + MySQL).
-Production requires:
-	•	php artisan optimize
-	•	Queues enabled
-	•	Cron for propagation engine
-	•	Manual upload via GitHub Actions or SSH deploy script
+## ⚙️ Configuration
 
-⸻
+All group-specific settings live in **Admin → Settings** — no code editing required:
 
-🔐 10. Security Policy
-	•	Admin guard separate from user guard
-	•	Password expiry logic
-	•	Forced password resets
-	•	Operators and Users stored separately
-	•	No direct S3 uploads without validation
+- Group name, callsign, number and region
+- Logo upload (PNG, JPG, SVG, WebP)
+- Contact and support emails
+- Site URL
+- Email header injection
 
-⸻
+---
 
-📄 11. License
+## 📄 Default Pages
 
-Internal Liverpool RAYNET development.
-Not for external redistribution.
+RAYNET CMS ships with these pages ready for you to customise:
 
+| Page | Description |
+|------|-------------|
+| **Home** | Landing page with alert status and upcoming events |
+| **About** | Group information and history |
+| **Training** | Training information and course links |
+| **Event Support** | Public support request form |
+| **Calendar** | Public events calendar with ICS export |
+| **Privacy Notice** | GDPR-compliant template |
+| **Cookie Policy** | Cookie consent policy |
+
+All pages are fully editable via the visual builder or source editor.
+
+---
+
+## 👨‍💻 Developers
+
+RAYNET CMS is developed and maintained by **RAYNET Liverpool** (Group 10/ME/179).
+
+<table>
+<tr>
+<td align="center" width="50%">
+<br>
+<strong>Ian</strong><br>
+<code>G4BDS</code><br>
+<em>Developer</em><br>
+<br>
+</td>
+<td align="center" width="50%">
+<br>
+<strong>Nathan</strong><br>
+<code>M7NDN</code><br>
+<em>Developer</em><br>
+<br>
+</td>
+</tr>
+</table>
+
+---
+
+## 🔗 Links
+
+| | |
+|--|--|
+| 🌐 **RAYNET UK** | [raynet-uk.net](https://www.raynet-uk.net) |
+| 📻 **RAYNET Liverpool** | [raynet-liverpool.net](https://raynet-liverpool.net) |
+| 🔌 **Module Repository** | [github.com/raynet-uk/raynet-cms-modules](https://github.com/raynet-uk/raynet-cms-modules) |
+
+---
+
+## 📜 Licence
+
+RAYNET CMS is open source software released under the **[GNU General Public Licence v2.0](https://www.gnu.org/licenses/gpl-2.0.html)**.
+
+You are free to use, modify and distribute this software for any RAYNET UK group. We ask that improvements are contributed back to the project where possible.
+
+---
+
+<div align="center">
+
+<br>
+
+**RAYNET CMS** · Developed by RAYNET Liverpool · For every RAYNET UK group
+
+*RAYNET — the Radio Amateurs' Emergency Network*
+
+<br>
+
+`73 de G4BDS & M7NDN 📻`
+
+</div>
