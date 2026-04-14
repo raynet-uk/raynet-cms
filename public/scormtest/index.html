@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Liverpool RAYNET – Simple Awareness Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 30px auto; line-height: 1.5; }
+    h1 { color: #b22222; }
+    .question { margin: 25px 0; padding: 15px; border: 1px solid #ccc; border-radius: 6px; }
+    button { padding: 10px 20px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #004080; }
+    #result { font-weight: bold; margin-top: 30px; font-size: 1.2em; }
+  </style>
+</head>
+<body>
+
+<h1>Liverpool RAYNET Awareness</h1>
+<p>A very short introduction quiz based on <a href="https://raynet-liverpool.net/" target="_blank">raynet-liverpool.net</a></p>
+<p><strong>Goal:</strong> Complete the quiz → score ≥ 60% → course marked complete.</p>
+
+<div class="question">
+  <p><strong>1. What does RAYNET stand for?</strong></p>
+  <label><input type="radio" name="q1" value="0"> Royal Amateur Youth Network</label><br>
+  <label><input type="radio" name="q1" value="0"> Radio Assistance for Youth Events</label><br>
+  <label><input type="radio" name="q1" value="1"> Radio Amateurs' Emergency Network</label><br>
+  <label><input type="radio" name="q1" value="0"> Rescue And Youth Emergency Team</label>
+</div>
+
+<div class="question">
+  <p><strong>2. Liverpool RAYNET mainly supports which area?</strong></p>
+  <label><input type="radio" name="q2" value="0"> Greater Manchester</label><br>
+  <label><input type="radio" name="q2" value="1"> Merseyside</label><br>
+  <label><input type="radio" name="q2" value="0"> London</label><br>
+  <label><input type="radio" name="q2" value="0"> Scotland</label>
+</div>
+
+<div class="question">
+  <p><strong>3. Who do they provide trained volunteer radio communications to? (select the best answer)</strong></p>
+  <label><input type="radio" name="q3" value="0"> Only music festivals</label><br>
+  <label><input type="radio" name="q3" value="1"> Blue-light services, local authorities, and events when normal comms fail or are overloaded</label><br>
+  <label><input type="radio" name="q3" value="0"> Only private companies</label><br>
+  <label><input type="radio" name="q3" value="0"> Schools and universities</label>
+</div>
+
+<div class="question">
+  <p><strong>4. Current RAYNET Alert Level on the website is usually shown as:</strong></p>
+  <label><input type="radio" name="q4" value="0"> Level 1 – Major Incident</label><br>
+  <label><input type="radio" name="q4" value="1"> Level 5 – No Incidents (routine monitoring & training)</label><br>
+  <label><input type="radio" name="q4" value="0"> Level 10 – Full Activation</label>
+</div>
+
+<div class="question">
+  <p><strong>5. How far in advance should event organisers contact Liverpool RAYNET for free radio support?</strong></p>
+  <label><input type="radio" name="q5" value="0"> At least 1 day</label><br>
+  <label><input type="radio" name="q5" value="0"> At least 1 week</label><br>
+  <label><input type="radio" name="q5" value="1"> At least 4 weeks</label><br>
+  <label><input type="radio" name="q5" value="0"> After the event starts</label>
+</div>
+
+<button onclick="checkAnswers()">Submit Quiz</button>
+
+<div id="result"></div>
+
+<script>
+// Very basic SCORM 1.2 support
+var score = 0;
+var totalQuestions = 5;
+
+function findAPI(win) {
+  while (win && !win.API) {
+    if (win.parent && win.parent !== win) win = win.parent;
+    else win = null;
+  }
+  return win ? win.API : null;
+}
+
+var API = findAPI(window);
+
+function scormInitialize() {
+  if (API) API.LMSInitialize("");
+}
+
+function scormSetValue(name, value) {
+  if (API) API.LMSSetValue(name, value);
+}
+
+function scormCommit() {
+  if (API) API.LMSCommit("");
+}
+
+function scormFinish() {
+  if (API) API.LMSFinish("");
+}
+
+function scormSetScore(rawScore, max, min) {
+  scormSetValue("cmi.core.score.raw", rawScore);
+  scormSetValue("cmi.core.score.max", max);
+  scormSetValue("cmi.core.score.min", min);
+  scormSetValue("cmi.core.lesson_status", rawScore >= 60 ? "completed" : "incomplete");
+}
+
+window.onload = function() {
+  scormInitialize();
+  scormSetValue("cmi.core.student_name", "Guest"); // or pull from LMS if needed
+  scormSetValue("cmi.core.student_id", "guest000");
+};
+
+function checkAnswers() {
+  score = 0;
+
+  if (document.querySelector('input[name="q1"]:checked')?.value === "1") score++;
+  if (document.querySelector('input[name="q2"]:checked')?.value === "1") score++;
+  if (document.querySelector('input[name="q3"]:checked')?.value === "1") score++;
+  if (document.querySelector('input[name="q4"]:checked')?.value === "1") score++;
+  if (document.querySelector('input[name="q5"]:checked')?.value === "1") score++;
+
+  var percent = Math.round((score / totalQuestions) * 100);
+  var msg = "You scored " + score + "/" + totalQuestions + " (" + percent + "%)\n\n";
+
+  if (percent >= 60) {
+    msg += "Well done! Course marked as completed.";
+    scormSetScore(percent, 100, 0);
+    scormSetValue("cmi.core.lesson_location", "quiz-finished");
+    scormCommit();
+    // Many LMS will now allow closing the window
+  } else {
+    msg += "Try again to reach at least 60%.";
+  }
+
+  document.getElementById("result").innerText = msg;
+}
+
+// Optional: mark incomplete if user closes without finishing
+window.onunload = function() {
+  if (score === 0) {
+    scormSetValue("cmi.core.lesson_status", "incomplete");
+    scormCommit();
+  }
+  scormFinish();
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 2: Radio Procedures</title>
+<link rel="stylesheet" href="style.css">
+<script src="scorm_api.js"></script>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-logo">RAY<br>NET</div>
+    <div>
+        <div class="header-title">RAYNET Basics: Operator Fundamentals</div>
+        <div class="header-sub">Lesson 2 of 3 — Radio Procedures &amp; Phonetic Alphabet</div>
+    </div>
+</div>
+
+<div class="lesson-wrap">
+
+    <div class="lesson-eyebrow">Module 1</div>
+    <h1>Radio Procedures &amp; Phonetic Alphabet</h1>
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-label" id="progressLabel">0% complete</div>
+
+    <div id="page1">
+        <div class="content-card">
+            <h2>The NATO Phonetic Alphabet</h2>
+            <p>To ensure clarity over radio, RAYNET operators use the NATO phonetic alphabet. Every letter has a standard spoken word to avoid confusion between similar-sounding letters (e.g. B and D, M and N).</p>
+            <table>
+                <tr><th>Letter</th><th>Word</th><th>Letter</th><th>Word</th></tr>
+                <tr><td>A</td><td>Alpha</td><td>N</td><td>November</td></tr>
+                <tr><td>B</td><td>Bravo</td><td>O</td><td>Oscar</td></tr>
+                <tr><td>C</td><td>Charlie</td><td>P</td><td>Papa</td></tr>
+                <tr><td>D</td><td>Delta</td><td>Q</td><td>Quebec</td></tr>
+                <tr><td>E</td><td>Echo</td><td>R</td><td>Romeo</td></tr>
+                <tr><td>F</td><td>Foxtrot</td><td>S</td><td>Sierra</td></tr>
+                <tr><td>G</td><td>Golf</td><td>T</td><td>Tango</td></tr>
+                <tr><td>H</td><td>Hotel</td><td>U</td><td>Uniform</td></tr>
+                <tr><td>I</td><td>India</td><td>V</td><td>Victor</td></tr>
+                <tr><td>J</td><td>Juliet</td><td>W</td><td>Whiskey</td></tr>
+                <tr><td>K</td><td>Kilo</td><td>X</td><td>X-ray</td></tr>
+                <tr><td>L</td><td>Lima</td><td>Y</td><td>Yankee</td></tr>
+                <tr><td>M</td><td>Mike</td><td>Z</td><td>Zulu</td></tr>
+            </table>
+            <div class="callout callout-info">
+                ℹ Example: Callsign "G4ABC" would be spoken as "Golf 4 Alpha Bravo Charlie"
+            </div>
+        </div>
+        <div class="footer-nav">
+            <span></span>
+            <button class="btn btn-primary" onclick="goPage(2)">Continue →</button>
+        </div>
+    </div>
+
+    <div id="page2" style="display:none;">
+        <div class="content-card">
+            <h2>Standard Radio Procedure Words (Prowords)</h2>
+            <p>Prowords (procedure words) are standardised terms used to control radio communications efficiently. You <strong>must</strong> use these — not informal alternatives.</p>
+            <table>
+                <tr><th>Proword</th><th>Meaning</th></tr>
+                <tr><td><strong>OVER</strong></td><td>I have finished transmitting and expect a reply</td></tr>
+                <tr><td><strong>OUT</strong></td><td>I have finished — no reply expected. End of contact.</td></tr>
+                <tr><td><strong>WAIT</strong></td><td>I must pause — do not reply yet</td></tr>
+                <tr><td><strong>WAIT OUT</strong></td><td>I must pause — I will call you back</td></tr>
+                <tr><td><strong>ROGER</strong></td><td>I have received and understood your last message</td></tr>
+                <tr><td><strong>WILCO</strong></td><td>I understand and will comply</td></tr>
+                <tr><td><strong>SAY AGAIN</strong></td><td>Please repeat your last message (NOT "repeat")</td></tr>
+                <tr><td><strong>CORRECT</strong></td><td>What you said is correct</td></tr>
+                <tr><td><strong>NEGATIVE</strong></td><td>No / that is incorrect</td></tr>
+                <tr><td><strong>SEND</strong></td><td>Proceed with your message</td></tr>
+                <tr><td><strong>STANDBY</strong></td><td>Wait — I will attend to you shortly</td></tr>
+            </table>
+            <div class="callout callout-warning">
+                ⚠ Never say "REPEAT" over the radio — this is an artillery command meaning "fire again". Always say "SAY AGAIN".
+            </div>
+        </div>
+        <div class="footer-nav">
+            <button class="btn btn-primary" onclick="goPage(1)" style="background:var(--muted);">← Back</button>
+            <button class="btn btn-primary" onclick="goPage(3)">Continue →</button>
+        </div>
+    </div>
+
+    <div id="page3" style="display:none;">
+        <div class="content-card">
+            <h2>Making a Radio Call</h2>
+            <p>A standard radio call follows the format: <strong>[Called station] — [Calling station] — OVER</strong></p>
+            <div class="callout callout-info">
+                📻 Example:<br><br>
+                "Liverpool Control, this is Checkpoint 3, G4ABC, OVER"<br><br>
+                "Checkpoint 3, Liverpool Control, send your message, OVER"<br><br>
+                "Liverpool Control, Checkpoint 3 — runner 247 passed checkpoint at 10:35 — OVER"<br><br>
+                "Checkpoint 3, ROGER — runner 247 logged at 10:35 — OUT"
+            </div>
+
+            <h2>Radio Discipline</h2>
+            <ul>
+                <li>Always listen before transmitting — the channel may be in use</li>
+                <li>Keep transmissions brief and accurate</li>
+                <li>Speak clearly at a moderate pace — about 100 words per minute</li>
+                <li>Hold the PTT (push-to-talk) for one second before speaking</li>
+                <li>Never transmit music, profanity, or unidentified transmissions</li>
+                <li>Log all traffic — time, from, to, message summary</li>
+            </ul>
+        </div>
+
+        <div class="content-card">
+            <div class="callout callout-success">
+                ✓ You have completed Lesson 2. Proceed to Lesson 3 — the Knowledge Check Quiz — to test your understanding.
+            </div>
+        </div>
+
+        <div class="footer-nav">
+            <button class="btn btn-primary" onclick="goPage(2)" style="background:var(--muted);">← Back</button>
+            <button class="btn btn-success" id="completeBtn" onclick="completeLesson()">✓ Complete Lesson 2</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+var currentPage = 1;
+var totalPages  = 3;
+
+function goPage(n) {
+    document.getElementById('page' + currentPage).style.display = 'none';
+    currentPage = n;
+    document.getElementById('page' + currentPage).style.display = '';
+    updateProgress();
+    window.scrollTo(0, 0);
+}
+
+function updateProgress() {
+    var pct = Math.round((currentPage / totalPages) * 100);
+    document.getElementById('progressFill').style.width  = pct + '%';
+    document.getElementById('progressLabel').textContent = pct + '% complete';
+    ScormAPI.setStatus('incomplete');
+}
+
+function completeLesson() {
+    document.getElementById('completeBtn').textContent = '✓ Completed!';
+    document.getElementById('completeBtn').className   = 'btn btn-disabled';
+    document.getElementById('completeBtn').disabled    = true;
+    ScormAPI.complete();
+    setTimeout(function () {
+        alert('Lesson 2 complete! Return to the course menu to continue to the Knowledge Check Quiz.');
+    }, 300);
+}
+
+updateProgress();
+</script>
+
+</body>
+</html>

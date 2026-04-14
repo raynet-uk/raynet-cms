@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowledge Check Quiz</title>
+<link rel="stylesheet" href="style.css">
+<script src="scorm_api.js"></script>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-logo">RAY<br>NET</div>
+    <div>
+        <div class="header-title">RAYNET Basics: Operator Fundamentals</div>
+        <div class="header-sub">Lesson 3 of 3 — Knowledge Check Quiz</div>
+    </div>
+</div>
+
+<div class="lesson-wrap">
+
+    <div class="lesson-eyebrow">Module 1</div>
+    <h1>Knowledge Check Quiz</h1>
+
+    <div id="quizIntro">
+        <div class="content-card">
+            <h2>Before you begin</h2>
+            <p>This quiz covers the material from Lessons 1 and 2. You will be asked <strong>10 questions</strong> covering RAYNET basics, Ofcom licensing, message precedence, radio prowords, and the phonetic alphabet.</p>
+            <ul>
+                <li>Pass mark: <strong>80%</strong> (8 out of 10 correct)</li>
+                <li>You may attempt this quiz up to <strong>3 times</strong></li>
+                <li>All answers are recorded</li>
+            </ul>
+            <div class="callout callout-info">ℹ Take your time — there is no time limit.</div>
+        </div>
+        <div style="text-align:right;">
+            <button class="btn btn-primary" onclick="startQuiz()" style="margin-top:8px;">Start Quiz →</button>
+        </div>
+    </div>
+
+    <div id="quizForm" style="display:none;">
+        <div id="questionsArea"></div>
+        <div style="text-align:right;margin-top:8px;">
+            <button class="btn btn-primary" id="submitBtn" onclick="submitQuiz()">Submit Answers →</button>
+        </div>
+    </div>
+
+    <div id="quizResults" style="display:none;"></div>
+
+</div>
+
+<script>
+var questions = [
+    {
+        q: "What does RAYNET stand for?",
+        opts: ["Radio Amateurs' Emergency Network","Radio Auxiliary Emergency Network","Regional Amateur Emergency Network","Radio Assistance Emergency Network"],
+        correct: 0
+    },
+    {
+        q: "Which government body licenses amateur radio operators in the UK?",
+        opts: ["RSGB","Ofcom","RAYNET HQ","Ofgem"],
+        correct: 1
+    },
+    {
+        q: "What is the maximum transmit power for a Foundation licence holder?",
+        opts: ["50W","400W","10W","100W"],
+        correct: 2
+    },
+    {
+        q: "Which message precedence level indicates an immediate threat to life?",
+        opts: ["Urgent","Welfare","Routine","Emergency"],
+        correct: 3
+    },
+    {
+        q: "The proword OVER means:",
+        opts: ["I have finished — no reply needed","Please repeat your message","I have finished transmitting and expect a reply","I understand and will comply"],
+        correct: 2
+    },
+    {
+        q: "Why should you NEVER say 'REPEAT' over the radio?",
+        opts: ["It is impolite","It is an artillery term meaning 'fire again'","It is not in the proword list","It sounds too similar to 'retreat'"],
+        correct: 1
+    },
+    {
+        q: "What is the phonetic alphabet word for the letter 'G'?",
+        opts: ["Gamma","Geneva","Golf","Green"],
+        correct: 2
+    },
+    {
+        q: "The correct format for a radio call is:",
+        opts: ["Calling station — Called station — OVER","Called station — Calling station — OVER","Calling station — message — OUT","Your callsign — message — ROGER"],
+        correct: 1
+    },
+    {
+        q: "As a RAYNET operator, your primary role during an incident is to:",
+        opts: ["Provide first aid to casualties","Direct traffic at road closures","Relay accurate information between parties","Co-ordinate the emergency services"],
+        correct: 2
+    },
+    {
+        q: "The proword WILCO means:",
+        opts: ["I did not receive your message","I have received and understood","I understand and will comply","Negative — I cannot comply"],
+        correct: 2
+    }
+];
+
+var userAnswers = {};
+var submitted   = false;
+
+function startQuiz() {
+    document.getElementById('quizIntro').style.display = 'none';
+    document.getElementById('quizForm').style.display  = '';
+    renderQuestions();
+    ScormAPI.setStatus('incomplete');
+}
+
+function renderQuestions() {
+    var html = '';
+    questions.forEach(function(q, qi) {
+        html += '<div class="content-card q-block" id="q' + qi + '">';
+        html += '<div class="q-text">Q' + (qi+1) + '. ' + q.q + '</div>';
+        html += '<div class="q-options">';
+        q.opts.forEach(function(opt, oi) {
+            html += '<label class="q-opt" id="opt_' + qi + '_' + oi + '">';
+            html += '<input type="radio" name="q' + qi + '" value="' + oi + '" onchange="selectAnswer(' + qi + ',' + oi + ')">';
+            html += opt;
+            html += '</label>';
+        });
+        html += '</div></div>';
+    });
+    document.getElementById('questionsArea').innerHTML = html;
+}
+
+function selectAnswer(qi, oi) {
+    userAnswers[qi] = oi;
+    // Update visual selection
+    for (var i = 0; i < questions[qi].opts.length; i++) {
+        var el = document.getElementById('opt_' + qi + '_' + i);
+        if (el) el.classList.toggle('selected', i === oi);
+    }
+    updateSubmitBtn();
+}
+
+function updateSubmitBtn() {
+    var answered = Object.keys(userAnswers).length;
+    var btn = document.getElementById('submitBtn');
+    if (btn) btn.textContent = 'Submit Answers (' + answered + '/' + questions.length + ') →';
+}
+
+function submitQuiz() {
+    var answered = Object.keys(userAnswers).length;
+    if (answered < questions.length) {
+        alert('Please answer all ' + questions.length + ' questions before submitting.\n\nYou have answered ' + answered + ' of ' + questions.length + '.');
+        return;
+    }
+
+    submitted = true;
+    var correct = 0;
+
+    // Mark answers
+    questions.forEach(function(q, qi) {
+        var chosen  = userAnswers[qi];
+        var isRight = (chosen === q.correct);
+        if (isRight) correct++;
+
+        // Disable radio buttons
+        document.querySelectorAll('input[name="q' + qi + '"]').forEach(function(r) { r.disabled = true; });
+
+        // Colour options
+        for (var i = 0; i < q.opts.length; i++) {
+            var el = document.getElementById('opt_' + qi + '_' + i);
+            if (!el) continue;
+            if (i === q.correct) el.classList.add('correct');
+            else if (i === chosen && !isRight) el.classList.add('wrong');
+        }
+    });
+
+    var score   = Math.round((correct / questions.length) * 100);
+    var passed  = score >= 80;
+
+    // Show results
+    document.getElementById('quizForm').style.display    = 'none';
+    document.getElementById('quizResults').style.display = '';
+
+    var html = '<div class="score-badge ' + (passed ? 'score-pass' : 'score-fail') + '">';
+    html += '<div class="score-num">' + score + '%</div>';
+    html += '<div class="score-label">' + (passed ? '✓ PASSED' : '✗ NOT PASSED') + ' — ' + correct + '/' + questions.length + ' correct</div>';
+    html += '</div>';
+
+    if (passed) {
+        html += '<div class="content-card"><div class="callout callout-success">';
+        html += '✓ Congratulations! You have passed the knowledge check with ' + score + '%. ';
+        html += 'Your completion of RAYNET Basics: Operator Fundamentals has been recorded.';
+        html += '</div></div>';
+    } else {
+        html += '<div class="content-card"><div class="callout callout-warning">';
+        html += '⚠ You scored ' + score + '% — the pass mark is 80%. Please review Lessons 1 and 2 and try again.';
+        html += '</div></div>';
+    }
+
+    // Show question review
+    html += '<div class="content-card"><h2>Question Review</h2>';
+    questions.forEach(function(q, qi) {
+        var chosen  = userAnswers[qi];
+        var isRight = (chosen === q.correct);
+        html += '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);">';
+        html += '<div style="font-size:13px;font-weight:bold;margin-bottom:4px;color:' + (isRight ? 'var(--green)' : 'var(--red)') + ';">';
+        html += (isRight ? '✓' : '✗') + ' Q' + (qi+1) + '. ' + q.q;
+        html += '</div>';
+        html += '<div style="font-size:12px;color:var(--muted);">Correct answer: <strong style="color:var(--navy);">' + q.opts[q.correct] + '</strong></div>';
+        if (!isRight) {
+            html += '<div style="font-size:12px;color:var(--red);">Your answer: ' + q.opts[chosen] + '</div>';
+        }
+        html += '</div>';
+    });
+    html += '</div>';
+
+    html += '<div style="text-align:right;">';
+    html += '<button class="btn btn-success" onclick="completeQuiz(' + score + ', ' + passed + ')">✓ Finish Course</button>';
+    html += '</div>';
+
+    document.getElementById('quizResults').innerHTML = html;
+    window.scrollTo(0, 0);
+
+    // Report to SCORM
+    ScormAPI.setScore(score, 0, 100);
+    if (passed) {
+        ScormAPI.finish('passed');
+    } else {
+        ScormAPI.finish('failed');
+    }
+}
+
+function completeQuiz(score, passed) {
+    alert(
+        passed
+            ? 'Course complete! Your score of ' + score + '% has been recorded. Well done.'
+            : 'Your score of ' + score + '% has been recorded. Please review the material and try again.'
+    );
+}
+</script>
+
+</body>
+</html>

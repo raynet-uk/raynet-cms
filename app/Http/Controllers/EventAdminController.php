@@ -1,0 +1,540 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Event;
+use App\Models\EventDocument;
+use App\Models\EventType;
+use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+class EventAdminController extends Controller
+{
+    // -------------------------------------------------------------------------
+    // INDEX — list events; ?edit={id} pre-populates the edit form
+    // -------------------------------------------------------------------------
+
+    public function index(Request $request): View
+    {
+        $events = Event::with(['type', 'documents'])
+            ->orderBy('starts_at', 'desc')
+            ->paginate(10);
+
+        $types = EventType::orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        $editingEvent = null;
+        if ($request->filled('edit')) {
+            $editingEvent = Event::find($request->integer('edit'));
+        }
+
+        return view('admin.events.index', compact('events', 'types', 'editingEvent'));
+    }
+
+    // -------------------------------------------------------------------------
+    // STORE
+    // -------------------------------------------------------------------------
+
+    public function store(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'title'              => ['required', 'string', 'max:255'],
+            'location'           => ['nullable', 'string', 'max:255'],
+            'starts_at'          => ['required', 'date'],
+            'ends_at'            => ['nullable', 'date', 'after:starts_at'],
+            'event_type_id'      => ['required', 'exists:event_types,id'],
+            'description'        => ['nullable', 'string'],
+            'is_private'         => ['nullable', 'boolean'],          // ← ADDED
+            'event_lat'          => ['nullable', 'numeric', 'between:-90,90'],
+            'event_lng'          => ['nullable', 'numeric', 'between:-180,180'],
+            'event_polygon'      => ['nullable', 'string'],
+            'event_polygon_name' => ['nullable', 'string', 'max:120'],
+            'event_route'        => ['nullable', 'string'],
+            'event_route_name'   => ['nullable', 'string', 'max:120'],
+            'event_pois'         => ['nullable', 'string'],
+        ], [], [
+            'starts_at'     => 'start date/time',
+            'ends_at'       => 'end date/time',
+            'event_type_id' => 'event type',
+        ]);
+
+        $event = new Event;
+        $event->title              = $data['title'];
+        $event->slug               = Str::slug($data['title']);
+        $event->location           = $data['location'] ?? null;
+        $event->starts_at          = Carbon::parse($data['starts_at']);
+        $event->ends_at            = !empty($data['ends_at']) ? Carbon::parse($data['ends_at']) : null;
+        $event->event_type_id      = $data['event_type_id'];
+        $event->description        = $data['description'] ?? null;
+        $event->is_public          = true;
+        $event->is_private         = $request->boolean('is_private');  // ← ADDED
+        $event->event_lat          = isset($data['event_lat']) && $data['event_lat'] !== '' ? (float) $data['event_lat'] : null;
+        $event->event_lng          = isset($data['event_lng']) && $data['event_lng'] !== '' ? (float) $data['event_lng'] : null;
+        $event->event_polygon      = $this->parsePolygon($request->input('event_polygon'));
+        $event->event_polygon_name = $request->filled('event_polygon_name') ? trim($request->input('event_polygon_name')) : null;
+        $event->event_route        = $this->parseRoute($request->input('event_route'));
+        $event->event_route_name   = $request->filled('event_route_name')   ? trim($request->input('event_route_name'))   : null;
+        $event->event_pois         = $this->parsePois($request->input('event_pois'));
+        $event->save();
+
+        return redirect()->route('admin.events')->with('status', 'Event created.');
+    }
+
+    // -------------------------------------------------------------------------
+    // UPDATE
+    // -------------------------------------------------------------------------
+
+    public function update(Request $request, int $id): RedirectResponse
+    {
+        $event = Event::findOrFail($id);
+
+        $data = $request->validate([
+            'title'              => ['required', 'string', 'max:255'],
+            'location'           => ['nullable', 'string', 'max:255'],
+            'starts_at'          => ['required', 'date'],
+            'ends_at'            => ['nullable', 'date', 'after:starts_at'],
+            'event_type_id'      => ['required', 'exists:event_types,id'],
+            'description'        => ['nullable', 'string'],
+            'is_private'         => ['nullable', 'boolean'],          // ← ADDED
+            'event_lat'          => ['nullable', 'numeric', 'between:-90,90'],
+            'event_lng'          => ['nullable', 'numeric', 'between:-180,180'],
+            'event_polygon'      => ['nullable', 'string'],
+            'event_polygon_name' => ['nullable', 'string', 'max:120'],
+            'event_route'        => ['nullable', 'string'],
+            'event_route_name'   => ['nullable', 'string', 'max:120'],
+            'event_pois'         => ['nullable', 'string'],
+        ], [], [
+            'starts_at'     => 'start date/time',
+            'ends_at'       => 'end date/time',
+            'event_type_id' => 'event type',
+        ]);
+
+        $event->title              = $data['title'];
+        $event->slug               = Str::slug($data['title']);
+        $event->location           = $data['location'] ?? null;
+        $event->starts_at          = Carbon::parse($data['starts_at']);
+        $event->ends_at            = !empty($data['ends_at']) ? Carbon::parse($data['ends_at']) : null;
+        $event->event_type_id      = $data['event_type_id'];
+        $event->description        = $data['description'] ?? null;
+        $event->is_private         = $request->boolean('is_private');  // ← ADDED
+        $event->event_lat          = isset($data['event_lat']) && $data['event_lat'] !== '' ? (float) $data['event_lat'] : null;
+        $event->event_lng          = isset($data['event_lng']) && $data['event_lng'] !== '' ? (float) $data['event_lng'] : null;
+        $event->event_polygon      = $this->parsePolygon($request->input('event_polygon'));
+        $event->event_polygon_name = $request->filled('event_polygon_name') ? trim($request->input('event_polygon_name')) : null;
+        $event->event_route        = $this->parseRoute($request->input('event_route'));
+        $event->event_route_name   = $request->filled('event_route_name')   ? trim($request->input('event_route_name'))   : null;
+        $event->event_pois         = $this->parsePois($request->input('event_pois'));
+        $event->save();
+
+        return redirect()->route('admin.events')->with('status', 'Event updated.');
+    }
+
+    // -------------------------------------------------------------------------
+    // DESTROY
+    // -------------------------------------------------------------------------
+
+    public function destroy(int $id): RedirectResponse
+    {
+        $event = Event::findOrFail($id);
+        $event->delete();
+
+        return redirect()->route('admin.events')->with('status', 'Event deleted.');
+    }
+
+    // -------------------------------------------------------------------------
+    // EXPORT CSV
+    // -------------------------------------------------------------------------
+
+    public function export(): StreamedResponse
+    {
+        $fileName = 'events_export_' . now()->format('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, [
+                'id', 'title', 'slug', 'starts_at', 'ends_at',
+                'location', 'type_name', 'description',
+                'event_lat', 'event_lng',
+                'is_sample', 'is_public', 'is_private', 'created_at', 'updated_at',
+            ]);
+
+            Event::with('type')
+                ->orderBy('starts_at')
+                ->chunk(200, function ($events) use ($handle) {
+                    foreach ($events as $event) {
+                        fputcsv($handle, [
+                            $event->id,
+                            $event->title,
+                            $event->slug,
+                            optional($event->starts_at)->format('Y-m-d H:i:s'),
+                            optional($event->ends_at)->format('Y-m-d H:i:s'),
+                            $event->location,
+                            optional($event->type)->name,
+                            $event->description,
+                            $event->event_lat ?? '',
+                            $event->event_lng ?? '',
+                            $event->is_sample   ? 1 : 0,
+                            $event->is_public   ? 1 : 0,
+                            $event->is_private  ? 1 : 0,   // ← ADDED
+                            optional($event->created_at)->format('Y-m-d H:i:s'),
+                            optional($event->updated_at)->format('Y-m-d H:i:s'),
+                        ]);
+                    }
+                });
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportCsv(): StreamedResponse
+    {
+        return $this->export();
+    }
+
+    // -------------------------------------------------------------------------
+    // IMPORT CSV
+    // -------------------------------------------------------------------------
+
+    public function showImportForm(): View
+    {
+        return view('admin.events.import');
+    }
+
+    public function import(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'events_file'     => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+            'update_existing' => ['nullable', 'boolean'],
+        ]);
+
+        $updateExisting = (bool)($data['update_existing'] ?? false);
+
+        $file = $request->file('events_file');
+        $path = $file->getRealPath();
+
+        if (! $path || ! file_exists($path)) {
+            return back()->withErrors(['events_file' => 'Uploaded file could not be read.']);
+        }
+
+        $handle = fopen($path, 'r');
+        if (! $handle) {
+            return back()->withErrors(['events_file' => 'Unable to open the uploaded file.']);
+        }
+
+        $header = fgetcsv($handle);
+        if (! $header) {
+            fclose($handle);
+            return back()->withErrors(['events_file' => 'CSV file appears to be empty or invalid.']);
+        }
+
+        $map = [];
+        foreach ($header as $index => $name) {
+            $key = strtolower(trim($name));
+            if ($key !== '') {
+                $map[$key] = $index;
+            }
+        }
+
+        $required = ['title', 'slug', 'starts_at', 'ends_at', 'location', 'type_name', 'description', 'is_sample'];
+
+        foreach ($required as $column) {
+            if (! array_key_exists($column, $map)) {
+                fclose($handle);
+                return back()->withErrors([
+                    'events_file' => "Missing required column '{$column}'. Tip: export a CSV first, edit it, then re-import.",
+                ]);
+            }
+        }
+
+        $created = 0;
+        $updated = 0;
+        $skipped = 0;
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count(array_filter($row, fn ($v) => trim((string)$v) !== '')) === 0) {
+                continue;
+            }
+
+            $col = function (string $name) use ($map, $row): ?string {
+                $index = $map[$name] ?? null;
+                if ($index === null || ! array_key_exists($index, $row)) {
+                    return null;
+                }
+                return trim((string)$row[$index]);
+            };
+
+            $title       = $col('title') ?: null;
+            $slug        = $col('slug') ?: null;
+            $startsAtRaw = $col('starts_at') ?: null;
+            $endsAtRaw   = $col('ends_at') ?: null;
+            $location    = $col('location') ?: null;
+            $typeName    = $col('type_name') ?: null;
+            $description = $col('description') ?: null;
+            $isSampleRaw = strtolower($col('is_sample') ?? '');
+            $isPrivateRaw = strtolower($col('is_private') ?? '');  // ← ADDED
+            $csvLat      = $col('event_lat');
+            $csvLng      = $col('event_lng');
+
+            if (! $title || ! $slug || ! $startsAtRaw) {
+                $skipped++;
+                continue;
+            }
+
+            try {
+                $startsAt = Carbon::parse($startsAtRaw);
+            } catch (\Throwable $e) {
+                $skipped++;
+                continue;
+            }
+
+            $endsAt = null;
+            if (! empty($endsAtRaw)) {
+                try {
+                    $endsAt = Carbon::parse($endsAtRaw);
+                } catch (\Throwable $e) {
+                    $endsAt = null;
+                }
+            }
+
+            $isSample    = in_array($isSampleRaw,  ['1', 'true', 'yes', 'y'], true);
+            $isPrivate   = in_array($isPrivateRaw, ['1', 'true', 'yes', 'y'], true);  // ← ADDED
+            $eventLat    = ($csvLat !== null && $csvLat !== '') ? (float) $csvLat : null;
+            $eventLng    = ($csvLng !== null && $csvLng !== '') ? (float) $csvLng : null;
+            $eventTypeId = null;
+
+            if ($typeName) {
+                $type = EventType::firstOrCreate(
+                    ['name' => $typeName],
+                    ['colour' => '#22c55e']
+                );
+                $eventTypeId = $type->id;
+            }
+
+            $existing = Event::where('slug', $slug)->first();
+
+            if ($existing) {
+                if (! $updateExisting) {
+                    $skipped++;
+                    continue;
+                }
+                $existing->title         = $title;
+                $existing->starts_at     = $startsAt;
+                $existing->ends_at       = $endsAt;
+                $existing->location      = $location;
+                $existing->description   = $description;
+                $existing->is_sample     = $isSample;
+                $existing->is_private    = $isPrivate;   // ← ADDED
+                $existing->event_type_id = $eventTypeId;
+                $existing->event_lat     = $eventLat;
+                $existing->event_lng     = $eventLng;
+                $existing->save();
+                $updated++;
+            } else {
+                Event::create([
+                    'title'         => $title,
+                    'slug'          => $slug,
+                    'starts_at'     => $startsAt,
+                    'ends_at'       => $endsAt,
+                    'location'      => $location,
+                    'description'   => $description,
+                    'is_sample'     => $isSample,
+                    'is_private'    => $isPrivate,    // ← ADDED
+                    'event_type_id' => $eventTypeId,
+                    'event_lat'     => $eventLat,
+                    'event_lng'     => $eventLng,
+                ]);
+                $created++;
+            }
+        }
+
+        fclose($handle);
+
+        return redirect()
+            ->route('admin.events')
+            ->with('status', sprintf(
+                'Import complete: %d created, %d updated, %d skipped.',
+                $created, $updated, $skipped
+            ));
+    }
+
+    // -------------------------------------------------------------------------
+    // DOCUMENTS — upload, download, delete
+    // -------------------------------------------------------------------------
+
+    public function uploadDocument(Request $request, Event $event): RedirectResponse
+    {
+        $request->validate([
+            'document' => [
+                'required', 'file', 'max:20480',
+                'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,jpg,jpeg,png,zip',
+            ],
+            'label' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $file     = $request->file('document');
+        $filename = $file->getClientOriginalName();
+        $path     = $file->store("event-documents/{$event->id}", 'local');
+
+        EventDocument::create([
+            'event_id'    => $event->id,
+            'filename'    => $filename,
+            'label'       => $request->filled('label') ? trim($request->input('label')) : null,
+            'disk'        => 'local',
+            'path'        => $path,
+            'size_bytes'  => $file->getSize(),
+            'sort_order'  => EventDocument::where('event_id', $event->id)->count(),
+            'uploaded_by' => auth()->id(),
+        ]);
+
+        return redirect()
+            ->route('admin.events', ['docs' => $event->id])
+            ->with('status', 'Document "' . $filename . '" uploaded successfully.');
+    }
+
+    public function downloadDocument(EventDocument $document): mixed
+    {
+        abort_unless(Storage::disk($document->disk)->exists($document->path), 404);
+
+        return Storage::disk($document->disk)->download($document->path, $document->filename);
+    }
+
+    public function deleteDocument(EventDocument $document): RedirectResponse
+    {
+        $eventId = $document->event_id;
+        $label   = $document->label ?: $document->filename;
+
+        Storage::disk($document->disk)->delete($document->path);
+        $document->delete();
+
+        return redirect()
+            ->route('admin.events', ['docs' => $eventId])
+            ->with('status', 'Document "' . $label . '" removed.');
+    }
+
+    // -------------------------------------------------------------------------
+    // PRIVATE HELPERS
+    // -------------------------------------------------------------------------
+
+    /**
+     * Decode and validate a GeoJSON Polygon/MultiPolygon from the map picker.
+     */
+    private function parsePolygon(?string $raw): ?array
+    {
+        if (empty($raw)) return null;
+
+        try {
+            $d = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return null;
+        }
+
+        if (! is_array($d) || ! isset($d['type'], $d['coordinates'])
+            || ! in_array($d['type'], ['Polygon', 'MultiPolygon'], true)) {
+            return null;
+        }
+
+        return $d;
+    }
+
+    /**
+     * Decode and validate the event route field.
+     *
+     * New format:  [{id, name, geometry: LineString}, ...]
+     * Legacy format: {type: "LineString", coordinates: [...]}
+     *
+     * Always stores as the array format. Returns null if empty/invalid.
+     */
+    private function parseRoute(?string $raw): ?array
+    {
+        if (empty($raw)) return null;
+
+        try {
+            $d = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return null;
+        }
+
+        // New array format: [{id, name, geometry}, ...]
+        if (isset($d[0]) && is_array($d[0])) {
+            $clean = [];
+            foreach ($d as $item) {
+                if (!isset($item['geometry']['type'], $item['geometry']['coordinates'])) continue;
+                if (!in_array($item['geometry']['type'], ['LineString', 'MultiLineString'], true)) continue;
+                $clean[] = [
+                    'id'       => $item['id']       ?? \Illuminate\Support\Str::uuid()->toString(),
+                    'name'     => substr((string)($item['name'] ?? 'Route'), 0, 120),
+                    'geometry' => $item['geometry'],
+                ];
+            }
+            return empty($clean) ? null : $clean;
+        }
+
+        // Legacy single-geometry format: {type, coordinates}
+        if (
+            is_array($d) &&
+            isset($d['type'], $d['coordinates']) &&
+            in_array($d['type'], ['LineString', 'MultiLineString'], true)
+        ) {
+            return [[
+                'id'       => \Illuminate\Support\Str::uuid()->toString(),
+                'name'     => 'Route',
+                'geometry' => $d,
+            ]];
+        }
+
+        return null;
+    }
+
+    /**
+     * Decode and sanitise the POI JSON array from the map picker.
+     */
+    private function parsePois(?string $raw): ?array
+    {
+        if (empty($raw)) return null;
+
+        try {
+            $decoded = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return null;
+        }
+
+        if (! is_array($decoded)) return null;
+
+        $allowedTypes = ['entrance', 'exit', 'car_park', 'medical', 'control', 'hazard', 'info', 'custom'];
+
+        $clean = [];
+        foreach ($decoded as $poi) {
+            if (! isset($poi['lat'], $poi['lng'], $poi['name'])) continue;
+
+            $clean[] = [
+                'id'          => $poi['id']          ?? \Illuminate\Support\Str::uuid()->toString(),
+                'type'        => in_array($poi['type'] ?? '', $allowedTypes, true) ? $poi['type'] : 'custom',
+                'name'        => substr((string)($poi['name']        ?? ''), 0, 100),
+                'description' => substr((string)($poi['description'] ?? ''), 0, 300),
+                'lat'         => round((float)$poi['lat'], 7),
+                'lng'         => round((float)$poi['lng'], 7),
+                'colour'      => preg_match('/^#[0-9a-fA-F]{6}$/', $poi['colour'] ?? '')
+                                    ? $poi['colour'] : '#C8102E',
+            ];
+        }
+
+        return empty($clean) ? null : $clean;
+    }
+}

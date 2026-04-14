@@ -1,0 +1,29 @@
+{
+    "_comment": "This file lives on your central update server (e.g. updates.raynet-liverpool.net/modules.json). Each group's install polls this to check for available updates.",
+    "modules": {
+        "announcements": {
+            "name": "Announcements",
+            "version": "1.1.0",
+            "description": "Post news and announcements to your group website.",
+            "download_url": "https://updates.raynet-liverpool.net/modules/announcements-1.1.0.zip",
+            "changelog": "Added member-only post visibility. Fixed pagination bug.",
+            "released_at": "2025-03-01"
+        },
+        "callouts": {
+            "name": "Callout Log",
+            "version": "1.0.0",
+            "description": "Log and track RAYNET callouts and incidents.",
+            "download_url": "https://updates.raynet-liverpool.net/modules/callouts-1.0.0.zip",
+            "changelog": "Initial release.",
+            "released_at": "2025-02-15"
+        },
+        "netlog": {
+            "name": "Net Logging",
+            "version": "1.0.0",
+            "description": "Record radio net sessions, check-ins, and messages.",
+            "download_url": "https://updates.raynet-liverpool.net/modules/netlog-1.0.0.zip",
+            "changelog": "Initial release.",
+            "released_at": "2025-02-20"
+        }
+    }
+}

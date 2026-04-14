@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 1: Introduction to RAYNET</title>
+<link rel="stylesheet" href="style.css">
+<script src="scorm_api.js"></script>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-logo">RAY<br>NET</div>
+    <div>
+        <div class="header-title">RAYNET Basics: Operator Fundamentals</div>
+        <div class="header-sub">Lesson 1 of 3 — Introduction to RAYNET</div>
+    </div>
+</div>
+
+<div class="lesson-wrap">
+
+    <div class="lesson-eyebrow">Module 1</div>
+    <h1>Introduction to RAYNET</h1>
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-label" id="progressLabel">0% complete</div>
+
+    <div id="page1">
+        <div class="content-card">
+            <h2>What is RAYNET?</h2>
+            <p>RAYNET (Radio Amateurs' Emergency Network) is a volunteer organisation of licensed amateur radio operators who provide emergency communications support to the statutory emergency services and the community.</p>
+            <p>We work under the guidance of Ofcom's licensing framework and operate under a formal agreement with served agencies such as local authorities, police, ambulance, and mountain rescue teams.</p>
+            <div class="callout callout-info">
+                ℹ RAYNET is affiliated to the Radio Society of Great Britain (RSGB) and has over 2,000 active members across the UK, organised into regional groups.
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>Liverpool RAYNET — Group 10/ME/179</h2>
+            <p>Liverpool RAYNET covers Merseyside and supports a wide range of events and exercises, including:</p>
+            <ul>
+                <li>Large public events (marathons, cycling events, air shows)</li>
+                <li>Multi-agency exercises with emergency services</li>
+                <li>Severe weather deployments</li>
+                <li>Community resilience activities</li>
+            </ul>
+            <p>Our group trains regularly and maintains a pool of equipment and trained operators who can be deployed at short notice.</p>
+        </div>
+
+        <div class="footer-nav">
+            <span></span>
+            <button class="btn btn-primary" onclick="goPage(2)">Continue →</button>
+        </div>
+    </div>
+
+    <div id="page2" style="display:none;">
+        <div class="content-card">
+            <h2>The RAYNET Operator's Role</h2>
+            <p>As a RAYNET operator, you provide a <strong>communications service</strong> — not an emergency service. Your role is to relay accurate information between parties who cannot communicate by other means.</p>
+
+            <div class="callout callout-warning">
+                ⚠ You are not first aid trained, a police officer, or a firefighter by virtue of being a RAYNET operator. Stay in your lane — communicate, do not intervene.
+            </div>
+
+            <h2>Key Responsibilities</h2>
+            <ul>
+                <li>Operate your radio station safely and legally under your Ofcom licence</li>
+                <li>Follow the Net Controller's instructions at all times</li>
+                <li>Use plain language — no codes, no jargon</li>
+                <li>Maintain an accurate log of all messages passed</li>
+                <li>Report to your Group Controller any operational issues</li>
+            </ul>
+        </div>
+
+        <div class="content-card">
+            <h2>Ofcom Licence Requirements</h2>
+            <p>All RAYNET operators must hold a valid Ofcom amateur radio licence. There are three levels:</p>
+            <table>
+                <tr><th>Licence</th><th>Max Power</th><th>Frequency Access</th></tr>
+                <tr><td>Foundation</td><td>10W</td><td>Limited bands</td></tr>
+                <tr><td>Intermediate</td><td>50W</td><td>More bands</td></tr>
+                <tr><td>Full</td><td>400W</td><td>Full access</td></tr>
+            </table>
+            <p>You must only operate within the terms of your licence. Operating outside your licence conditions is a criminal offence under the Wireless Telegraphy Act 2006.</p>
+        </div>
+
+        <div class="footer-nav">
+            <button class="btn btn-primary" onclick="goPage(1)" style="background:var(--muted);">← Back</button>
+            <button class="btn btn-primary" onclick="goPage(3)">Continue →</button>
+        </div>
+    </div>
+
+    <div id="page3" style="display:none;">
+        <div class="content-card">
+            <h2>Message Handling & Precedence</h2>
+            <p>RAYNET uses a standard message precedence system to prioritise traffic:</p>
+            <table>
+                <tr><th>Precedence</th><th>Description</th><th>Example</th></tr>
+                <tr><td><strong>EMERGENCY</strong></td><td>Immediate threat to life</td><td>Person in cardiac arrest, location needed</td></tr>
+                <tr><td><strong>URGENT</strong></td><td>Time-critical but not life-threatening</td><td>Key event staff relocation</td></tr>
+                <tr><td><strong>WELFARE</strong></td><td>Personnel welfare checks</td><td>Operator reporting in safely</td></tr>
+                <tr><td><strong>ROUTINE</strong></td><td>General operational traffic</td><td>Resource requests, updates</td></tr>
+            </table>
+            <p>Always state the precedence at the start of your message. Emergency traffic has absolute priority over all other net traffic.</p>
+        </div>
+
+        <div class="content-card">
+            <div class="callout callout-success">
+                ✓ You have reached the end of Lesson 1. Click the button below to mark this lesson as complete and continue to Lesson 2.
+            </div>
+            <p style="margin-top:14px;">In the next lesson, you will learn radio procedures and the phonetic alphabet used in RAYNET operations.</p>
+        </div>
+
+        <div class="footer-nav">
+            <button class="btn btn-primary" onclick="goPage(2)" style="background:var(--muted);">← Back</button>
+            <button class="btn btn-success" id="completeBtn" onclick="completeLesson()">✓ Complete Lesson 1</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+var currentPage = 1;
+var totalPages  = 3;
+
+function goPage(n) {
+    document.getElementById('page' + currentPage).style.display = 'none';
+    currentPage = n;
+    document.getElementById('page' + currentPage).style.display = '';
+    updateProgress();
+    window.scrollTo(0, 0);
+}
+
+function updateProgress() {
+    var pct = Math.round((currentPage / totalPages) * 100);
+    document.getElementById('progressFill').style.width  = pct + '%';
+    document.getElementById('progressLabel').textContent = pct + '% complete';
+    ScormAPI.setStatus('incomplete');
+}
+
+function completeLesson() {
+    document.getElementById('completeBtn').textContent = '✓ Completed!';
+    document.getElementById('completeBtn').className   = 'btn btn-disabled';
+    document.getElementById('completeBtn').disabled    = true;
+    ScormAPI.complete();
+    setTimeout(function () {
+        alert('Lesson 1 complete! Return to the course menu to continue to Lesson 2.');
+    }, 300);
+}
+
+updateProgress();
+</script>
+
+</body>
+</html>

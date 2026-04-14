@@ -1,0 +1,137 @@
+[28-Feb-2026 20:03:00 UTC] PHP Warning:  require(/home/nathandillon/public_html/raynet.nathandillon.co.uk/vendor/autoload.php): Failed to open stream: No such file or directory in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan on line 10
+[28-Feb-2026 20:03:00 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/nathandillon/public_html/raynet.nathandillon.co.uk/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan:10
+Stack trace:
+#0 {main}
+  thrown in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan on line 10
+[28-Feb-2026 20:03:09 UTC] PHP Warning:  require(/home/nathandillon/public_html/raynet.nathandillon.co.uk/vendor/autoload.php): Failed to open stream: No such file or directory in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan on line 10
+[28-Feb-2026 20:03:09 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/nathandillon/public_html/raynet.nathandillon.co.uk/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan:10
+Stack trace:
+#0 {main}
+  thrown in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan on line 10
+[28-Feb-2026 20:08:21 UTC] PHP Warning:  require(/home/nathandillon/public_html/raynet.nathandillon.co.uk/vendor/autoload.php): Failed to open stream: No such file or directory in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan on line 10
+[28-Feb-2026 20:08:21 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/nathandillon/public_html/raynet.nathandillon.co.uk/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan:10
+Stack trace:
+#0 {main}
+  thrown in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan on line 10
+[28-Feb-2026 20:08:21 UTC] PHP Warning:  require(/home/nathandillon/public_html/raynet.nathandillon.co.uk/vendor/autoload.php): Failed to open stream: No such file or directory in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan on line 10
+[28-Feb-2026 20:08:21 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/nathandillon/public_html/raynet.nathandillon.co.uk/vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan:10
+Stack trace:
+#0 {main}
+  thrown in /home/nathandillon/public_html/raynet.nathandillon.co.uk/artisan on line 10
+[28-Feb-2026 20:09:36 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:09:49 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:09:57 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:10:06 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:10:40 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:10:47 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:13:17 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:14:59 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:15:00 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:15:00 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:15:00 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:15:08 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:16:03 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:16:03 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:16:04 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:16:21 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:16:50 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:16:50 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:16:50 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:16:51 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:17:43 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:17:44 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:17:44 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:17:46 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:18:52 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:18:52 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:18:53 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:18:55 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[28-Feb-2026 20:20:10 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:00:49 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[08-Mar-2026 23:01:22 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:02:02 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:02:02 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:02:03 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:02:03 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:47:46 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:47:51 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:51:31 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:51:33 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:51:38 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:52:57 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:53:01 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[08-Mar-2026 23:58:26 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 00:11:57 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 00:11:57 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 00:11:58 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 00:12:06 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 00:12:33 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 00:12:55 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 00:12:55 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 00:12:57 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 01:27:11 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 01:30:45 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 01:30:48 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 01:41:43 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[09-Mar-2026 01:41:45 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[12-Mar-2026 01:08:51 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[12-Mar-2026 01:10:03 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[12-Mar-2026 01:10:43 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[12-Mar-2026 01:44:42 UTC] PHP Warning:  PHP Startup: session.gc_divisor must be greater than 0 in Unknown on line 0
+[21-Mar-2026 01:01:01 UTC] PHP Parse error:  syntax error, unexpected token "->" in /home/raynetliverpool/public_html/bootstrap/app.php on line 70
+[21-Mar-2026 01:02:02 UTC] PHP Parse error:  syntax error, unexpected token "->" in /home/raynetliverpool/public_html/bootstrap/app.php on line 70
+[21-Mar-2026 01:38:40 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[25-Mar-2026 21:51:14 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[25-Mar-2026 21:53:18 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[25-Mar-2026 21:53:22 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[25-Mar-2026 21:55:11 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[25-Mar-2026 21:55:21 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[25-Mar-2026 21:56:05 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[25-Mar-2026 21:56:09 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[10-Apr-2026 00:45:10 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:11:36 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:12:16 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:14:33 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:15:59 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:16:08 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:16:13 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:16:26 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:16:30 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:16:43 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[12-Apr-2026 22:18:02 UTC] PHP Fatal error:  Uncaught RuntimeException: Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.3.0". You are running 8.2.30. in /home/raynetliverpool/public_html/vendor/composer/platform_check.php:22
+Stack trace:
+#0 /home/raynetliverpool/public_html/vendor/composer/autoload_real.php(25): require()
+#1 /home/raynetliverpool/public_html/vendor/autoload.php(22): ComposerAutoloaderInita817c25ca076f4ad793b4462eb8e3041::getLoader()
+#2 /home/raynetliverpool/public_html/artisan(10): require('/home/raynetliv...')
+#3 {main}
+  thrown in /home/raynetliverpool/public_html/vendor/composer/platform_check.php on line 22
+[13-Apr-2026 22:49:02 Europe/London] PHP Fatal error:  Cannot use App\Http\Controllers\Admin\PageEditorController as PageEditorController because the name is already in use in /home/raynetliverpool/public_html/routes/web.php on line 53
+[13-Apr-2026 22:17:28 UTC] PHP Parse error:  Unclosed '(' on line 4 does not match ']' in Command line code on line 5
+[13-Apr-2026 22:17:34 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[13-Apr-2026 22:18:13 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[13-Apr-2026 22:18:17 UTC] PHP Parse error:  syntax error, unexpected double-quoted string "][^" in app/Http/Controllers/Admin/PageEditorController.php on line 367
+[13-Apr-2026 22:18:46 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[13-Apr-2026 22:18:46 UTC] PHP Parse error:  syntax error, unexpected double-quoted string "][^" in app/Http/Controllers/Admin/PageEditorController.php on line 367
+[13-Apr-2026 22:22:08 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[13-Apr-2026 22:22:08 UTC] PHP Parse error:  syntax error, unexpected double-quoted string "][^" in app/Http/Controllers/Admin/PageEditorController.php on line 367
+[14-Apr-2026 19:58:12 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/raynetliverpool/public_html/test-updater-setup.php:28
+Stack trace:
+#0 {main}
+  thrown in /home/raynetliverpool/public_html/test-updater-setup.php on line 28
+[14-Apr-2026 20:00:08 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/raynetliverpool/public_html/test-updater-setup.php:28
+Stack trace:
+#0 {main}
+  thrown in /home/raynetliverpool/public_html/test-updater-setup.php on line 28
+[14-Apr-2026 20:10:28 UTC] PHP Warning:  Undefined variable $tmp in /home/raynetliverpool/public_html/fix-updater.php on line 110
+[14-Apr-2026 20:10:28 UTC] PHP Warning:  Undefined variable $tmp in /home/raynetliverpool/public_html/fix-updater.php on line 111
+[14-Apr-2026 20:10:28 UTC] PHP Warning:  Undefined variable $tmp in /home/raynetliverpool/public_html/fix-updater.php on line 112
+[14-Apr-2026 20:10:28 UTC] PHP Warning:  Undefined variable $tmp in /home/raynetliverpool/public_html/fix-updater.php on line 114
+[14-Apr-2026 20:10:28 UTC] PHP Warning:  Undefined variable $tmp in /home/raynetliverpool/public_html/fix-updater.php on line 116
+[14-Apr-2026 20:10:28 UTC] PHP Fatal error:  Uncaught Error: Using $this when not in object context in /home/raynetliverpool/public_html/fix-updater.php:121
+Stack trace:
+#0 {main}
+  thrown in /home/raynetliverpool/public_html/fix-updater.php on line 121
+[14-Apr-2026 20:47:03 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[14-Apr-2026 20:48:11 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[14-Apr-2026 20:49:10 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0
+[14-Apr-2026 20:54:50 UTC] PHP Fatal error:  [ionCube Loader] The Loader must appear as the first entry in the php.ini file in Unknown on line 0

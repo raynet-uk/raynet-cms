@@ -1,0 +1,6 @@
+
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^raynet\-liverpool\.uk$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.raynet\-liverpool\.uk$
+RewriteRule ^/?$ "https\:\/\/raynet\-liverpool\.net\/" [R=301,L]
+

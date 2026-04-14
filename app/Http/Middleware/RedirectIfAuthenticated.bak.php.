@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class RedirectIfAuthenticated
+{
+    /**
+     * Handle an incoming request.
+     *
+     * This runs on routes that use the "guest" middleware,
+     * e.g. your /login route from Breeze.
+     */
+    public function handle(Request $request, Closure $next, string ...$guards)
+    {
+        // If no guards are given, just use the default web guard
+        $guards = $guards ?: [null];
+
+        foreach ($guards as $guard) {
+            if (Auth::guard($guard)->check()) {
+                // Already logged in → send to members’ hub
+                return redirect()->route('members');
+            }
+        }
+
+        return $next($request);
+    }
+}

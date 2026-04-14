@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to DMR — Liverpool RAYNET</title>
+<script src="scorm_api.js"></script>
+<style>
+/* ══════════════════════════════════════════════════════
+   RAYNET BRAND: #003366 navy, #C8102E red, #F2F2F2 grey
+   Font: Arial only — fancy achieved through animation
+   ══════════════════════════════════════════════════════ */
+:root {
+  --navy:    #003366;
+  --navy-d:  #001f40;
+  --navy-dd: #000f1f;
+  --red:     #C8102E;
+  --red-dim: rgba(200,16,46,.18);
+  --red-glow:rgba(200,16,46,.4);
+  --white:   #ffffff;
+  --grey:    #F2F2F2;
+  --grey-m:  #dde2e8;
+  --grey-d:  #b0b8c4;
+  --text:    #001f40;
+  --muted:   #5a7090;
+  --surface: rgba(255,255,255,.96);
+  --f: Arial,'Helvetica Neue',Helvetica,sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--f);
+  background:var(--navy-dd);
+  color:var(--white);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ══════════ ANIMATED BACKGROUND ══════════ */
+#bgWrap{
+  position:fixed;inset:0;z-index:0;
+  background:linear-gradient(160deg,var(--navy-dd) 0%,#001428 50%,var(--navy-dd) 100%);
+  overflow:hidden;
+}
+
+.bg-hex{
+  position:absolute;
+  width:var(--sz);height:var(--sz);
+  border:1px solid rgba(0,51,102,.5);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  animation:hexDrift var(--dur) ease-in-out infinite alternate;
+  opacity:.15;
+}
+@keyframes hexDrift{
+  from{transform:translateY(0) rotate(0deg);}
+  to  {transform:translateY(calc(var(--drift)*1px)) rotate(12deg);}
+}
+
+.bg-wave{
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(200,16,46,.12);
+  animation:waveExpand var(--wd) ease-out infinite;
+  width:0;height:0;
+  left:50%;top:40%;
+}
+@keyframes waveExpand{
+  0%  {width:0;height:0;left:50%;top:40%;opacity:.6;margin:-0px;}
+  100%{width:800px;height:800px;left:calc(50% - 400px);top:calc(40% - 400px);opacity:0;}
+}
+
+/* ══════════ TOPBAR ══════════ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:54px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  background:rgba(0,15,31,.92);
+  border-bottom:3px solid var(--red);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 4px 24px rgba(0,0,0,.5);
+}
+
+.topbar-brand{display:flex;align-items:center;gap:10px;}
+
+.topbar-logo{
+  width:34px;height:34px;
+  background:var(--red);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:7.5px;font-weight:bold;color:#fff;
+  text-align:center;line-height:1.2;text-transform:uppercase;
+  flex-shrink:0;
+  animation:logoPulse 4s ease infinite;
+}
+@keyframes logoPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(200,16,46,0);}
+  50%    {box-shadow:0 0 0 6px rgba(200,16,46,.2);}
+}
+
+.topbar-title-wrap{display:flex;flex-direction:column;}
+.topbar-title{font-size:13px;font-weight:bold;color:#fff;letter-spacing:.04em;text-transform:uppercase;}
+.topbar-sub  {font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;}
+
+.topbar-right{display:flex;align-items:center;gap:14px;}
+
+/* Progress bar */
+.prog-wrap{display:flex;align-items:center;gap:8px;}
+.prog-track{
+  width:100px;height:5px;
+  background:rgba(255,255,255,.1);
+  border-radius:99px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+}
+.prog-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--red),#ff4d6d);
+  border-radius:99px;
+  width:0%;
+  transition:width .7s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 8px var(--red-glow);
+}
+.prog-pct{
+  font-size:10px;font-weight:bold;
+  color:rgba(255,255,255,.55);
+  font-variant-numeric:tabular-nums;
+  min-width:28px;
+}
+
+.live-chip{
+  display:flex;align-items:center;gap:6px;
+  font-size:9px;font-weight:bold;
+  color:rgba(255,255,255,.45);
+  letter-spacing:.1em;text-transform:uppercase;
+}
+.live-chip::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:#22c55e;
+  animation:liveDot 1.8s ease infinite;
+}
+@keyframes liveDot{
+  0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.5);}
+  50%    {opacity:.6;box-shadow:0 0 0 4px rgba(34,197,94,0);}
+}
+
+/* ══════════ SLIDE SYSTEM ══════════ */
+.slide-container{position:relative;z-index:1;padding-top:54px;}
+.slide{display:none;min-height:calc(100vh - 54px);}
+.slide.active{display:flex;flex-direction:column;}
+.slide.in { animation:slideIn .45s cubic-bezier(.4,0,.2,1) both; }
+.slide.out{ animation:slideOut .3s cubic-bezier(.4,0,.2,1) both; }
+@keyframes slideIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+@keyframes slideOut{ from{opacity:1;transform:none} to{opacity:0;transform:translateY(-12px)} }
+
+/* ══════════ SLIDE 0: HERO ══════════ */
+.hero{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;text-align:center;
+  padding:60px 32px 120px;
+  position:relative;
+}
+
+/* DMR logo animation */
+.dmr-visual{
+  position:relative;
+  width:220px;height:220px;
+  margin:0 auto 44px;
+}
+
+.dmr-hex-outer{
+  position:absolute;inset:0;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  border:2px solid rgba(200,16,46,.3);
+  animation:hexRotateOuter 12s linear infinite;
+}
+@keyframes hexRotateOuter{to{transform:rotate(360deg);}}
+
+.dmr-hex-mid{
+  position:absolute;inset:20px;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  border:1px solid rgba(0,51,102,.6);
+  animation:hexRotateOuter 8s linear infinite reverse;
+}
+
+.dmr-hex-inner{
+  position:absolute;inset:0;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  background:linear-gradient(135deg,rgba(200,16,46,.15),rgba(0,51,102,.3));
+  display:flex;align-items:center;justify-content:center;
+}
+
+.dmr-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.dmr-ring{
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(200,16,46,.2);
+  animation:dmrRing var(--rd) ease-out infinite;
+}
+@keyframes dmrRing{
+  0%  {width:40px;height:40px;opacity:.8;}
+  100%{width:200px;height:200px;opacity:0;}
+}
+
+.dmr-center{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+}
+
+.dmr-letters{
+  font-size:52px;font-weight:bold;color:#fff;
+  letter-spacing:.12em;line-height:1;
+  text-shadow:0 0 30px rgba(200,16,46,.6),0 0 60px rgba(0,51,102,.8);
+  animation:dmrGlow 3s ease infinite alternate;
+}
+@keyframes dmrGlow{
+  from{text-shadow:0 0 20px rgba(200,16,46,.4),0 2px 0 rgba(0,0,0,.4);}
+  to  {text-shadow:0 0 40px rgba(200,16,46,.8),0 0 80px rgba(200,16,46,.2),0 2px 0 rgba(0,0,0,.4);}
+}
+
+.dmr-sub-label{
+  font-size:9px;font-weight:bold;color:rgba(200,16,46,.8);
+  letter-spacing:.2em;text-transform:uppercase;margin-top:4px;
+}
+
+/* Signal bars on sides */
+.signal-bars{
+  position:absolute;
+  top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:4px;align-items:center;
+}
+.signal-bars.left{left:-32px;}
+.signal-bars.right{right:-32px;}
+
+.signal-bar{
+  background:var(--red);
+  border-radius:1px;
+  width:4px;
+  animation:barPulse var(--bp) ease infinite;
+  opacity:.7;
+}
+@keyframes barPulse{
+  0%,100%{opacity:.3;transform:scaleY(.6);}
+  50%    {opacity:.9;transform:scaleY(1);}
+}
+
+.hero-eyebrow{
+  font-size:10px;font-weight:bold;
+  color:var(--red);
+  letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:20px;
+  opacity:0;animation:fadeUp .5s .2s both;
+  display:flex;align-items:center;gap:10px;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{
+  content:'';width:30px;height:1px;background:var(--red);opacity:.5;
+}
+
+.hero-h1{
+  font-size:clamp(32px,7vw,68px);
+  font-weight:bold;color:#fff;
+  line-height:1;letter-spacing:-.01em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+  opacity:0;animation:fadeUp .5s .4s both;
+}
+.hero-h1 .red{color:var(--red);}
+
+.hero-h2{
+  font-size:clamp(16px,3vw,26px);
+  font-weight:bold;color:rgba(255,255,255,.35);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:24px;
+  opacity:0;animation:fadeUp .5s .55s both;
+}
+
+.hero-desc{
+  font-size:14px;color:rgba(255,255,255,.55);
+  max-width:520px;line-height:1.7;
+  margin:0 auto 40px;
+  opacity:0;animation:fadeUp .5s .7s both;
+}
+
+.hero-meta{
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  margin-bottom:48px;
+  opacity:0;animation:fadeUp .5s .85s both;
+}
+
+.meta-pill{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 16px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:99px;
+  font-size:11px;font-weight:bold;
+  color:rgba(255,255,255,.6);
+  letter-spacing:.04em;
+}
+.meta-pill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.meta-pill-dot.red{background:var(--red);}
+.meta-pill-dot.blue{background:#4a9eff;}
+.meta-pill-dot.green{background:#22c55e;}
+.meta-pill-dot.gold{background:#f5c842;}
+
+.begin-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:15px 44px;
+  background:var(--red);
+  border:none;border-radius:3px;
+  font-family:var(--f);font-size:14px;font-weight:bold;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#fff;cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:transform .15s,box-shadow .15s;
+  opacity:0;animation:fadeUp .5s 1s both;
+  box-shadow:0 4px 0 rgba(0,0,0,.3),0 0 0 0 var(--red-glow);
+}
+.begin-btn::before{
+  content:'';
+  position:absolute;top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  animation:shimmer 2.5s ease infinite;
+}
+@keyframes shimmer{
+  0%  {left:-100%;}
+  60%,100%{left:150%;}
+}
+.begin-btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,.3),0 0 24px var(--red-glow);}
+.begin-btn:active{transform:translateY(0);box-shadow:0 2px 0 rgba(0,0,0,.3);}
+.begin-btn-arrow{font-size:18px;transition:transform .2s;}
+.begin-btn:hover .begin-btn-arrow{transform:translateX(4px);}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(14px);}
+  to  {opacity:1;transform:translateY(0);}
+}
+
+/* ══════════ LESSON CONTENT ══════════ */
+.lesson{
+  flex:1;
+  max-width:880px;width:100%;
+  margin:0 auto;
+  padding:48px 28px 110px;
+}
+
+/* Section labels */
+.sec-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:9px;font-weight:bold;
+  color:var(--red);letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:12px;
+  opacity:0;transition:opacity .5s,transform .5s;transform:translateY(10px);
+}
+.sec-tag.vis{opacity:1;transform:none;}
+.sec-tag::after{content:'';width:24px;height:1px;background:var(--red);opacity:.5;}
+
+.sec-h{
+  font-size:clamp(26px,5vw,46px);font-weight:bold;
+  color:#fff;text-transform:uppercase;
+  letter-spacing:-.01em;line-height:1;
+  margin-bottom:8px;
+  opacity:0;transition:opacity .5s .08s,transform .5s .08s;transform:translateY(10px);
+}
+.sec-h.vis{opacity:1;transform:none;}
+.sec-h .red{color:var(--red);}
+
+.sec-lead{
+  font-size:14px;color:rgba(255,255,255,.55);
+  line-height:1.7;max-width:620px;
+  margin-bottom:40px;
+  opacity:0;transition:opacity .5s .16s,transform .5s .16s;transform:translateY(10px);
+}
+.sec-lead.vis{opacity:1;transform:none;}
+
+/* Reveal wrapper */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .5s,transform .5s;}
+.rv.vis{opacity:1;transform:none;}
+.rv.d1{transition-delay:.05s;}.rv.d2{transition-delay:.12s;}.rv.d3{transition-delay:.19s;}
+.rv.d4{transition-delay:.26s;}.rv.d5{transition-delay:.33s;}.rv.d6{transition-delay:.4s;}
+
+/* ══════════ CARDS ══════════ */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:36px;}
+
+.card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-top:3px solid var(--red);
+  border-radius:2px;
+  padding:22px 20px;
+  transition:transform .2s,background .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+}
+.card::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(200,16,46,.05) 0%,transparent 60%);
+  opacity:0;transition:opacity .2s;
+}
+.card:hover{
+  transform:translateY(-3px);
+  background:rgba(255,255,255,.07);
+  box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(200,16,46,.2);
+}
+.card:hover::after{opacity:1;}
+
+.card-icon{font-size:28px;margin-bottom:12px;display:block;}
+.card-title{font-size:14px;font-weight:bold;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px;}
+.card-body{font-size:12px;color:rgba(255,255,255,.5);line-height:1.65;}
+
+/* ══════════ DMR FRAME DIAGRAM ══════════ */
+.frame-diagram{
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:4px;
+  padding:28px 24px;
+  margin-bottom:36px;
+  overflow-x:auto;
+}
+
+.frame-label{
+  font-size:9px;font-weight:bold;
+  color:rgba(255,255,255,.4);
+  letter-spacing:.16em;text-transform:uppercase;
+  margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;
+}
+.frame-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
+
+.frame-row{display:flex;align-items:stretch;gap:3px;min-width:600px;}
+
+.frame-seg{
+  flex:var(--fw,1);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:12px 8px;
+  border-radius:3px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  animation:segReveal .6s var(--sd,.1s) both;
+}
+@keyframes segReveal{
+  from{opacity:0;transform:scaleY(.4);}
+  to  {opacity:1;transform:scaleY(1);}
+}
+.frame-seg::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.08) 0%,transparent 100%);
+}
+.frame-seg-val{font-size:13px;font-weight:bold;color:#fff;position:relative;z-index:1;}
+.frame-seg-lbl{font-size:9px;color:rgba(255,255,255,.45);margin-top:4px;position:relative;z-index:1;letter-spacing:.06em;}
+
+.seg-preamble {background:#003366;}
+.seg-sync     {background:#C8102E;}
+.seg-data1    {background:rgba(0,51,102,.7);}
+.seg-cach     {background:rgba(100,100,100,.4);}
+.seg-data2    {background:rgba(0,51,102,.7);}
+.seg-sync2    {background:rgba(200,16,46,.7);}
+
+.frame-bits{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:10px;padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.06);
+  font-size:10px;color:rgba(255,255,255,.35);
+  font-weight:bold;min-width:600px;
+}
+
+/* Timeslot visual */
+.timeslot-wrap{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;margin-bottom:36px;
+}
+
+.ts{
+  background:rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:4px;padding:20px;
+  position:relative;overflow:hidden;
+}
+.ts-header{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:14px;
+}
+.ts-num{
+  width:28px;height:28px;
+  background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:bold;color:#fff;
+  flex-shrink:0;
+}
+.ts-title{font-size:13px;font-weight:bold;color:#fff;text-transform:uppercase;letter-spacing:.04em;}
+
+.ts-bar-wrap{margin-bottom:10px;}
+.ts-bar-track{
+  height:8px;background:rgba(255,255,255,.08);
+  border-radius:99px;overflow:hidden;margin-bottom:5px;
+}
+.ts-bar-fill{
+  height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--red),#ff4d6d);
+  animation:tsBarGrow 1.2s cubic-bezier(.4,0,.2,1) both;
+}
+@keyframes tsBarGrow{from{width:0;}to{width:var(--tw,50%);}}
+.ts-bar-label{font-size:10px;color:rgba(255,255,255,.4);display:flex;justify-content:space-between;}
+
+.ts-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.ts-tag{
+  padding:2px 8px;border-radius:2px;
+  font-size:10px;font-weight:bold;
+  background:rgba(0,51,102,.6);
+  border:1px solid rgba(0,51,102,.8);
+  color:rgba(255,255,255,.6);
+  text-transform:uppercase;letter-spacing:.06em;
+}
+
+/* Floating radio wave on timeslot */
+.ts::before{
+  content:'';
+  position:absolute;right:-30px;top:50%;transform:translateY(-50%);
+  width:80px;height:80px;
+  border-radius:50%;
+  border:1px solid rgba(200,16,46,.08);
+  animation:tsRing 2.5s ease-out infinite;
+  animation-delay:var(--td,0s);
+}
+@keyframes tsRing{
+  0%  {width:20px;height:20px;opacity:.6;right:-10px;}
+  100%{width:120px;height:120px;opacity:0;right:-60px;}
+}
+
+/* ══════════ TALKGROUP TABLE ══════════ */
+.tg-table{
+  width:100%;border-collapse:collapse;
+  margin-bottom:36px;
+  border-radius:4px;overflow:hidden;
+}
+.tg-table thead tr{background:rgba(0,51,102,.8);}
+.tg-table th{
+  padding:12px 14px;
+  font-size:9px;font-weight:bold;
+  text-transform:uppercase;letter-spacing:.14em;
+  color:rgba(255,255,255,.6);
+  text-align:left;
+  border-bottom:2px solid var(--red);
+}
+.tg-table tbody tr{
+  border-bottom:1px solid rgba(255,255,255,.05);
+  transition:background .15s;
+  animation:rowSlide .4s var(--rs,.1s) both;
+}
+@keyframes rowSlide{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:none;}}
+.tg-table tbody tr:hover{background:rgba(0,51,102,.3);}
+.tg-table td{padding:13px 14px;font-size:12px;color:rgba(255,255,255,.65);vertical-align:top;}
+
+.tg-id{
+  font-family:monospace;font-size:13px;font-weight:bold;
+  color:var(--red);letter-spacing:.04em;
+}
+.tg-name{font-weight:bold;color:#fff;margin-bottom:3px;}
+.tg-scope{
+  display:inline-block;padding:2px 7px;border-radius:2px;
+  font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;
+}
+.tg-local   {background:rgba(0,51,102,.6);border:1px solid rgba(0,51,102,1);color:#7eb3ff;}
+.tg-regional{background:rgba(200,16,46,.15);border:1px solid rgba(200,16,46,.3);color:#ff8fa3;}
+.tg-national{background:rgba(200,16,46,.25);border:1px solid rgba(200,16,46,.5);color:#ffc0cb;}
+
+/* ══════════ CODEPLUG SIMULATOR ══════════ */
+.codeplug{
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:4px;
+  overflow:hidden;
+  margin-bottom:36px;
+}
+
+.codeplug-header{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;
+  background:rgba(0,51,102,.4);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.codeplug-dot{width:7px;height:7px;border-radius:50%;}
+.codeplug-dot.on {background:#22c55e;animation:liveDot 1.5s ease infinite;}
+.codeplug-dot.off{background:rgba(255,255,255,.2);}
+.codeplug-header-title{font-size:10px;font-weight:bold;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;}
+
+.codeplug-body{padding:0;}
+
+.cp-channel{
+  display:grid;
+  grid-template-columns:28px 1fr 80px 80px 90px;
+  align-items:center;
+  gap:12px;
+  padding:11px 16px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .12s;
+  cursor:default;
+  font-size:12px;
+}
+.cp-channel:last-child{border-bottom:none;}
+.cp-channel:hover{background:rgba(0,51,102,.2);}
+.cp-channel.active{background:rgba(200,16,46,.08);border-left:3px solid var(--red);}
+
+.cp-num{font-size:10px;font-weight:bold;color:rgba(255,255,255,.25);font-variant-numeric:tabular-nums;}
+.cp-name{font-weight:bold;color:#fff;}
+.cp-name-sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:1px;}
+.cp-freq{font-family:monospace;font-size:11px;color:rgba(255,255,255,.55);}
+.cp-mode{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 7px;border-radius:2px;
+  font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;
+}
+.cp-dmr{background:rgba(200,16,46,.2);border:1px solid rgba(200,16,46,.35);color:#ff8fa3;}
+.cp-fm {background:rgba(0,51,102,.5);border:1px solid rgba(0,51,102,.8);color:#7eb3ff;}
+.cp-tg{font-family:monospace;font-size:11px;color:rgba(255,255,255,.4);}
+
+/* ══════════ CALLOUT ══════════ */
+.callout{
+  display:flex;gap:14px;
+  padding:16px 18px;
+  border-radius:3px;
+  margin-bottom:24px;
+  font-size:13px;line-height:1.65;
+}
+.callout-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.callout-body{flex:1;}
+.callout-title{font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.callout-info{background:rgba(0,51,102,.3);border:1px solid rgba(0,51,102,.6);border-left:3px solid #4a9eff;color:rgba(255,255,255,.7);}
+.callout-warn{background:rgba(200,16,46,.08);border:1px solid rgba(200,16,46,.2);border-left:3px solid var(--red);color:rgba(255,255,255,.7);}
+.callout-good{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-left:3px solid #22c55e;color:rgba(255,255,255,.7);}
+.callout-title.blue{color:#7eb3ff;}
+.callout-title.red {color:#ff8fa3;}
+.callout-title.grn {color:#86efac;}
+
+/* ══════════ QUIZ ══════════ */
+.quiz-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:4px;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.quiz-q-head{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 18px;
+  background:rgba(0,0,0,.2);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.quiz-num{
+  font-size:9px;font-weight:bold;
+  color:var(--red);letter-spacing:.12em;text-transform:uppercase;
+  background:rgba(200,16,46,.12);
+  border:1px solid rgba(200,16,46,.25);
+  border-radius:2px;padding:2px 7px;flex-shrink:0;
+}
+.quiz-q-text{font-size:14px;font-weight:bold;color:#fff;flex:1;}
+.quiz-opts{display:flex;flex-direction:column;gap:6px;padding:14px 18px;}
+.quiz-opt{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:3px;
+  background:transparent;
+  font-family:var(--f);font-size:13px;color:rgba(255,255,255,.75);
+  cursor:pointer;text-align:left;width:100%;
+  transition:border-color .15s,background .15s,transform .1s;
+}
+.quiz-opt:hover:not(:disabled){border-color:rgba(200,16,46,.4);background:rgba(200,16,46,.06);transform:translateX(3px);}
+.quiz-opt-radio{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.2);
+  flex-shrink:0;position:relative;transition:.15s;
+}
+.quiz-opt.selected .quiz-opt-radio{border-color:var(--red);}
+.quiz-opt.selected .quiz-opt-radio::after{content:'';position:absolute;inset:2px;border-radius:50%;background:var(--red);}
+.quiz-opt.correct-a{border-color:#22c55e!important;background:rgba(34,197,94,.08)!important;animation:correctFl .4s ease;}
+.quiz-opt.wrong-a  {border-color:var(--red)!important;background:rgba(200,16,46,.1)!important;animation:wrongShk .35s ease;}
+@keyframes correctFl{0%{background:rgba(34,197,94,.3)!important;}100%{background:rgba(34,197,94,.08)!important;}}
+@keyframes wrongShk {0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+.quiz-fb{
+  padding:10px 18px;font-size:12px;font-weight:bold;
+  border-top:1px solid rgba(255,255,255,.06);display:none;
+}
+.quiz-fb.show{display:block;}
+.quiz-fb.ok {color:#86efac;}
+.quiz-fb.bad{color:#ff8fa3;}
+
+/* Score */
+.score-screen{text-align:center;padding:48px 24px;display:none;}
+.score-screen.show{display:block;}
+.score-ring-wrap{position:relative;width:160px;height:160px;margin:0 auto 24px;}
+.score-svg{width:100%;height:100%;transform:rotate(-90deg);}
+.score-track{fill:none;stroke:rgba(255,255,255,.06);stroke-width:8;}
+.score-arc{
+  fill:none;stroke-width:8;stroke-linecap:round;
+  stroke-dasharray:408;stroke-dashoffset:408;
+  transition:stroke-dashoffset 1.3s cubic-bezier(.4,0,.2,1),stroke .4s;
+}
+.score-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-pct{font-size:38px;font-weight:bold;color:#fff;line-height:1;}
+.score-sublabel{font-size:9px;font-weight:bold;color:rgba(255,255,255,.4);letter-spacing:.12em;text-transform:uppercase;margin-top:2px;}
+.score-verdict{font-size:26px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.score-detail{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:32px;}
+.score-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 32px;
+  background:var(--red);border:none;border-radius:3px;
+  font-family:var(--f);font-size:13px;font-weight:bold;
+  text-transform:uppercase;letter-spacing:.1em;color:#fff;
+  cursor:pointer;transition:box-shadow .2s,transform .15s;display:none;
+}
+.score-cta:hover{box-shadow:0 0 20px var(--red-glow);transform:translateY(-2px);}
+
+/* ══════════ FOOTER NAV ══════════ */
+.foot-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  padding:12px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(0,10,20,.92);
+  border-top:1px solid rgba(255,255,255,.07);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+
+.nav-dots{display:flex;gap:5px;align-items:center;}
+.ndot{
+  width:6px;height:6px;border-radius:99px;
+  background:rgba(255,255,255,.12);
+  transition:all .3s;cursor:pointer;
+}
+.ndot.active{background:var(--red);width:18px;box-shadow:0 0 6px var(--red-glow);}
+.ndot.done{background:rgba(255,255,255,.3);}
+
+.nav-center{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.nav-slide-label{font-size:9px;font-weight:bold;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;}
+
+.nav-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:9px 22px;border:1px solid;border-radius:3px;
+  font-family:var(--f);font-size:11px;font-weight:bold;
+  text-transform:uppercase;letter-spacing:.08em;
+  cursor:pointer;transition:all .15s;
+}
+.nav-prev{background:transparent;border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.4);}
+.nav-prev:hover:not(:disabled){border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7);}
+.nav-next{background:var(--navy);border-color:rgba(0,51,102,.8);color:rgba(255,255,255,.8);}
+.nav-next:hover:not(:disabled){background:rgba(0,51,102,.9);box-shadow:0 0 14px rgba(0,51,102,.6);}
+.nav-done{background:var(--red);border-color:var(--red);color:#fff;}
+.nav-done:hover:not(:disabled){box-shadow:0 0 18px var(--red-glow);}
+.nav-btn:disabled{opacity:.25;cursor:not-allowed;}
+
+/* ══════════ COMPLETE OVERLAY ══════════ */
+.c-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,10,20,.96);
+  align-items:center;justify-content:center;flex-direction:column;
+  text-align:center;padding:40px;
+  backdrop-filter:blur(20px);
+}
+.c-overlay.show{display:flex;animation:fadeIn .5s ease both;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.c-badge{
+  width:90px;height:90px;margin:0 auto 28px;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  font-size:38px;
+  animation:badgeIn .6s .2s both;
+  box-shadow:0 0 50px var(--red-glow);
+}
+@keyframes badgeIn{from{opacity:0;transform:scale(.4) rotate(-30deg);}to{opacity:1;transform:scale(1) rotate(0deg);}}
+.c-title{font-size:36px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;color:#fff;margin-bottom:8px;animation:fadeUp .5s .4s both;}
+.c-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:36px;animation:fadeUp .5s .6s both;}
+.c-close{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 28px;background:var(--red);border:none;border-radius:3px;
+  font-family:var(--f);font-size:12px;font-weight:bold;
+  text-transform:uppercase;letter-spacing:.1em;color:#fff;cursor:pointer;
+  animation:fadeUp .5s .8s both;transition:box-shadow .2s;
+}
+.c-close:hover{box-shadow:0 0 24px var(--red-glow);}
+
+@media(max-width:600px){
+  .lesson{padding:32px 16px 100px;}
+  .card-grid{grid-template-columns:1fr;}
+  .timeslot-wrap{grid-template-columns:1fr;}
+  .cp-channel{grid-template-columns:24px 1fr 60px;}
+  .cp-freq,.cp-tg{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div id="bgWrap">
+  <!-- Hexagons generated by JS -->
+  <div class="bg-wave" style="--wd:4s;animation-delay:0s;"></div>
+  <div class="bg-wave" style="--wd:4s;animation-delay:1.3s;"></div>
+  <div class="bg-wave" style="--wd:4s;animation-delay:2.6s;"></div>
+</div>
+
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo">RAY<br>NET</div>
+    <div class="topbar-title-wrap">
+      <div class="topbar-title">Liverpool RAYNET</div>
+      <div class="topbar-sub">Training Module · Introduction to DMR</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="prog-wrap">
+      <div class="prog-track"><div class="prog-fill" id="pFill"></div></div>
+      <span class="prog-pct" id="pPct">0%</span>
+    </div>
+    <div class="live-chip">Live</div>
+  </div>
+</nav>
+
+<!-- ───────────── SLIDES ───────────── -->
+<div class="slide-container">
+
+  <!-- SLIDE 0: HERO -->
+  <div class="slide active" id="s0">
+    <div class="hero">
+      <div class="hero-eyebrow">Liverpool RAYNET · Digital Training</div>
+
+      <div class="dmr-visual">
+        <div class="dmr-hex-outer"></div>
+        <div class="dmr-hex-mid"></div>
+        <div class="dmr-hex-inner">
+          <div class="dmr-rings">
+            <div class="dmr-ring" style="--rd:2s;"></div>
+            <div class="dmr-ring" style="--rd:2s;animation-delay:.66s;"></div>
+            <div class="dmr-ring" style="--rd:2s;animation-delay:1.33s;"></div>
+          </div>
+          <div class="dmr-center">
+            <div class="dmr-letters">DMR</div>
+            <div class="dmr-sub-label">Digital Mobile Radio</div>
+          </div>
+        </div>
+        <!-- Signal bars left -->
+        <div class="signal-bars left">
+          <div class="signal-bar" style="height:6px;--bp:1.1s;"></div>
+          <div class="signal-bar" style="height:10px;--bp:1.4s;animation-delay:.2s;"></div>
+          <div class="signal-bar" style="height:14px;--bp:1.7s;animation-delay:.4s;"></div>
+          <div class="signal-bar" style="height:18px;--bp:2s;animation-delay:.6s;"></div>
+          <div class="signal-bar" style="height:22px;--bp:2.3s;animation-delay:.8s;"></div>
+        </div>
+        <!-- Signal bars right -->
+        <div class="signal-bars right">
+          <div class="signal-bar" style="height:22px;--bp:1.3s;animation-delay:.3s;"></div>
+          <div class="signal-bar" style="height:18px;--bp:1.6s;animation-delay:.5s;"></div>
+          <div class="signal-bar" style="height:14px;--bp:1.9s;animation-delay:.7s;"></div>
+          <div class="signal-bar" style="height:10px;--bp:2.2s;animation-delay:.9s;"></div>
+          <div class="signal-bar" style="height:6px;--bp:2.5s;animation-delay:1.1s;"></div>
+        </div>
+      </div>
+
+      <h1 class="hero-h1">Introduction to <span class="red">DMR</span></h1>
+      <div class="hero-h2">Digital Mobile Radio</div>
+      <p class="hero-desc">Understand how DMR works, why RAYNET uses it, how to configure a DMR codeplug, and how to operate on Liverpool RAYNET's digital network.</p>
+
+      <div class="hero-meta">
+        <span class="meta-pill"><span class="meta-pill-dot red"></span>4 Sections</span>
+        <span class="meta-pill"><span class="meta-pill-dot blue"></span>Est. 20 mins</span>
+        <span class="meta-pill"><span class="meta-pill-dot gold"></span>Pass mark 80%</span>
+        <span class="meta-pill"><span class="meta-pill-dot green"></span>Certificate awarded</span>
+      </div>
+
+      <button class="begin-btn" onclick="go(1)">
+        Begin Module
+        <span class="begin-btn-arrow">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SLIDE 1: WHAT IS DMR -->
+  <div class="slide" id="s1">
+    <div class="lesson">
+      <div class="sec-tag rv">01 · Foundations</div>
+      <h2 class="sec-h rv">What is <span class="red">DMR</span>?</h2>
+      <p class="sec-lead rv">DMR — Digital Mobile Radio — is an open digital radio standard adopted by RAYNET for its efficiency, clarity and capability to carry two simultaneous conversations on a single 12.5 kHz channel.</p>
+
+      <div class="card-grid">
+        <div class="card rv d1">
+          <span class="card-icon">📡</span>
+          <div class="card-title">The Standard</div>
+          <div class="card-body">DMR is an ETSI open standard (ETSI TS 102 361). First published in 2005, it is now used globally by emergency services, utilities and amateur radio operators.</div>
+        </div>
+        <div class="card rv d2">
+          <span class="card-icon">🔀</span>
+          <div class="card-title">Two Timeslots</div>
+          <div class="card-body">DMR uses TDMA (Time Division Multiple Access) to split one 12.5 kHz channel into two independent timeslots — effectively doubling spectrum efficiency.</div>
+        </div>
+        <div class="card rv d3">
+          <span class="card-icon">🔊</span>
+          <div class="card-title">AMBE+2 Vocoder</div>
+          <div class="card-body">Voice is encoded using the AMBE+2 codec at 3,600 bps. The result is clear, consistent audio even at weak signal levels where FM would be unreadable.</div>
+        </div>
+        <div class="card rv d4">
+          <span class="card-icon">🆚</span>
+          <div class="card-title">DMR vs FM</div>
+          <div class="card-body">FM degrades gradually as signal weakens — DMR maintains full quality right to the coverage edge, then drops sharply. This is the "digital cliff" effect.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-info rv d5">
+        <span class="callout-icon">ℹ</span>
+        <div class="callout-body">
+          <div class="callout-title blue">Why RAYNET uses DMR</div>
+          DMR repeaters can carry talkgroup-routed traffic nationally via the Brandmeister and RAYNET-UK networks, allowing Liverpool RAYNET to communicate with other groups during large-scale incidents without the need for additional infrastructure.
+        </div>
+      </div>
+
+      <div class="sec-tag rv d5" style="margin-top:40px;">Signal Frame Structure</div>
+      <h3 class="sec-h rv d5" style="font-size:clamp(18px,3vw,30px);">The DMR <span class="red">Frame</span></h3>
+      <p class="sec-lead rv d6" style="font-size:13px;">Each DMR burst is 27.5 ms long and carries 264 bits of information structured as follows:</p>
+
+      <div class="frame-diagram rv d6">
+        <div class="frame-label">One 27.5ms DMR burst — 264 bits total</div>
+        <div class="frame-row">
+          <div class="frame-seg seg-data1" style="--fw:2;--sd:.05s"><div class="frame-seg-val">98</div><div class="frame-seg-lbl">Data 1</div></div>
+          <div class="frame-seg seg-sync"  style="--fw:1;--sd:.15s"><div class="frame-seg-val">48</div><div class="frame-seg-lbl">Sync</div></div>
+          <div class="frame-seg seg-cach"  style="--fw:1;--sd:.25s"><div class="frame-seg-val">20</div><div class="frame-seg-lbl">CACH</div></div>
+          <div class="frame-seg seg-data2" style="--fw:2;--sd:.35s"><div class="frame-seg-val">98</div><div class="frame-seg-lbl">Data 2</div></div>
+          <div class="frame-seg seg-sync2" style="--fw:0.5;--sd:.45s" ><div class="frame-seg-val">—</div><div class="frame-seg-lbl">TS Flag</div></div>
+        </div>
+        <div class="frame-bits">
+          <span>◀ Timeslot 1</span>
+          <span>· CACH: Channel Access Control Header ·</span>
+          <span>Timeslot 2 ▶</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: TIMESLOTS & TALKGROUPS -->
+  <div class="slide" id="s2">
+    <div class="lesson">
+      <div class="sec-tag rv">02 · Network</div>
+      <h2 class="sec-h rv">Timeslots &amp; <span class="red">Talkgroups</span></h2>
+      <p class="sec-lead rv">DMR's power lies in its structured network of timeslots and talkgroups. Understanding these is essential to operating correctly on the Liverpool RAYNET system.</p>
+
+      <div class="sec-tag rv d2" style="margin-bottom:12px;">Timeslots</div>
+
+      <div class="timeslot-wrap rv d2">
+        <div class="ts" style="--td:0s">
+          <div class="ts-header">
+            <div class="ts-num">1</div>
+            <div class="ts-title">Timeslot 1 — Wide Area</div>
+          </div>
+          <div class="ts-bar-wrap">
+            <div class="ts-bar-track"><div class="ts-bar-fill" style="--tw:85%;animation-delay:.3s;"></div></div>
+            <div class="ts-bar-label"><span>Usage</span><span>85%</span></div>
+          </div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.65;">Reserved for wide-area and national talkgroups routed over the Brandmeister / RAYNET-UK network. Traffic here may be heard by operators across the UK.</div>
+          <div class="ts-tags">
+            <span class="ts-tag">BM Network</span>
+            <span class="ts-tag">UK Wide</span>
+            <span class="ts-tag">National TGs</span>
+          </div>
+        </div>
+        <div class="ts" style="--td:.4s">
+          <div class="ts-header">
+            <div class="ts-num">2</div>
+            <div class="ts-title">Timeslot 2 — Local</div>
+          </div>
+          <div class="ts-bar-wrap">
+            <div class="ts-bar-track"><div class="ts-bar-fill" style="--tw:60%;animation-delay:.6s;"></div></div>
+            <div class="ts-bar-label"><span>Usage</span><span>60%</span></div>
+          </div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.65;">Used for local and regional talkgroups. Traffic on TS2 stays within the local repeater and connected regional nodes — ideal for RAYNET operational comms.</div>
+          <div class="ts-tags">
+            <span class="ts-tag">Local Only</span>
+            <span class="ts-tag">RAYNET Ops</span>
+            <span class="ts-tag">Regional TGs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-tag rv d3" style="margin-top:8px;">Liverpool RAYNET Talkgroups</div>
+
+      <table class="tg-table rv d3">
+        <thead>
+          <tr>
+            <th>TG ID</th>
+            <th>Name</th>
+            <th>Timeslot</th>
+            <th>Scope</th>
+            <th>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="--rs:.05s"><td><span class="tg-id">235</span></td><td><div class="tg-name">UK Calling</div></td><td>TS1</td><td><span class="tg-scope tg-national">National</span></td><td>National calling/activation channel</td></tr>
+          <tr style="--rs:.12s"><td><span class="tg-id">23505</span></td><td><div class="tg-name">RAYNET-UK</div></td><td>TS1</td><td><span class="tg-scope tg-national">National</span></td><td>RAYNET national coordination</td></tr>
+          <tr style="--rs:.19s"><td><span class="tg-id">23551</span></td><td><div class="tg-name">Zone 10 NW</div></td><td>TS2</td><td><span class="tg-scope tg-regional">Regional</span></td><td>North West RAYNET Zone 10 net</td></tr>
+          <tr style="--rs:.26s"><td><span class="tg-id">23510</span></td><td><div class="tg-name">Liverpool RAYNET</div></td><td>TS2</td><td><span class="tg-scope tg-local">Local</span></td><td>Liverpool group primary ops channel</td></tr>
+          <tr style="--rs:.33s"><td><span class="tg-id">23511</span></td><td><div class="tg-name">Liverpool Tac 1</div></td><td>TS2</td><td><span class="tg-scope tg-local">Local</span></td><td>Tactical channel — event deployment</td></tr>
+          <tr style="--rs:.40s"><td><span class="tg-id">9</span></td><td><div class="tg-name">Local 9</div></td><td>TS2</td><td><span class="tg-scope tg-local">Local</span></td><td>Simplex-style local comms (no routing)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warn rv d4">
+        <span class="callout-icon">⚠</span>
+        <div class="callout-body">
+          <div class="callout-title red">Timeslot discipline is critical</div>
+          Transmitting on the wrong timeslot can disrupt national traffic or cause your transmission to be lost entirely. Always verify your codeplug channel is set to the correct TS before operating.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: CODEPLUG -->
+  <div class="slide" id="s3">
+    <div class="lesson">
+      <div class="sec-tag rv">03 · Codeplug</div>
+      <h2 class="sec-h rv">The DMR <span class="red">Codeplug</span></h2>
+      <p class="sec-lead rv">A codeplug is the configuration file programmed into your DMR radio. It defines every channel, talkgroup, zone and scan list. Never operate a DMR radio with an unchecked codeplug.</p>
+
+      <div class="card-grid rv d1">
+        <div class="card">
+          <span class="card-icon">📂</span>
+          <div class="card-title">What it contains</div>
+          <div class="card-body">Channels, talkgroups, RX groups, zones, scan lists, boot screen, and radio ID. Each radio must have a unique registered DMR ID from RadioID.net.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🔢</span>
+          <div class="card-title">Your DMR ID</div>
+          <div class="card-body">Each licensed operator registers for a unique 7-digit DMR ID at RadioID.net. Your ID is embedded in every transmission and identifies you globally.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🛡️</span>
+          <div class="card-title">Colour Codes</div>
+          <div class="card-body">DMR repeaters use a Colour Code (CC 0–15) similar to CTCSS in FM. Your channel must be set to the matching CC or the repeater will not respond.</div>
+        </div>
+      </div>
+
+      <div class="sec-tag rv d2" style="margin-top:8px;">Liverpool RAYNET Codeplug — Channel Preview</div>
+
+      <div class="codeplug rv d2">
+        <div class="codeplug-header">
+          <div class="codeplug-dot on"></div>
+          <div class="codeplug-dot off"></div>
+          <div class="codeplug-dot off"></div>
+          <div class="codeplug-header-title">Liverpool RAYNET Radio — Zone 1: DMR Primary</div>
+        </div>
+        <div class="codeplug-body">
+          <div class="cp-channel" style="border-bottom:1px solid rgba(255,255,255,.04)">
+            <div class="cp-num">#</div>
+            <div><div style="font-size:9px;font-weight:bold;color:rgba(255,255,255,.25);letter-spacing:.12em;text-transform:uppercase;">Channel Name</div></div>
+            <div style="font-size:9px;font-weight:bold;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;">Frequency</div>
+            <div style="font-size:9px;font-weight:bold;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;">Mode</div>
+            <div style="font-size:9px;font-weight:bold;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;">TG / TS</div>
+          </div>
+          <div class="cp-channel active">
+            <div class="cp-num">1</div>
+            <div><div class="cp-name">Liverpool RAYNET</div><div class="cp-name-sub">Primary operational</div></div>
+            <div class="cp-freq">430.0875</div>
+            <div><span class="cp-mode cp-dmr">DMR</span></div>
+            <div class="cp-tg">TG23510 · TS2</div>
+          </div>
+          <div class="cp-channel">
+            <div class="cp-num">2</div>
+            <div><div class="cp-name">Liverpool Tac 1</div><div class="cp-name-sub">Tactical / event ops</div></div>
+            <div class="cp-freq">430.0875</div>
+            <div><span class="cp-mode cp-dmr">DMR</span></div>
+            <div class="cp-tg">TG23511 · TS2</div>
+          </div>
+          <div class="cp-channel">
+            <div class="cp-num">3</div>
+            <div><div class="cp-name">Zone 10 NW</div><div class="cp-name-sub">Regional RAYNET net</div></div>
+            <div class="cp-freq">430.0875</div>
+            <div><span class="cp-mode cp-dmr">DMR</span></div>
+            <div class="cp-tg">TG23551 · TS2</div>
+          </div>
+          <div class="cp-channel">
+            <div class="cp-num">4</div>
+            <div><div class="cp-name">RAYNET-UK</div><div class="cp-name-sub">National coordination</div></div>
+            <div class="cp-freq">430.0875</div>
+            <div><span class="cp-mode cp-dmr">DMR</span></div>
+            <div class="cp-tg">TG23505 · TS1</div>
+          </div>
+          <div class="cp-channel">
+            <div class="cp-num">5</div>
+            <div><div class="cp-name">UK Calling</div><div class="cp-name-sub">National DMR calling</div></div>
+            <div class="cp-freq">430.0875</div>
+            <div><span class="cp-mode cp-dmr">DMR</span></div>
+            <div class="cp-tg">TG235 · TS1</div>
+          </div>
+          <div class="cp-channel">
+            <div class="cp-num">6</div>
+            <div><div class="cp-name">S22 Calling FM</div><div class="cp-name-sub">145.500 MHz simplex</div></div>
+            <div class="cp-freq">145.500</div>
+            <div><span class="cp-mode cp-fm">FM</span></div>
+            <div class="cp-tg">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-good rv d3">
+        <span class="callout-icon">✓</span>
+        <div class="callout-body">
+          <div class="callout-title grn">Before every deployment</div>
+          Verify: (1) your DMR ID is in the codeplug, (2) the correct talkgroup is selected, (3) the colour code matches the repeater, (4) you are on the correct timeslot, (5) your radio is showing the repeater in range. If in doubt — ask the Net Controller.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: QUIZ -->
+  <div class="slide" id="s4">
+    <div class="lesson">
+      <div class="sec-tag rv">04 · Assessment</div>
+      <h2 class="sec-h rv">Knowledge <span class="red">Check</span></h2>
+      <p class="sec-lead rv">Answer all 5 questions. You need 80% (4 out of 5) to pass this module.</p>
+
+      <div id="quizArea">
+
+        <div class="quiz-card rv d1" id="q0">
+          <div class="quiz-q-head"><span class="quiz-num">Q1</span><span class="quiz-q-text">How many simultaneous conversations can a single DMR 12.5 kHz channel carry?</span></div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="ans(0,0,false)"><span class="quiz-opt-radio"></span>One — the same as FM</button>
+            <button class="quiz-opt" onclick="ans(0,1,true)"><span class="quiz-opt-radio"></span>Two — via TDMA timeslots</button>
+            <button class="quiz-opt" onclick="ans(0,2,false)"><span class="quiz-opt-radio"></span>Four — using sub-channels</button>
+            <button class="quiz-opt" onclick="ans(0,3,false)"><span class="quiz-opt-radio"></span>It depends on the repeater</button>
+          </div>
+          <div class="quiz-fb" id="fb0"></div>
+        </div>
+
+        <div class="quiz-card rv d2" id="q1">
+          <div class="quiz-q-head"><span class="quiz-num">Q2</span><span class="quiz-q-text">Which timeslot should Liverpool RAYNET operational talkgroups generally use?</span></div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="ans(1,0,false)"><span class="quiz-opt-radio"></span>Timeslot 1 — for all local traffic</button>
+            <button class="quiz-opt" onclick="ans(1,1,true)"><span class="quiz-opt-radio"></span>Timeslot 2 — reserved for local and regional traffic</button>
+            <button class="quiz-opt" onclick="ans(1,2,false)"><span class="quiz-opt-radio"></span>Either timeslot — it makes no difference</button>
+            <button class="quiz-opt" onclick="ans(1,3,false)"><span class="quiz-opt-radio"></span>Timeslot 0 — the default slot</button>
+          </div>
+          <div class="quiz-fb" id="fb1"></div>
+        </div>
+
+        <div class="quiz-card rv d3" id="q2">
+          <div class="quiz-q-head"><span class="quiz-num">Q3</span><span class="quiz-q-text">What is a DMR Colour Code?</span></div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="ans(2,0,false)"><span class="quiz-opt-radio"></span>A visual indicator on the radio display</button>
+            <button class="quiz-opt" onclick="ans(2,1,false)"><span class="quiz-opt-radio"></span>The colour used to identify RAYNET channels</button>
+            <button class="quiz-opt" onclick="ans(2,2,true)"><span class="quiz-opt-radio"></span>A value (0–15) that must match the repeater — similar to CTCSS in FM</button>
+            <button class="quiz-opt" onclick="ans(2,3,false)"><span class="quiz-opt-radio"></span>The encoding scheme for voice data</button>
+          </div>
+          <div class="quiz-fb" id="fb2"></div>
+        </div>
+
+        <div class="quiz-card rv d4" id="q3">
+          <div class="quiz-q-head"><span class="quiz-num">Q4</span><span class="quiz-q-text">Where do you register for a unique DMR ID?</span></div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="ans(3,0,false)"><span class="quiz-opt-radio"></span>Ofcom.org.uk</button>
+            <button class="quiz-opt" onclick="ans(3,1,false)"><span class="quiz-opt-radio"></span>RSGB.org</button>
+            <button class="quiz-opt" onclick="ans(3,2,true)"><span class="quiz-opt-radio"></span>RadioID.net</button>
+            <button class="quiz-opt" onclick="ans(3,3,false)"><span class="quiz-opt-radio"></span>RAYNET-UK.net</button>
+          </div>
+          <div class="quiz-fb" id="fb3"></div>
+        </div>
+
+        <div class="quiz-card rv d5" id="q4">
+          <div class="quiz-q-head"><span class="quiz-num">Q5</span><span class="quiz-q-text">What talkgroup ID is used for Liverpool RAYNET's primary operational channel?</span></div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="ans(4,0,false)"><span class="quiz-opt-radio"></span>TG 235</button>
+            <button class="quiz-opt" onclick="ans(4,1,false)"><span class="quiz-opt-radio"></span>TG 23505</button>
+            <button class="quiz-opt" onclick="ans(4,2,false)"><span class="quiz-opt-radio"></span>TG 23551</button>
+            <button class="quiz-opt" onclick="ans(4,3,true)"><span class="quiz-opt-radio"></span>TG 23510</button>
+          </div>
+          <div class="quiz-fb" id="fb4"></div>
+        </div>
+
+      </div><!-- /quizArea -->
+
+      <div class="score-screen" id="scoreScreen">
+        <div class="score-ring-wrap">
+          <svg class="score-svg" viewBox="0 0 140 140">
+            <circle class="score-track" cx="70" cy="70" r="65"/>
+            <circle class="score-arc" id="scoreArc" cx="70" cy="70" r="65"/>
+          </svg>
+          <div class="score-inner">
+            <div class="score-pct" id="sPct">0%</div>
+            <div class="score-sublabel">Score</div>
+          </div>
+        </div>
+        <div class="score-verdict" id="sVerdict">—</div>
+        <div class="score-detail" id="sDetail">—</div>
+        <button class="score-cta" id="sBtn" onclick="completeMod()">✓ Complete Module</button>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /slide-container -->
+
+<!-- Footer nav -->
+<div class="foot-nav">
+  <button class="nav-btn nav-prev" id="btnPrev" onclick="go(cur-1)" disabled>← Back</button>
+  <div class="nav-center">
+    <div class="nav-dots" id="navDots"></div>
+    <div class="nav-slide-label" id="navLabel">Introduction</div>
+  </div>
+  <button class="nav-btn nav-next" id="btnNext" onclick="go(cur+1)">Continue →</button>
+</div>
+
+<!-- Complete overlay -->
+<div class="c-overlay" id="cOverlay">
+  <div class="c-badge">📡</div>
+  <div class="c-title">Module Complete</div>
+  <div class="c-sub">Introduction to DMR — Liverpool RAYNET<br>Your completion has been recorded. Well done.</div>
+  <button class="c-close" onclick="document.getElementById('cOverlay').classList.remove('show')">Close ✕</button>
+</div>
+
+<script>
+// ── Background hexagons ──────────────────────────────────────
+const bg = document.getElementById('bgWrap');
+for (let i = 0; i < 14; i++) {
+  const h = document.createElement('div');
+  h.className = 'bg-hex';
+  const sz = 40 + Math.random() * 120;
+  h.style.cssText = `
+    --sz:${sz}px; --drift:${-20+Math.random()*40}; --dur:${6+Math.random()*8}s;
+    left:${Math.random()*100}%; top:${Math.random()*100}%;
+    animation-delay:${Math.random()*4}s;
+  `;
+  bg.appendChild(h);
+}
+
+// ── Slide system ─────────────────────────────────────────────
+const LABELS = ['Introduction','What is DMR?','Timeslots & Talkgroups','The Codeplug','Assessment'];
+let cur = 0;
+const TOTAL = 4;
+
+function buildDots() {
+  const wrap = document.getElementById('navDots');
+  wrap.innerHTML = '';
+  for (let i = 0; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'ndot';
+    d.onclick = () => go(i);
+    wrap.appendChild(d);
+  }
+}
+
+function updateUI() {
+  const dots = document.querySelectorAll('.ndot');
+  dots.forEach((d, i) => {
+    d.className = 'ndot' + (i < cur ? ' done' : '') + (i === cur ? ' active' : '');
+  });
+  document.getElementById('btnPrev').disabled = cur === 0;
+  document.getElementById('navLabel').textContent = LABELS[cur] || '';
+
+  const pct = Math.round((cur / TOTAL) * 100);
+  document.getElementById('pFill').style.width = pct + '%';
+  document.getElementById('pPct').textContent   = pct + '%';
+
+  const next = document.getElementById('btnNext');
+  if (cur === TOTAL) {
+    next.style.display = 'none';
+  } else {
+    next.style.display = '';
+    next.textContent = cur === 0 ? 'Begin →' : 'Continue →';
+    next.className = 'nav-btn nav-next';
+  }
+
+  ScormAPI.setValue('cmi.core.lesson_location', String(cur));
+}
+
+function go(n) {
+  if (n < 0 || n > TOTAL) return;
+  const old = document.getElementById('s' + cur);
+  const nxt = document.getElementById('s' + n);
+  if (!old || !nxt) return;
+
+  old.classList.add('out');
+  setTimeout(() => {
+    old.classList.remove('active', 'out');
+    nxt.classList.add('active', 'in');
+    setTimeout(() => nxt.classList.remove('in'), 450);
+    window.scrollTo(0, 0);
+    revealAll();
+  }, 280);
+
+  cur = n;
+  updateUI();
+  ScormAPI.setStatus('incomplete');
+}
+
+// ── Reveal on scroll ──────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }});
+}, { threshold: .12 });
+
+function revealAll() {
+  setTimeout(() => {
+    document.querySelectorAll('.slide.active .rv, .slide.active .sec-tag, .slide.active .sec-h, .slide.active .sec-lead')
+      .forEach(el => obs.observe(el));
+  }, 60);
+}
+
+// ── Quiz ──────────────────────────────────────────────────────
+const answers = new Array(5).fill(null);
+
+function ans(qi, oi, correct) {
+  if (answers[qi] !== null) return;
+  answers[qi] = correct;
+
+  const card = document.getElementById('q' + qi);
+  const opts  = card.querySelectorAll('.quiz-opt');
+  const fb    = document.getElementById('fb' + qi);
+
+  opts.forEach(o => o.disabled = true);
+  opts[oi].classList.add('selected');
+
+  if (correct) {
+    opts[oi].classList.add('correct-a');
+    fb.textContent = '✓ Correct!';
+    fb.className = 'quiz-fb show ok';
+  } else {
+    opts[oi].classList.add('wrong-a');
+    fb.textContent = '✗ Not quite. Review the material above and remember this for next time.';
+    fb.className = 'quiz-fb show bad';
+    // Highlight correct
+    opts.forEach(o => {
+      if (o.onclick?.toString().includes(',true)')) o.classList.add('correct-a');
+    });
+  }
+
+  if (answers.every(a => a !== null)) setTimeout(showScore, 600);
+}
+
+function showScore() {
+  const right = answers.filter(Boolean).length;
+  const pct   = Math.round((right / answers.length) * 100);
+  const pass  = pct >= 80;
+
+  document.getElementById('quizArea').style.display = 'none';
+  const ss = document.getElementById('scoreScreen');
+  ss.classList.add('show');
+
+  setTimeout(() => {
+    document.getElementById('sPct').textContent = pct + '%';
+    const arc  = document.getElementById('scoreArc');
+    const circ = 2 * Math.PI * 65;
+    arc.style.strokeDashoffset = circ - (circ * pct / 100);
+    arc.style.stroke = pass ? '#22c55e' : '#C8102E';
+  }, 250);
+
+  document.getElementById('sVerdict').textContent = pass ? '✓ Passed' : '✗ Not Passed';
+  document.getElementById('sVerdict').style.color = pass ? '#86efac' : '#ff8fa3';
+  document.getElementById('sDetail').textContent  = `${right} of ${answers.length} correct — ${pass ? 'excellent work!' : 'please review the module content and retry.'}`;
+
+  ScormAPI.setScore(pct, 0, 100);
+
+  if (pass) {
+    document.getElementById('sBtn').style.display = 'inline-flex';
+    ScormAPI.finish('passed');
+  } else {
+    ScormAPI.finish('failed');
+  }
+}
+
+function completeMod() {
+  document.getElementById('cOverlay').classList.add('show');
+}
+
+// ── Init ──────────────────────────────────────────────────────
+buildDots();
+updateUI();
+revealAll();
+
+const saved = ScormAPI.getValue('cmi.core.lesson_location');
+if (saved && parseInt(saved) > 0) go(Math.min(parseInt(saved), TOTAL));
+</script>
+</body>
+</html>

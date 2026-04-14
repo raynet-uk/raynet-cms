@@ -1,0 +1,44 @@
+{
+    "name":          "RAYNET Core",
+    "alias":         "core",
+    "description":   "The foundational system that powers every RAYNET site. Provides authentication, member profiles, alert status, registration workflow, session management, admin messaging, audit logging, site settings, maintenance mode and security middleware. Cannot be disabled or removed.",
+    "version":       "1.0.0",
+    "requires_core": "*",
+
+    "author":        "RAYNET Liverpool",
+    "author_uri":    "https://raynet-liverpool.net",
+    "module_uri":    "https://raynet-liverpool.net",
+    "docs_uri":      "https://raynet-liverpool.net/docs",
+
+    "license":       "GPL-2.0+",
+    "license_uri":   "https://www.gnu.org/licenses/gpl-2.0.txt",
+
+    "tags":          ["core", "authentication", "members", "security", "alerts"],
+
+    "is_core":       true,
+    "can_disable":   false,
+    "can_delete":    false,
+
+    "changelog": {
+        "1.0.0": "Initial core release. Includes auth, profiles, alert status, registration, sessions, audit logging, settings and maintenance mode."
+    },
+
+    "providers": [
+        "Modules\\Core\\Providers\\CoreServiceProvider"
+    ],
+
+    "components": [
+        "Member Authentication & Sessions",
+        "Member Profiles & Avatars",
+        "Callsign Management & QRZ Lookup",
+        "Alert Status System",
+        "Registration Workflow & Approvals",
+        "Admin Messaging & Broadcasts",
+        "Audit & Activity Logging",
+        "Site Settings Store",
+        "Security Middleware Stack",
+        "Maintenance Mode",
+        "Impersonation System",
+        "CSRF & Rate Limiting"
+    ]
+}
