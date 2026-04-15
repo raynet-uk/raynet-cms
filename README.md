@@ -88,16 +88,42 @@
 
 ## 🚀 Installation
 
-### Step 1 — Get the files
+### Option A — Automated (recommended)
 
 ```bash
-git clone https://github.com/raynet-uk/raynet-cms.git
-cd raynet-cms
+git clone https://github.com/raynet-uk/raynet-cms.git .
+bash install.sh
+```
+
+The install script handles everything interactively:
+
+| Step | What it does |
+|------|-------------|
+| ✅ Pre-flight checks | PHP version, required extensions, writable directories |
+| ⚙️ Environment setup | Asks for DB credentials, site URL, mail settings — writes `.env` |
+| 📦 Composer | Detects or downloads `composer.phar` automatically |
+| 🔑 Key generation | Generates your `APP_KEY` |
+| 🗄️ Migrations | Runs all database migrations |
+| 🔗 Storage link | Creates the `public/storage` symlink |
+| 🔒 Permissions | Sets correct permissions on storage and cache |
+| 🗑️ Cache clear | Clears all application caches |
+| ⏰ Cron reminder | Shows the exact cron line to paste into cPanel |
+
+When the script finishes, visit your domain — the web-based installation wizard will guide you through the final group setup.
+
+---
+
+### Option B — Manual
+
+**1. Get the files**
+
+```bash
+git clone https://github.com/raynet-uk/raynet-cms.git .
 ```
 
 Or download the ZIP from GitHub and extract to your web root.
 
-### Step 2 — Install dependencies
+**2. Install dependencies**
 
 ```bash
 # Standard
@@ -107,7 +133,7 @@ composer install --no-dev --optimize-autoloader
 php composer.phar install --no-dev --optimize-autoloader
 ```
 
-### Step 3 — Configure your environment
+**3. Configure your environment**
 
 ```bash
 cp .env.example .env
@@ -124,7 +150,7 @@ MAIL_HOST=mail.yourgroup.net
 MAIL_FROM_ADDRESS=noreply@yourgroup.net
 ```
 
-### Step 4 — Finalise setup
+**4. Finalise setup**
 
 ```bash
 php artisan key:generate
@@ -132,7 +158,7 @@ php artisan migrate --force
 php artisan storage:link
 ```
 
-### Step 5 — Run the installation wizard
+**5. Run the installation wizard**
 
 Visit your domain in a browser. You'll be automatically redirected to `/install` where the wizard will guide you through:
 
@@ -237,7 +263,7 @@ RAYNET CMS is developed and maintained by **RAYNET Liverpool** (Group 10/ME/179)
 <br>
 <strong>Ian</strong><br>
 <code>G4BDS</code><br>
-<em>Developer</em><br>
+<em>Lead Developer</em><br>
 <br>
 </td>
 <td align="center" width="50%">
@@ -259,6 +285,7 @@ RAYNET CMS is developed and maintained by **RAYNET Liverpool** (Group 10/ME/179)
 | 🌐 **RAYNET UK** | [raynet-uk.net](https://www.raynet-uk.net) |
 | 📻 **RAYNET Liverpool** | [raynet-liverpool.net](https://raynet-liverpool.net) |
 | 🔌 **Module Repository** | [github.com/raynet-uk/raynet-cms-modules](https://github.com/raynet-uk/raynet-cms-modules) |
+| 📧 **Support** | [raynet-liverpool.net/request-support](https://raynet-liverpool.net/request-support) |
 
 ---
 
@@ -276,7 +303,7 @@ You are free to use, modify and distribute this software for any RAYNET UK group
 
 **RAYNET CMS** · Developed by RAYNET Liverpool · For every RAYNET UK group
 
-*RAYNET — the Radio Amateurs' Emergency Network*
+*RAYNET — the Radio Amateurs' Emergency Network · Affiliated with the RSGB*
 
 <br>
 
