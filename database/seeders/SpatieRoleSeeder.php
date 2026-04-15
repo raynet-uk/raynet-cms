@@ -78,10 +78,12 @@ class SpatieRoleSeeder extends Seeder
                 // Wipe any existing Spatie roles (makes seeder idempotent)
                 $user->syncRoles([]);
 
-                if ((bool)($user->is_super_admin)) {
+                $isSuperAdmin = (int)($user->getAttributes()['is_super_admin'] ?? 0) === 1;
+                $isAdmin = (int)($user->getAttributes()['is_admin'] ?? 0) === 1;
+                if ($isSuperAdmin) {
                     $user->assignRole('super-admin');
                     $counts['super-admin']++;
-                } elseif ((bool)($user->is_admin)) {
+                } elseif ($isAdmin) {
                     $user->assignRole('admin');
                     $counts['admin']++;
                 } elseif (($user->operator_title ?? '') === 'committee') {
