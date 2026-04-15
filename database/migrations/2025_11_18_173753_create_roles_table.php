@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('operator_roles', function (Blueprint $table) {
             $table->id();
             $table->string('name');              // Human label – e.g. Group Controller
             $table->string('slug')->unique();    // Internal key – e.g. group-controller
@@ -20,7 +20,7 @@ return new class extends Migration
         });
 
         // Seed my initial role set so I’ve got something usable straight away
-        DB::table('roles')->insert([
+        DB::table('operator_roles')->insert([
             [
                 'name'       => 'Group Controller',
                 'slug'       => 'group-controller',
@@ -89,6 +89,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('operator_roles');
     }
 };

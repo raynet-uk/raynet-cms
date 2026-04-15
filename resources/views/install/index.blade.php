@@ -212,7 +212,7 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
         </div>
         <div class="iz-card-foot">
             <span style="font-size:.72rem;color:#9ca3af">RAYNET CMS · Built for RAYNET UK</span>
-            <a href="{{ route('install.preview.step1') }}" class="iz-btn iz-btn-primary">
+            <a href="{{ route('install.step1') }}" class="iz-btn iz-btn-primary">
                 Get Started
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
@@ -230,7 +230,7 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
             </div>
             <div class="iz-card-sub">This information appears throughout your site. You can change everything later in Admin → Settings.</div>
         </div>
-        <form method="POST" action="{{ route('install.preview.step1.post') }}">
+        <form method="POST" action="{{ isset(\$preview) && \$preview ? route('install.preview.step1.post') : route('install.step1.post') }}">
             @csrf
             <div class="iz-card-body">
 
@@ -307,7 +307,7 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
 
             </div>
             <div class="iz-card-foot">
-                <a href="{{ route('install.index') }}" class="iz-btn iz-btn-ghost">
+                <a href="{{ isset(\$preview) && \$preview ? route('install.preview.index') : route('install.index') }}" class="iz-btn iz-btn-ghost">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                     Back
                 </a>
@@ -346,7 +346,7 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
             </div>
         </div>
         @endif
-    <form method="POST" action="{{ route('install.preview.step2.post') }}">
+    <form method="POST" action="{{ isset(\$preview) && \$preview ? route('install.preview.step2.post') : route('install.step2.post') }}">
             @csrf
             <div class="iz-card-body">
 
@@ -400,7 +400,7 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
 
             </div>
             <div class="iz-card-foot">
-                <a href="{{ route('install.preview.step1') }}" class="iz-btn iz-btn-ghost">
+                <a href="{{ route('install.step1') }}" class="iz-btn iz-btn-ghost">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                     Back
                 </a>
@@ -456,7 +456,7 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
             </div>
         </div>
         @endif
-    <form method="POST" action="{{ route('install.preview.complete') }}">
+    <form method="POST" action="{{ isset(\$preview) && \$preview ? route('install.preview.complete') : route('install.complete') }}">
                 @csrf
                 <button type="submit" class="iz-btn iz-btn-success">
                     ✓ Launch My Site
