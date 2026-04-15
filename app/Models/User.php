@@ -89,7 +89,8 @@ class User extends Authenticatable implements MustVerifyEmail
     // ── Mass assignment ────────────────────────────────────────────────────
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email',
+        'email_verified_at', 'password',
         'callsign', 'pending_callsign',
         'dmr_id',
         'licence_class', 'licence_number',
