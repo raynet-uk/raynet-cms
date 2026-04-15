@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('events', function (Blueprint $table) {
             // GeoJSON LineString geometry for the event route (walk, race course etc.)
             // {"type":"LineString","coordinates":[[lng,lat],[lng,lat],...]}
-            $table->json('event_route')->nullable()->after('event_polygon');
+            $table->json('event_route')->nullable();
         });
     }
 

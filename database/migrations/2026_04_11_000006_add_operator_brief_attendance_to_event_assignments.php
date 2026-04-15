@@ -12,16 +12,16 @@ return new class extends Migration
     {
         Schema::table('event_assignments', function (Blueprint $table) {
             // Unique token used in the QR code URL — unguessable, no login needed
-            $table->string('briefing_token', 64)->nullable()->unique()->after('briefing_sent_at');
+            $table->string('briefing_token', 64)->nullable()->unique();
 
             // Current attendance state — derived from log but stored for fast reads
             $table->enum('attendance_status', ['not_arrived', 'checked_in', 'on_break', 'checked_out'])
                   ->default('not_arrived')
-                  ->after('briefing_token');
+                  ;
 
             // Full log of all check-in/out/break events as a JSON array:
             // [{"type":"check_in","time":"2026-06-20T08:45:00","note":""}]
-            $table->json('attendance_log')->nullable()->after('attendance_status');
+            $table->json('attendance_log')->nullable();
         });
 
         // Backfill tokens for any existing assignments

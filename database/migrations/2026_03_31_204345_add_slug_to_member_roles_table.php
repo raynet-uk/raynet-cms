@@ -8,9 +8,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('member_roles', function (Blueprint $table) {
-            $table->string('slug')->unique()->after('name');
-            $table->string('colour', 7)->nullable()->after('slug');
-            $table->text('description')->nullable()->after('colour');
+            $table->string('slug')->unique();
+            $table->string('colour', 7)->nullable();
+            $table->text('description')->nullable();
         });
     }
 

@@ -10,30 +10,30 @@ return new class extends Migration
     {
         Schema::table('event_assignments', function (Blueprint $table) {
             // Multi-shift JSON (replaces single start_time/end_time for complex schedules)
-            $table->json('shifts')->nullable()->after('depart_time');
+            $table->json('shifts')->nullable();
 
             // Channel plan — primary already exists (frequency/mode/ctcss_tone)
             // Add label + secondary + fallback tiers
-            $table->string('channel_label', 50)->nullable()->after('ctcss_tone');
-            $table->string('secondary_frequency', 20)->nullable()->after('channel_label');
-            $table->string('secondary_mode', 10)->nullable()->after('secondary_frequency');
-            $table->string('secondary_ctcss', 10)->nullable()->after('secondary_mode');
-            $table->string('fallback_frequency', 20)->nullable()->after('secondary_ctcss');
-            $table->string('fallback_mode', 10)->nullable()->after('fallback_frequency');
-            $table->string('fallback_ctcss', 10)->nullable()->after('fallback_mode');
+            $table->string('channel_label', 50)->nullable();
+            $table->string('secondary_frequency', 20)->nullable();
+            $table->string('secondary_mode', 10)->nullable();
+            $table->string('secondary_ctcss', 10)->nullable();
+            $table->string('fallback_frequency', 20)->nullable();
+            $table->string('fallback_mode', 10)->nullable();
+            $table->string('fallback_ctcss', 10)->nullable();
 
             // Coverage radius for map circles
-            $table->unsignedInteger('coverage_radius_m')->default(0)->after('what3words');
+            $table->unsignedInteger('coverage_radius_m')->default(0);
 
             // Equipment as JSON checklist (supplements free-text equipment column)
-            $table->json('equipment_items')->nullable()->after('equipment');
+            $table->json('equipment_items')->nullable();
 
             // Private notes — not printed on standard briefing sheet
-            $table->text('medical_notes')->nullable()->after('briefing_notes');
+            $table->text('medical_notes')->nullable();
 
             // Emergency contact
-            $table->string('emergency_contact_name', 100)->nullable()->after('medical_notes');
-            $table->string('emergency_contact_phone', 20)->nullable()->after('emergency_contact_name');
+            $table->string('emergency_contact_name', 100)->nullable();
+            $table->string('emergency_contact_phone', 20)->nullable();
         });
     }
 

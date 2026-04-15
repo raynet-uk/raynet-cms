@@ -9,12 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->nullable()->after('callsign');        // e.g. "Net Controller", "Operator"
-            $table->integer('level')->nullable()->after('role');          // operator training level
-            $table->string('status')->nullable()->after('level');         // Active / Inactive / Standby
-            $table->string('phone')->nullable()->after('status');
-            $table->date('joined_at')->nullable()->after('phone');
-            $table->text('notes')->nullable()->after('joined_at');
+            $table->string('role')->nullable();        // e.g. "Net Controller", "Operator"
+            $table->integer('level')->nullable();          // operator training level
+            $table->string('status')->nullable();         // Active / Inactive / Standby
+            $table->string('phone')->nullable();
+            $table->date('joined_at')->nullable();
+            $table->text('notes')->nullable();
         });
     }
 

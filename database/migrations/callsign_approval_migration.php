@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('pending_callsign')->nullable()->after('callsign');
+            $table->string('pending_callsign')->nullable();
         });
     }
 

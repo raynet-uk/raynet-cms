@@ -25,7 +25,7 @@ return new class extends Migration
             Schema::table('activity_logs', function (Blueprint $table) {
                 // Add any missing columns safely
                 if (!Schema::hasColumn('activity_logs', 'logged_by')) {
-                    $table->unsignedBigInteger('logged_by')->nullable()->after('hours');
+                    $table->unsignedBigInteger('logged_by')->nullable();
                     $table->foreign('logged_by')->references('id')->on('users')->onDelete('set null');
                 }
                 if (!Schema::hasColumn('activity_logs', 'updated_at')) {

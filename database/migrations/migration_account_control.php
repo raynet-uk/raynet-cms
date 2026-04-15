@@ -10,19 +10,19 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (! Schema::hasColumn('users', 'force_password_reset')) {
-                $table->boolean('force_password_reset')->default(false)->after('password');
+                $table->boolean('force_password_reset')->default(false);
             }
             if (! Schema::hasColumn('users', 'suspended_at')) {
-                $table->timestamp('suspended_at')->nullable()->after('force_password_reset');
+                $table->timestamp('suspended_at')->nullable();
             }
             if (! Schema::hasColumn('users', 'suspension_message')) {
-                $table->text('suspension_message')->nullable()->after('suspended_at');
+                $table->text('suspension_message')->nullable();
             }
             if (! Schema::hasColumn('users', 'admin_message')) {
-                $table->text('admin_message')->nullable()->after('suspension_message');
+                $table->text('admin_message')->nullable();
             }
             if (! Schema::hasColumn('users', 'dismissed_broadcast_id')) {
-                $table->unsignedBigInteger('dismissed_broadcast_id')->nullable()->after('admin_message');
+                $table->unsignedBigInteger('dismissed_broadcast_id')->nullable();
             }
         });
     }

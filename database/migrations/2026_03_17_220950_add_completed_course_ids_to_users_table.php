@@ -7,7 +7,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->json('completed_course_ids')->nullable()->after('notes');
+            $table->json('completed_course_ids')->nullable();
         });
     }
     public function down(): void

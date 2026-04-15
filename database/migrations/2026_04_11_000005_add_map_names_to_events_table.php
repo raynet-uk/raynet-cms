@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            $table->string('event_polygon_name', 120)->nullable()->after('event_polygon');
-            $table->string('event_route_name',   120)->nullable()->after('event_route');
+            $table->string('event_polygon_name', 120)->nullable();
+            $table->string('event_route_name',   120)->nullable();
         });
     }
 

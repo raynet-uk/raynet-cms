@@ -8,7 +8,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lms_courses', function (Blueprint $table) {
-            $table->json('unlocks_badge_ids')->nullable()->after('certificate_text');
+            $table->json('unlocks_badge_ids')->nullable();
         });
     }
     public function down(): void

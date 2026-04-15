@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('events', function (Blueprint $table) {
             // JSON array of POI objects:
             // [{"id":"uuid","type":"entrance","name":"Main Gate","lat":53.41,"lng":-2.99,"description":"...","colour":"#1a6b3c"}]
-            $table->json('event_pois')->nullable()->after('event_polygon');
+            $table->json('event_pois')->nullable();
         });
     }
 
