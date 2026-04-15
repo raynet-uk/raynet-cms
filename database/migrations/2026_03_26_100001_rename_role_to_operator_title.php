@@ -20,7 +20,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->renameColumn('role', 'operator_title');
+            if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'role')) { $table->renameColumn('role', 'operator_title'); }
         });
     }
 
