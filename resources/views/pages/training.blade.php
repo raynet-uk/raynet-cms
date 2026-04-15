@@ -235,7 +235,7 @@ body {
         <div class="brand">
             <div class="brand-badge">📡</div>
             <div>
-                <div class="brand-name">Liverpool RAYNET</div>
+                <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="brand-sub">Zone 10 · Merseyside · Group 179</div>
             </div>
         </div>
@@ -248,7 +248,7 @@ body {
     <header class="page-header">
         <div class="page-header-eyebrow">// Training & Exercises</div>
         <h1>Keeping Operators<br><span>Ready to Deploy</span></h1>
-        <p>Liverpool RAYNET delivers structured training in radio procedure, net control, digital modes, mapping, JESIP interoperability, and resilient deployment — through on-air nets, classroom sessions, and practical field exercises.</p>
+        <p>{{ \App\Helpers\RaynetSetting::groupName() }} delivers structured training in radio procedure, net control, digital modes, mapping, JESIP interoperability, and resilient deployment — through on-air nets, classroom sessions, and practical field exercises.</p>
     </header>
 
     <div class="stat-strip">
@@ -546,7 +546,7 @@ body {
             </div>
             <div class="step">
                 <div class="step-num">02</div>
-                <div class="step-title">Join Liverpool RAYNET</div>
+                <div class="step-title">Join {{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="step-desc">Register with the group, complete RAYNET-UK membership, and gain access to callout list and training resources.</div>
             </div>
             <div class="step">

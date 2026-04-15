@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Operational Map — Liverpool RAYNET')
+@section('title', 'Operational Map — {{ \App\Helpers\RaynetSetting::groupName() }}')
 
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -166,7 +166,7 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <div>
             <div class="sb-head-title">Operational Map</div>
-            <div class="sb-head-sub">Liverpool RAYNET · Live layers</div>
+            <div class="sb-head-sub">{{ \App\Helpers\RaynetSetting::groupName() }} · Live layers</div>
         </div>
     </div>
 
@@ -219,7 +219,7 @@
             </div>
             <div>
                 <div class="ao-title">APRS STATIONS</div>
-                <div class="ao-subtitle">Liverpool RAYNET &bull; Live feed</div>
+                <div class="ao-subtitle">{{ \App\Helpers\RaynetSetting::groupName() }} &bull; Live feed</div>
             </div>
         </div>
 
@@ -267,7 +267,7 @@
     </div>
 </div>
 <div class="ops-bar">
-    <span class="ops-chip">📍 Liverpool RAYNET</span>
+    <span class="ops-chip">📍 {{ \App\Helpers\RaynetSetting::groupName() }}</span>
     <span class="ops-chip" id="actCount">0 layers active</span>
     <span class="ops-coords" id="coords">Hover map for coordinates</span>
 </div>
@@ -434,7 +434,7 @@ async function loadAprs(){
                 ${memberBadge}
                 ${p.title?`<div class="rp-row"><span class="rp-lbl">Role</span><span>${p.title}</span></div>`:''}
                 <div class="rp-row"><span class="rp-lbl">Last seen</span><span>${p.age}</span></div>
-                <div class="rp-row"><span class="rp-lbl">Distance</span><span>${p.distKm} km from Liverpool</span></div>
+                <div class="rp-row"><span class="rp-lbl">Distance</span><span>${p.distKm} km from {{ \App\Helpers\RaynetSetting::groupName() }}</span></div>
                 ${p.speed>0?`<div class="rp-row"><span class="rp-lbl">Speed</span><span>${Math.round(p.speed)} km/h</span></div>`:''}
                 ${p.alt>0?`<div class="rp-row"><span class="rp-lbl">Altitude</span><span>${Math.round(p.alt)} m</span></div>`:''}
                 ${p.comment?`<div style="margin-top:4px;font-size:11px;color:#666;">${p.comment}</div>`:''}

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Cookie Policy — Liverpool RAYNET')
+@section('title', 'Cookie Policy — {{ \App\Helpers\RaynetSetting::groupName() }}')
 @section('content')
 
 <style>
@@ -57,9 +57,9 @@
 </style>
 
 <div class="cookies-hero">
-    <div class="cookies-hero-eyebrow">Liverpool RAYNET · Legal</div>
+    <div class="cookies-hero-eyebrow">{{ \App\Helpers\RaynetSetting::groupName() }} · Legal</div>
     <div class="cookies-hero-title">🍪 Cookie Policy</div>
-    <div class="cookies-hero-sub">Last updated {{ now()->format('d F Y') }} · Applies to raynet-liverpool.net</div>
+    <div class="cookies-hero-sub">Last updated {{ now()->format('d F Y') }} · Applies to {{ \App\Helpers\RaynetSetting::siteUrl() }}</div>
 </div>
 
 <div class="cookies-wrap">
@@ -198,11 +198,11 @@
 
     <div class="policy-card">
         <h2>📬 Contact</h2>
-        <p>If you have questions about our use of cookies or wish to exercise your data rights, please contact the Liverpool RAYNET Group Controller via the <a href="{{ route('request-support') }}" style="color:#003366;font-weight:bold;">support request form</a> or via RAYNET-UK.</p>
+        <p>If you have questions about our use of cookies or wish to exercise your data rights, please contact the {{ \App\Helpers\RaynetSetting::groupName() }} Group Controller via the <a href="{{ route('request-support') }}" style="color:#003366;font-weight:bold;">support request form</a> or via RAYNET-UK.</p>
         <p>For complaints about how we handle your data, you can contact the UK Information Commissioner's Office (ICO) at <a href="https://ico.org.uk" target="_blank" style="color:#003366;font-weight:bold;">ico.org.uk</a>.</p>
     </div>
 
-    <p class="last-updated">Cookie Policy v1.0 · Liverpool RAYNET (Group 10/ME/179) · Affiliated to RAYNET-UK</p>
+    <p class="last-updated">Cookie Policy v1.0 · {{ \App\Helpers\RaynetSetting::groupName() }} (Group {{ \App\Helpers\RaynetSetting::groupNumber() }}) · Affiliated to RAYNET-UK</p>
 
 </div>
 

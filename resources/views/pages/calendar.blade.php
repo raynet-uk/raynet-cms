@@ -29,7 +29,7 @@
                 {{ $currentMonth->format('F Y') }}
             </h1>
             <p style="margin:0.25rem 0 0; font-size:0.9rem; color:#9ca3af;">
-                Public training, exercises and event support for Liverpool RAYNET.
+                Public training, exercises and event support for {{ \App\Helpers\RaynetSetting::groupName() }}.
             </p>
         </div>
 

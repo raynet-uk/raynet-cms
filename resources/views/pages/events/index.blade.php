@@ -140,7 +140,7 @@ body { background: var(--grey); color: var(--text); font-family: var(--font); fo
         <div class="rn-brand">
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div>
-                <div class="rn-org">Liverpool RAYNET</div>
+                <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="rn-sub">Upcoming Events</div>
             </div>
         </div>
@@ -154,7 +154,7 @@ body { background: var(--grey); color: var(--text); font-family: var(--font); fo
         <div>
             <div class="page-eyebrow">Public Schedule</div>
             <h1 class="page-title">Upcoming Events</h1>
-            <p class="page-desc">Public Liverpool RAYNET events, pulled from the same data as the calendar.</p>
+            <p class="page-desc">Public {{ \App\Helpers\RaynetSetting::groupName() }} events, pulled from the same data as the calendar.</p>
         </div>
     </div>
 </div>

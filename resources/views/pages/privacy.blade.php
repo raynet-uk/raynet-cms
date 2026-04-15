@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Privacy Notice — Liverpool RAYNET')
+@section('title', 'Privacy Notice — {{ \App\Helpers\RaynetSetting::groupName() }}')
 @section('content')
 
 <style>
@@ -161,7 +161,7 @@
 
 {{-- Hero --}}
 <div class="privacy-hero">
-    <div class="privacy-hero-eyebrow">Liverpool RAYNET · Legal</div>
+    <div class="privacy-hero-eyebrow">{{ \App\Helpers\RaynetSetting::groupName() }} · Legal</div>
     <h1 class="privacy-hero-title">🔒 Privacy Notice &amp; Data Protection Policy</h1>
     <div class="privacy-hero-meta">
         <span class="privacy-hero-chip">📅 Last updated: 17 March 2026</span>
@@ -177,9 +177,9 @@
         <div style="flex:1;">
             <div class="pcc-title">Data Controller</div>
             <div class="pcc-detail">
-                <strong>Ian Jones</strong> · Group Controller, Liverpool RAYNET Group<br>
-                Email: <a href="mailto:GC.liverpool@raynet-uk.net">GC.liverpool@raynet-uk.net</a> &nbsp;·&nbsp;
-                Website: <a href="https://raynet-liverpool.net">raynet-liverpool.net</a>
+                <strong>{{ \App\Helpers\RaynetSetting::gcName() }}</strong> · Group Controller, {{ \App\Helpers\RaynetSetting::groupName() }}<br>
+                Email: <a href="mailto:{{ \App\Helpers\RaynetSetting::gcEmail() }}">{{ \App\Helpers\RaynetSetting::gcEmail() }}</a> &nbsp;·&nbsp;
+                Website: <a href="https://{{ \App\Helpers\RaynetSetting::siteUrl() }}">{{ \App\Helpers\RaynetSetting::siteUrl() }}</a>
             </div>
         </div>
         <div style="flex-shrink:0;display:flex;align-items:center;">
@@ -229,9 +229,9 @@
             <span class="psec-chevron open">▼</span>
         </div>
         <div class="privacy-section-body open">
-            <p>Liverpool RAYNET Group is a voluntary emergency communications organisation. We support events, exercises, incidents, training, and community resilience activity. In doing so, we handle personal data relating to adult members, adult volunteers, and adult third-party contacts.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group is a voluntary emergency communications organisation. We support events, exercises, incidents, training, and community resilience activity. In doing so, we handle personal data relating to adult members, adult volunteers, and adult third-party contacts.</p>
             <p>We are committed to processing personal data lawfully, fairly, securely, and transparently in accordance with the <strong>UK General Data Protection Regulation</strong>, the <strong>Data Protection Act 2018</strong>, and the <strong>Privacy and Electronic Communications Regulations</strong> where applicable.</p>
-            <p>This document serves as both Liverpool RAYNET Group's privacy notice and its general data protection policy.</p>
+            <p>This document serves as both {{ \App\Helpers\RaynetSetting::groupName() }} Group's privacy notice and its general data protection policy.</p>
             <div class="priv-info"><span class="priv-box-icon">ℹ️</span><span>This policy is intended for adult members and adult third parties only. It is not intended for children.</span></div>
         </div>
     </div>
@@ -244,12 +244,12 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group, acting through its Management Committee, is the data controller for the personal data covered by this policy.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group, acting through its Management Committee, is the data controller for the personal data covered by this policy.</p>
             <p><strong>Data Controller contact:</strong><br>
             Ian Jones, Group Controller<br>
-            Email: <a href="mailto:GC.liverpool@raynet-uk.net">GC.liverpool@raynet-uk.net</a><br>
-            Website: <a href="https://raynet-liverpool.net">raynet-liverpool.net</a></p>
-            <p>Liverpool RAYNET Group is registered with the Information Commissioner's Office.</p>
+            Email: <a href="mailto:{{ \App\Helpers\RaynetSetting::gcEmail() }}">{{ \App\Helpers\RaynetSetting::gcEmail() }}</a><br>
+            Website: <a href="https://{{ \App\Helpers\RaynetSetting::siteUrl() }}">{{ \App\Helpers\RaynetSetting::siteUrl() }}</a></p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group is registered with the Information Commissioner's Office.</p>
         </div>
     </div>
 
@@ -262,7 +262,7 @@
         </div>
         <div class="privacy-section-body">
             <p>RAYNET-UK operates its own website, email system, and member management system under its own control. <strong>RAYNET-UK is therefore a separate data controller</strong> for that processing. Members should refer to RAYNET-UK's own privacy information for the way RAYNET-UK collects, stores, and uses personal data through its own systems.</p>
-            <div class="priv-info"><span class="priv-box-icon">📋</span><span>Liverpool RAYNET Group does not provide identifiable member data to RAYNET-UK as part of routine annual reporting. It provides only aggregated information such as total hours and total events where required.</span></div>
+            <div class="priv-info"><span class="priv-box-icon">📋</span><span>{{ \App\Helpers\RaynetSetting::groupName() }} Group does not provide identifiable member data to RAYNET-UK as part of routine annual reporting. It provides only aggregated information such as total hours and total events where required.</span></div>
         </div>
     </div>
 
@@ -274,7 +274,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>This policy applies to personal data processed by Liverpool RAYNET Group in connection with:</p>
+            <p>This policy applies to personal data processed by {{ \App\Helpers\RaynetSetting::groupName() }} Group in connection with:</p>
             <ul>
                 <li>membership administration at group level</li>
                 <li>training and learning administration</li>
@@ -295,7 +295,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group may collect, store, and use the following categories of personal data about members and volunteers:</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group may collect, store, and use the following categories of personal data about members and volunteers:</p>
             <ul>
                 <li>name</li>
                 <li>callsign</li>
@@ -341,7 +341,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group uses personal data for the following purposes:</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group uses personal data for the following purposes:</p>
             <ul>
                 <li>to maintain group-level membership and contact records</li>
                 <li>to contact members for operational deployment, event duties, meetings, and training</li>
@@ -367,7 +367,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group relies on different lawful bases depending on the activity.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group relies on different lawful bases depending on the activity.</p>
             <ul>
                 <li><strong>Contract</strong> — for core group membership administration that is objectively necessary to run a member's participation in the Group.</li>
                 <li><strong>Legitimate interests</strong> — for routine operational coordination, event administration, training records, attendance, qualifications, deployment records, limited sharing for events, finance administration, and similar day-to-day group functions.</li>
@@ -375,7 +375,7 @@
                 <li><strong>Consent</strong> — for public-relations and social-media photographs of identifiable individuals used as featured or promotional images.</li>
                 <li><strong>Consent</strong> — for non-essential cookies, analytics, embedded videos, and social-media plugins on the website.</li>
             </ul>
-            <div class="priv-info"><span class="priv-box-icon">ℹ️</span><span>For health or welfare information, Liverpool RAYNET Group will use such information only where operationally necessary and with clear prior notice. Where practicable, explicit consent will be sought. In urgent situations involving serious risk to life or safety, Liverpool RAYNET Group may process or disclose relevant information where another lawful basis or condition applies.</span></div>
+            <div class="priv-info"><span class="priv-box-icon">ℹ️</span><span>For health or welfare information, {{ \App\Helpers\RaynetSetting::groupName() }} Group will use such information only where operationally necessary and with clear prior notice. Where practicable, explicit consent will be sought. In urgent situations involving serious risk to life or safety, {{ \App\Helpers\RaynetSetting::groupName() }} Group may process or disclose relevant information where another lawful basis or condition applies.</span></div>
         </div>
     </div>
 
@@ -388,7 +388,7 @@
         </div>
         <div class="privacy-section-body">
             <p>Health and welfare information is <strong>special category personal data</strong> and is handled only where genuinely necessary, with access limited to those who need to know.</p>
-            <p>Liverpool RAYNET Group will collect and use such information only where it is operationally necessary, proportionate, and lawful to do so.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group will collect and use such information only where it is operationally necessary, proportionate, and lawful to do so.</p>
         </div>
     </div>
 
@@ -400,7 +400,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group may use APRS and live location tracking, including through SARstuff, during authorised events, exercises, incidents, and deployments.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group may use APRS and live location tracking, including through SARstuff, during authorised events, exercises, incidents, and deployments.</p>
             <p>Location tracking is used only for operational coordination, safety, welfare, and insurance-related purposes. It is <strong>not</strong> used for routine private monitoring outside authorised activities.</p>
             <p>Location data and track logs may be visible to authorised personnel with a genuine operational need to know.</p>
         </div>
@@ -414,10 +414,10 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group may use photographs for membership administration, identification, public relations, website content, and social-media content.</p>
-            <p>For featured, posed, or clearly identifiable promotional images of members or other individuals, Liverpool RAYNET Group will seek explicit consent where appropriate.</p>
-            <p>For general crowd shots or scene-setting images taken at public events, Liverpool RAYNET Group may rely on legitimate interests where use of the image is proportionate, people would reasonably expect such photography, clear notice is given, and the image is not used in a way likely to cause unfairness, harm, or distress.</p>
-            <div class="priv-info"><span class="priv-box-icon">📷</span><span>Consent for publicity photographs may be withdrawn. Withdrawal will not affect use already made before the withdrawal, but Liverpool RAYNET Group will stop future use where required.</span></div>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group may use photographs for membership administration, identification, public relations, website content, and social-media content.</p>
+            <p>For featured, posed, or clearly identifiable promotional images of members or other individuals, {{ \App\Helpers\RaynetSetting::groupName() }} Group will seek explicit consent where appropriate.</p>
+            <p>For general crowd shots or scene-setting images taken at public events, {{ \App\Helpers\RaynetSetting::groupName() }} Group may rely on legitimate interests where use of the image is proportionate, people would reasonably expect such photography, clear notice is given, and the image is not used in a way likely to cause unfairness, harm, or distress.</p>
+            <div class="priv-info"><span class="priv-box-icon">📷</span><span>Consent for publicity photographs may be withdrawn. Withdrawal will not affect use already made before the withdrawal, but {{ \App\Helpers\RaynetSetting::groupName() }} Group will stop future use where required.</span></div>
         </div>
     </div>
 
@@ -429,7 +429,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Members may provide emergency contact details for operational safety purposes. <strong>Members are responsible for ensuring that the emergency contact knows that their details have been provided</strong> to Liverpool RAYNET Group for that purpose.</p>
+            <p>Members may provide emergency contact details for operational safety purposes. <strong>Members are responsible for ensuring that the emergency contact knows that their details have been provided</strong> to {{ \App\Helpers\RaynetSetting::groupName() }} Group for that purpose.</p>
             <p>Emergency contact details are used only where relevant to welfare, safety, or urgent operational need.</p>
         </div>
     </div>
@@ -442,7 +442,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group processes limited finance-related personal data in order to record payments, maintain an audit trail, and reimburse legitimate expenses.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group processes limited finance-related personal data in order to record payments, maintain an audit trail, and reimburse legitimate expenses.</p>
             <p>This may include payer name, transaction reference, amount paid, bank details for reimbursement, expense claims, and invoices.</p>
         </div>
     </div>
@@ -455,16 +455,16 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group shares personal data only where there is a lawful basis and a genuine operational, administrative, safety, insurance, or legal need to do so. We may share personal data with:</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group shares personal data only where there is a lawful basis and a genuine operational, administrative, safety, insurance, or legal need to do so. We may share personal data with:</p>
             <ul>
                 <li><strong>SARstuff</strong> — for operational management, incident coordination, location tracking, and operational records</li>
                 <li><strong>Moodle</strong> — for learning administration, course access, attendance, assessment results, certificates, learning progress, forum posts, and assignments</li>
                 <li><strong>Google Workspace</strong> — where used as a document repository for membership lists, attendance records, training records, deployment logs, incident reports, finance records, photographs, and committee papers</li>
-                <li><strong>Website and hosting providers</strong> — where necessary to run raynet-liverpool.net and its supporting services</li>
+                <li><strong>Website and hosting providers</strong> — where necessary to run {{ \App\Helpers\RaynetSetting::siteUrl() }} and its supporting services</li>
                 <li><strong>Event organisers, local authorities, emergency services, and partner agencies</strong> — where operationally necessary, usually limited to first name and callsign, and in some cases mobile number or vehicle registration</li>
                 <li><strong>Insurers, safeguarding contacts, regulators, or law enforcement</strong> — where disclosure is required or justified by law, safeguarding duty, insurance need, or urgent risk to life or safety</li>
             </ul>
-            <div class="priv-info"><span class="priv-box-icon">🔒</span><span>Liverpool RAYNET Group does not sell personal data and does not share personal data for marketing purposes.</span></div>
+            <div class="priv-info"><span class="priv-box-icon">🔒</span><span>{{ \App\Helpers\RaynetSetting::groupName() }} Group does not sell personal data and does not share personal data for marketing purposes.</span></div>
         </div>
     </div>
 
@@ -476,8 +476,8 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group uses third-party platforms and services including SARstuff, Moodle, Google Workspace, website hosting, and related tools.</p>
-            <p>Liverpool RAYNET Group expects providers handling personal data on its behalf to process it securely and appropriately under applicable contractual terms and data protection law.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group uses third-party platforms and services including SARstuff, Moodle, Google Workspace, website hosting, and related tools.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group expects providers handling personal data on its behalf to process it securely and appropriately under applicable contractual terms and data protection law.</p>
         </div>
     </div>
 
@@ -489,8 +489,8 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>To the best of Liverpool RAYNET Group's knowledge, its data is normally stored in the UK. However, some service providers may process personal data outside the UK.</p>
-            <p>Where personal data is transferred outside the UK, Liverpool RAYNET Group will seek to ensure that appropriate safeguards are in place, such as recognised contractual safeguards or other lawful transfer mechanisms required by UK data protection law.</p>
+            <p>To the best of {{ \App\Helpers\RaynetSetting::groupName() }} Group's knowledge, its data is normally stored in the UK. However, some service providers may process personal data outside the UK.</p>
+            <p>Where personal data is transferred outside the UK, {{ \App\Helpers\RaynetSetting::groupName() }} Group will seek to ensure that appropriate safeguards are in place, such as recognised contractual safeguards or other lawful transfer mechanisms required by UK data protection law.</p>
         </div>
     </div>
 
@@ -502,7 +502,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group keeps personal data only for as long as necessary for the purpose for which it was collected. Current retention periods are:</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group keeps personal data only for as long as necessary for the purpose for which it was collected. Current retention periods are:</p>
             <div class="retention-wrap">
                 <table class="retention-table">
                     <thead>
@@ -541,8 +541,8 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Raynet-Liverpool.net uses cookies and similar technologies. Non-essential cookies, analytics tools, embedded videos, and social-media plugins that collect personal data or store or access information on a user's device will be activated only with the user's consent through our cookie consent tool. Users will have the option to reject non-essential technologies.</p>
-            <p>Liverpool RAYNET Group does not use its website for unsolicited direct marketing.</p>
+            <p>{{ \App\Helpers\RaynetSetting::siteUrl() }} uses cookies and similar technologies. Non-essential cookies, analytics tools, embedded videos, and social-media plugins that collect personal data or store or access information on a user's device will be activated only with the user's consent through our cookie consent tool. Users will have the option to reject non-essential technologies.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group does not use its website for unsolicited direct marketing.</p>
             <div class="priv-info"><span class="priv-box-icon">🍪</span><span>For full details of every cookie we use, including your right to object to legitimate interest claims under UK GDPR Article 21, please see our <a href="{{ route('cookies') }}">Cookie Policy</a>.</span></div>
             <p>
                 <button onclick="openCookieSettings()"
@@ -561,7 +561,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group sends operational emails, calls to meetings, and event details. It does not use personal data for unsolicited marketing, fundraising promotion, or general commercial advertising.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group sends operational emails, calls to meetings, and event details. It does not use personal data for unsolicited marketing, fundraising promotion, or general commercial advertising.</p>
         </div>
     </div>
 
@@ -573,7 +573,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group applies technical and organisational measures to protect personal data. These include access controls, password protection, secure storage, sensible limitation of access, member awareness of responsible data handling, and secure disposal of records when they are no longer needed.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group applies technical and organisational measures to protect personal data. These include access controls, password protection, secure storage, sensible limitation of access, member awareness of responsible data handling, and secure disposal of records when they are no longer needed.</p>
             <p>Access to personal data is restricted to those with a genuine operational or administrative need to know.</p>
         </div>
     </div>
@@ -587,7 +587,7 @@
         </div>
         <div class="privacy-section-body">
             <p>Any member who becomes aware of a personal data breach, suspected breach, loss, or unauthorised disclosure must report it promptly to the Group Controller.</p>
-            <p>Liverpool RAYNET Group will assess the incident, record it, and where legally required notify the ICO without undue delay.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group will assess the incident, record it, and where legally required notify the ICO without undue delay.</p>
         </div>
     </div>
 
@@ -599,7 +599,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group will carry out a data protection impact assessment where a new technology, tracking function, database, or other change is likely to create a high risk to individuals' rights and freedoms.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group will carry out a data protection impact assessment where a new technology, tracking function, database, or other change is likely to create a high risk to individuals' rights and freedoms.</p>
         </div>
     </div>
 
@@ -622,7 +622,7 @@
                 <li>withdraw consent at any time where consent is the lawful basis</li>
                 <li>complain to the Information Commissioner's Office</li>
             </ul>
-            <p>Requests should be sent to: <a href="mailto:GC.liverpool@raynet-uk.net">GC.liverpool@raynet-uk.net</a></p>
+            <p>Requests should be sent to: <a href="mailto:{{ \App\Helpers\RaynetSetting::gcEmail() }}">{{ \App\Helpers\RaynetSetting::gcEmail() }}</a></p>
         </div>
     </div>
 
@@ -634,7 +634,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Membership is administered through RAYNET-UK rather than by Liverpool RAYNET Group itself. However, if a member does not provide the personal data needed for local administration, training, deployment, reimbursement, emergency contact, or operational safety, Liverpool RAYNET Group may be unable to deploy that member, enrol them on training, contact them in an emergency, or reimburse legitimate expenses.</p>
+            <p>Membership is administered through RAYNET-UK rather than by {{ \App\Helpers\RaynetSetting::groupName() }} Group itself. However, if a member does not provide the personal data needed for local administration, training, deployment, reimbursement, emergency contact, or operational safety, {{ \App\Helpers\RaynetSetting::groupName() }} Group may be unable to deploy that member, enrol them on training, contact them in an emergency, or reimburse legitimate expenses.</p>
         </div>
     </div>
 
@@ -646,7 +646,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group does not carry out solely automated decision-making or profiling about individuals.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group does not carry out solely automated decision-making or profiling about individuals.</p>
         </div>
     </div>
 
@@ -658,7 +658,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>This policy will be reviewed at least annually, or sooner if Liverpool RAYNET Group's processing activities, systems, or legal obligations change.</p>
+            <p>This policy will be reviewed at least annually, or sooner if {{ \App\Helpers\RaynetSetting::groupName() }} Group's processing activities, systems, or legal obligations change.</p>
         </div>
     </div>
 
@@ -670,7 +670,7 @@
             <span class="psec-chevron">▼</span>
         </div>
         <div class="privacy-section-body">
-            <p>Liverpool RAYNET Group will try to resolve any privacy or data-protection concern fairly and promptly. If you are dissatisfied with the way your personal data has been handled, you may complain to the <strong>Information Commissioner's Office</strong>.</p>
+            <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group will try to resolve any privacy or data-protection concern fairly and promptly. If you are dissatisfied with the way your personal data has been handled, you may complain to the <strong>Information Commissioner's Office</strong>.</p>
             <div class="priv-info">
                 <span class="priv-box-icon">🏛</span>
                 <div>
@@ -684,7 +684,7 @@
 
     {{-- Page footer --}}
     <div class="privacy-page-footer">
-        <p>Liverpool RAYNET Group (Group 10/ME/179) · Affiliated to RAYNET-UK · Volunteer emergency communications for Merseyside</p>
+        <p>{{ \App\Helpers\RaynetSetting::groupName() }} Group (Group {{ \App\Helpers\RaynetSetting::groupNumber() }}) · Affiliated to RAYNET-UK · Volunteer emergency communications for {{ \App\Helpers\RaynetSetting::groupRegion() }}</p>
         <p style="margin-top:.3rem;">Privacy Notice v1.0 · Draft · Last updated 17 March 2026 ·
             <a href="{{ route('cookies') }}">Cookie Policy</a>
         </p>

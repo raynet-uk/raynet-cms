@@ -281,8 +281,8 @@ body {
         <div class="brand">
             <div class="brand-badge">📡</div>
             <div>
-                <div class="brand-name">Liverpool RAYNET</div>
-                <div class="brand-sub">Zone 10 · Merseyside · Group 179</div>
+                <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
+                <div class="brand-sub">Zone 10 · {{ \App\Helpers\RaynetSetting::groupRegion() }} · Group 179</div>
             </div>
         </div>
         <div class="status-chip">
@@ -293,8 +293,8 @@ body {
 
 <header class="page-header">
         <div class="page-header-eyebrow">// About Us</div>
-        <h1>Emergency Communications<br>for <span>Merseyside</span></h1>
-        <p>Liverpool RAYNET is a dedicated team of licensed amateur radio operators providing voluntary, resilient communications support to emergency services, local authorities, and community events across Merseyside.</p>
+        <h1>Emergency Communications<br>for <span>{{ \App\Helpers\RaynetSetting::groupRegion() }}</span></h1>
+        <p>{{ \App\Helpers\RaynetSetting::groupName() }} is a dedicated team of licensed amateur radio operators providing voluntary, resilient communications support to emergency services, local authorities, and community events across {{ \App\Helpers\RaynetSetting::groupRegion() }}.</p>
     </header>
 
 <div class="stat-strip">
@@ -306,7 +306,7 @@ body {
         <div class="stat-card">
             <div class="stat-label">Group Ref</div>
             <div class="stat-value">179</div>
-            <div class="stat-sub">Zone 10 · Merseyside</div>
+            <div class="stat-sub">Zone 10 · {{ \App\Helpers\RaynetSetting::groupRegion() }}</div>
         </div>
         <div class="stat-card">
             <div class="stat-label">Members</div>
@@ -333,7 +333,7 @@ body {
                 <div class="card-body">
                     <p>RAYNET-UK is the national voluntary communications service provided by licensed radio amateurs, formed in 1953 after severe East Coast flooding to organise amateur radio resources for emergencies.</p>
                     <p>Registered with Ofcom and working closely with police, ambulance, fire &amp; rescue, local authorities, and voluntary agencies, RAYNET supplies resilient communications when normal systems fail or become overwhelmed.</p>
-                    <p>Liverpool RAYNET (Group 10/ME/179) is one of many groups in Zone 10, serving Merseyside and surrounding areas with trained volunteers and self-sufficient equipment.</p>
+                    <p>{{ \App\Helpers\RaynetSetting::groupName() }} (Group {{ \App\Helpers\RaynetSetting::groupNumber() }}) is one of many groups in Zone 10, serving {{ \App\Helpers\RaynetSetting::groupRegion() }} and surrounding areas with trained volunteers and self-sufficient equipment.</p>
                 </div>
             </div>
 
@@ -351,7 +351,7 @@ body {
                             <div class="cap-dot" style="background:var(--navy);"></div>
                             <div>
                                 <div class="cap-item-title">VHF / UHF Voice Communications</div>
-                                <div class="cap-item-desc">Portable and mobile FM radios on 2m and 70cm amateur bands, with repeater access across Merseyside for reliable local coverage.</div>
+                                <div class="cap-item-desc">Portable and mobile FM radios on 2m and 70cm amateur bands, with repeater access across {{ \App\Helpers\RaynetSetting::groupRegion() }} for reliable local coverage.</div>
                             </div>
                         </div>
                         <div class="cap-item">

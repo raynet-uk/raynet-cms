@@ -373,8 +373,8 @@ body {
         <div class="brand">
             <div class="brand-badge">📡</div>
             <div>
-                <div class="brand-name">Liverpool RAYNET</div>
-                <div class="brand-sub">Zone 10 · Merseyside · Group 179</div>
+                <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
+                <div class="brand-sub">Zone 10 · {{ \App\Helpers\RaynetSetting::groupRegion() }} · Group 179</div>
             </div>
         </div>
         <div class="status-chip">
@@ -393,12 +393,12 @@ body {
                 @include('partials.alert-status-card', ['alertStatus' => $alertStatus ?? null])
             </div>
             <div>
-                <div class="hero-eyebrow">Zone 10 · Merseyside · Group 179</div>
+                <div class="hero-eyebrow">Zone 10 · {{ \App\Helpers\RaynetSetting::groupRegion() }} · Group 179</div>
                 <h1 class="hero-title">
-                    Reliable emergency comms<br>when it matters <span>for Merseyside</span>
+                    Reliable emergency comms<br>when it matters <span>for {{ \App\Helpers\RaynetSetting::groupRegion() }}</span>
                 </h1>
                 <p class="hero-desc">
-                    Liverpool RAYNET provides trained volunteers and resilient radio networks to support blue-light services, local authorities, and events when normal systems fail or are overloaded.
+                    {{ \App\Helpers\RaynetSetting::groupName() }} provides trained volunteers and resilient radio networks to support blue-light services, local authorities, and events when normal systems fail or are overloaded.
                 </p>
                 <div class="hero-actions">
                     <a href="{{ route('request-support') }}" class="btn btn-primary">Request Support Now →</a>
@@ -411,7 +411,7 @@ body {
     <div class="section-head">
         <div>
             <h2>Upcoming & Recent Activity</h2>
-            <p>Snapshot of Liverpool RAYNET deployments and upcoming support.</p>
+            <p>Snapshot of {{ \App\Helpers\RaynetSetting::groupName() }} deployments and upcoming support.</p>
         </div>
         <a href="{{ route('calendar') }}">Full Calendar →</a>
     </div>
@@ -481,7 +481,7 @@ body {
 <div class="section-head">
     <div>
         <h2>What We Do</h2>
-        <p>Supporting Merseyside resilience with volunteer radio communications.</p>
+        <p>Supporting {{ \App\Helpers\RaynetSetting::groupRegion() }} resilience with volunteer radio communications.</p>
     </div>
     <a href="{{ route('about') }}">About RAYNET-UK →</a>
 </div>
@@ -534,8 +534,8 @@ body {
 
 <div class="cta-strip">
     <div>
-        <div class="cta-strip-title">Planning an Event in Merseyside?</div>
-        <div class="cta-strip-desc">Free volunteer radio support from Liverpool RAYNET. Get in touch at least 4 weeks ahead.</div>
+        <div class="cta-strip-title">Planning an Event in {{ \App\Helpers\RaynetSetting::groupRegion() }}?</div>
+        <div class="cta-strip-desc">Free volunteer radio support from {{ \App\Helpers\RaynetSetting::groupName() }}. Get in touch at least 4 weeks ahead.</div>
     </div>
 
     <div style="display:flex; gap:1rem; flex-wrap:wrap;">

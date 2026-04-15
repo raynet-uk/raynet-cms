@@ -395,8 +395,8 @@ body {
         <div class="brand">
             <div class="brand-badge">📡</div>
             <div>
-                <div class="brand-name">Liverpool RAYNET</div>
-                <div class="brand-sub">Zone 10 · Merseyside · Group 179</div>
+                <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
+                <div class="brand-sub">Zone 10 · {{ \App\Helpers\RaynetSetting::groupRegion() }} · Group 179</div>
             </div>
         </div>
         <div class="status-chip">
@@ -408,7 +408,7 @@ body {
     <header class="page-header">
         <div class="page-header-eyebrow">// Event Support</div>
         <h1>Radio Communications for<br>Your <span>Event</span></h1>
-        <p>Liverpool RAYNET provides free volunteer radio support for public events across Merseyside — marathons, sportives, charity walks, festivals, and more — ensuring reliable links for marshals, welfare, medical, and command teams independent of mobile networks.</p>
+        <p>{{ \App\Helpers\RaynetSetting::groupName() }} provides free volunteer radio support for public events across {{ \App\Helpers\RaynetSetting::groupRegion() }} — marathons, sportives, charity walks, festivals, and more — ensuring reliable links for marshals, welfare, medical, and command teams independent of mobile networks.</p>
     </header>
 
     <div class="stat-strip">
@@ -424,7 +424,7 @@ body {
         </div>
         <div class="stat-card">
             <div class="stat-label">Coverage</div>
-            <div class="stat-value">Merseyside</div>
+            <div class="stat-value">{{ \App\Helpers\RaynetSetting::groupRegion() }}</div>
             <div class="stat-sub">City & surrounding</div>
         </div>
         <div class="stat-card">

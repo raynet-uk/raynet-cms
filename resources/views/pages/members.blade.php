@@ -672,7 +672,7 @@ body {
         <div class="topbar-brand">
             <div class="topbar-logo">RAY<br>NET</div>
             <div>
-                <div class="topbar-name">Liverpool RAYNET</div>
+                <div class="topbar-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="topbar-sub">Members' Hub</div>
             </div>
         </div>
@@ -949,7 +949,7 @@ body {
                     <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
                         <div>
                             <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:.3rem;">
-                                Liverpool RAYNET DMR Network &middot; m0kkn.dragon-net.pl
+                                {{ \App\Helpers\RaynetSetting::groupName() }} DMR Network &middot; m0kkn.dragon-net.pl
                             </div>
                             <div style="font-size:12px;color:var(--muted);">
                                 @if($hasDmrDashboard)
