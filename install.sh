@@ -207,33 +207,27 @@ setup_env() {
 install_deps() {
     step "Installing PHP Dependencies"
 
-    # Find composer
-    if command -v composer &>/dev/null; then
-        COMPOSER="composer"
-    elif [ -f "composer.phar" ]; then
-        COMPOSER="$PHP composer.phar"
-    else
-        info "Downloading composer.phar..."
-        curl -sS https://getcomposer.org/installer | $PHP -- --quiet
-        COMPOSER="$PHP composer.phar"
-        ok "composer.phar downloaded"
+    # Always download composer.phar using the detected PHP binary
+    # Never rely on system 'composer' as it may use a broken PHP
+    info "Downloading composer.phar using $PHP..."
+    curl -sS https://getcomposer.org/installer | $PHP -- --quiet 2>/dev/null
+    if [ ! -f "composer.phar" ]; then
+        fail "Failed to download composer.phar. Check curl is available and try again."
     fi
-    ok "Composer: $COMPOSER"
+    COMPOSER="$PHP composer.phar"
+    ok "composer.phar ready"
 
     info "Running composer install (this may take 1-2 minutes)..."
 
-    # Run composer as the account user if possible, to avoid root-owned vendor/
+    # Run as account user if we are root, to avoid root-owned vendor/
     if [ "$(whoami)" = "root" ] && [ -n "$ACCOUNT_USER" ] && [ "$ACCOUNT_USER" != "root" ]; then
-        su -s /bin/bash "$ACCOUNT_USER" -c \
-            "cd $INSTALL_DIR && $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1" \
-            | grep -v "OPcache" | tail -5
+        su -s /bin/bash "$ACCOUNT_USER" -c             "cd $INSTALL_DIR && $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1"             | grep -v "OPcache" | grep -v "^$" | tail -8
     else
-        $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1 \
-            | grep -v "OPcache" | tail -5
+        $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1             | grep -v "OPcache" | grep -v "^$" | tail -8
     fi
 
     if [ ! -d "vendor" ]; then
-        fail "vendor/ directory not created — composer install failed. Check your PHP version and try again."
+        fail "vendor/ directory not created — composer install failed."
     fi
     ok "Dependencies installed (vendor/ created)"
 }
