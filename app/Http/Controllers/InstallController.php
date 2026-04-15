@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class InstallController extends Controller
 {
@@ -27,6 +27,7 @@ class InstallController extends Controller
     public function step1Post(Request $request)
     {
         $request->validate([
+            'licence_key'           => ['required', 'string', 'max:64'],
             'group_name'            => ['required', 'string', 'max:80'],
             'group_number'          => ['nullable', 'string', 'max:20'],
             'group_callsign'        => ['nullable', 'string', 'max:20'],
@@ -38,6 +39,31 @@ class InstallController extends Controller
             'raynet_zone'           => ['nullable', 'string', 'max:20'],
         ]);
 
+        // ── Validate licence key against raynet-liverpool.net ─────────────
+        $licenceKey = trim($request->input('licence_key'));
+        $licenceValid = false;
+
+        try {
+            $response = Http::timeout(10)->post('https://raynet-liverpool.net/api/cms/validate-licence', [
+                'key'      => $licenceKey,
+                'site_url' => $request->input('site_url'),
+            ]);
+
+            if ($response->successful() && $response->json('valid')) {
+                $licenceValid = true;
+            } else {
+                $message = $response->json('message', 'Invalid or already used licence key.');
+                return back()
+                    ->withInput()
+                    ->withErrors(['licence_key' => $message]);
+            }
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['licence_key' => 'Could not connect to the RAYNET CMS licence server. Please check your internet connection and try again. If the problem persists, contact RAYNET Liverpool.']);
+        }
+
+        // ── Save settings ─────────────────────────────────────────────────
         $fields = [
             'group_name', 'group_number', 'group_callsign', 'group_region',
             'gc_name', 'gc_email', 'support_request_email', 'site_url', 'raynet_zone',
@@ -48,6 +74,7 @@ class InstallController extends Controller
         }
 
         Setting::set('site_name', $request->input('group_name'));
+        Setting::set('cms_licence_key', $licenceKey);
 
         return redirect()->route('install.step2');
     }
@@ -88,7 +115,6 @@ class InstallController extends Controller
             // Fallback
         }
 
-        // Store user ID in session for auto-login after complete
         session(['install_user_id' => $user->id]);
 
         return redirect()->route('install.step3');
