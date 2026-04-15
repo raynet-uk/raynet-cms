@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('event_assignments', function (Blueprint $table) {
+        if (!Schema::hasTable('event_assignments')) Schema::create('event_assignments', function (Blueprint $table) {
             $table->id();
 
             // Use unsignedInteger (not unsignedBigInteger) to match existing
