@@ -44,27 +44,28 @@ header() {
 
 # ── Detect PHP binary ─────────────────────────────────────────
 detect_php() {
-    for bin in php php8.3 php8.2 php82 /usr/local/bin/php8.3 /usr/local/bin/php8.2 /usr/local/bin/php /usr/bin/php; do
-        if command -v "$bin" &>/dev/null; then
-            PHP_VER=$("$bin" -r "echo PHP_VERSION;" 2>/dev/null | tr -d "\r\n ")
-            if [ -z "$PHP_VER" ]; then continue; fi
-            MAJOR=$(echo "$PHP_VER" | awk -F. "{print \$1}")
-            MINOR=$(echo "$PHP_VER" | awk -F. "{print \$2}")
+    # Check all common PHP binary locations — cPanel ea-php* binaries first
+    for bin in         /usr/local/bin/ea-php84         /usr/local/bin/ea-php83         /usr/local/bin/ea-php82         /usr/local/bin/ea-php81         php8.4 php8.3 php8.2 php8.1         /usr/local/bin/php         /usr/bin/php         php; do
+
+        # Check if binary exists and is executable
+        if [ -x "$bin" ] || command -v "$bin" &>/dev/null; then
+            # Test it actually produces output
+            TEST=$("$bin" -r "echo PHP_VERSION;" 2>/dev/null)
+            if [ -z "$TEST" ]; then continue; fi
+
+            PHP_VER=$(echo "$TEST" | tr -d "
+ ")
+            MAJOR=$(echo "$PHP_VER" | cut -d. -f1 | tr -dc "0-9")
+            MINOR=$(echo "$PHP_VER" | cut -d. -f2 | tr -dc "0-9")
+
             if [ -n "$MAJOR" ] && [ -n "$MINOR" ]; then
-                if [ "$MAJOR" -ge 8 ] 2>/dev/null && [ "$MINOR" -ge 2 ] 2>/dev/null; then
+                if [ "$MAJOR" -ge 8 ] && [ "$MINOR" -ge 2 ]; then
                     PHP="$bin"
                     return 0
                 fi
             fi
         fi
     done
-    # Last resort — just use whatever php is available
-    if command -v php &>/dev/null; then
-        PHP="php"
-        PHP_VER=$(php -r "echo PHP_VERSION;" 2>/dev/null | tr -d "\r\n ")
-        warn "Using php ($PHP_VER) — version check failed but continuing"
-        return 0
-    fi
     return 1
 }
 
