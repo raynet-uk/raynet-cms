@@ -33,7 +33,7 @@ return new class extends Migration
 
             // Match the events.id column type precisely
             if ($eventsIdType === 'int') {
-                $table->unsignedInteger('event_id');
+                $table->unsignedBigInteger('event_id');
             } else {
                 $table->unsignedBigInteger('event_id');
             }
@@ -43,7 +43,7 @@ return new class extends Migration
             $table->string('disk')->default('local'); // storage disk (local / s3 etc.)
             $table->string('path');                   // full path on the disk
             $table->unsignedBigInteger('size_bytes')->nullable();
-            $table->unsignedInteger('sort_order')->default(0);
+            $table->unsignedBigInteger('sort_order')->default(0);
 
             // uploaded_by — nullable FK to users
             // Use the same type detection in case users.id is also int

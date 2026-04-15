@@ -12,7 +12,7 @@ return new class extends Migration
 
         Schema::create('lms_scorm_data', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('user_id');        // int(10) unsigned to match users.id
+            $table->unsignedBigInteger('user_id');        // int(10) unsigned to match users.id
             $table->unsignedBigInteger('lesson_id');   // bigint to match lms_lessons.id
             $table->string('key', 255);
             $table->text('value')->nullable();

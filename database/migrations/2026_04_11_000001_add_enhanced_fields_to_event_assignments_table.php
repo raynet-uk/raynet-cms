@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('fallback_ctcss', 10)->nullable();
 
             // Coverage radius for map circles
-            $table->unsignedInteger('coverage_radius_m')->default(0);
+            $table->unsignedBigInteger('coverage_radius_m')->default(0);
 
             // Equipment as JSON checklist (supplements free-text equipment column)
             $table->json('equipment_items')->nullable();
