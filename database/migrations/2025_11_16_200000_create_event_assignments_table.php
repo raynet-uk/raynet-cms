@@ -14,8 +14,8 @@ return new class extends Migration
             // Use unsignedInteger (not unsignedBigInteger) to match existing
             // events and users tables that were created with increments('id').
             // If your tables use bigIncrements, change these to unsignedBigInteger.
-            $table->unsignedInteger('event_id');
-            $table->unsignedInteger('user_id');
+            $table->unsignedBigInteger('event_id');
+            $table->unsignedBigInteger('user_id');
 
             $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
