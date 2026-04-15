@@ -13,7 +13,7 @@ return new class extends Migration
             // RAYNET year (1 Sep → 31 Aug). Reset to false on 1 September.
             $table->boolean('attended_event_this_year')
                   ->default(false)
-                  ->after('notes');
+                  ;
 
             // Count of individual events attended in the current year.
             $table->unsignedSmallInteger('events_attended_this_year')
