@@ -374,7 +374,7 @@ body {
             <div class="brand-badge">📡</div>
             <div>
                 <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
-                <div class="brand-sub">Zone 10 · {{ \App\Helpers\RaynetSetting::groupRegion() }} · Group 179</div>
+                <div class="brand-sub">{{ \App\Helpers\RaynetSetting::groupNumber() }}</div>
             </div>
         </div>
         <div class="status-chip">
@@ -393,7 +393,7 @@ body {
                 @include('partials.alert-status-card', ['alertStatus' => $alertStatus ?? null])
             </div>
             <div>
-                <div class="hero-eyebrow">Zone 10 · {{ \App\Helpers\RaynetSetting::groupRegion() }} · Group 179</div>
+                <div class="hero-eyebrow">{{ \App\Helpers\RaynetSetting::groupNumber() }}</div>
                 <h1 class="hero-title">
                     Reliable emergency comms<br>when it matters <span>for {{ \App\Helpers\RaynetSetting::groupRegion() }}</span>
                 </h1>

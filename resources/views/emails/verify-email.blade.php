@@ -121,7 +121,7 @@
                     If you did not register, you can safely ignore this email.
                   </div>
                   <div style="margin-top:10px;font-size:11px;color:#9aa3ae;">
-                    {{ \App\Helpers\RaynetSetting::groupName() }} · Zone 10 · Merseyside · Group 179<br>
+                    {{ \App\Helpers\RaynetSetting::groupName() }} · {{ \App\Helpers\RaynetSetting::groupNumber() }}<br>
                     Radio Amateurs' Emergency Network
                   </div>
                 </td>

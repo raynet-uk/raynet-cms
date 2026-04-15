@@ -309,7 +309,7 @@ body {
             <div class="brand-badge">📡</div>
             <div>
                 <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
-                <div class="brand-sub">Zone 10 · Merseyside · Group 179</div>
+                <div class="brand-sub">{{ \App\Helpers\RaynetSetting::groupNumber() }}</div>
             </div>
         </div>
         <div class="status-chip">
