@@ -38,7 +38,7 @@
             border-right:1px solid rgba(15,23,42,0.95);
             border-top-left-radius:1rem;
         ">
-            Liverpool RAYNET
+            {{ \App\Helpers\RaynetSetting::groupName() }}
         </div>
 
         {{-- Centre level box --}}

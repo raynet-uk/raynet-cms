@@ -134,7 +134,7 @@
   {{-- Bottom footer --}}
   <div class="footer-bottom">
     © {{ date('Y') }} {{ \App\Helpers\RaynetSetting::groupName() }} ({{ \App\Helpers\RaynetSetting::groupNumber() }})<br>
-    Affiliated to RAYNET-UK · Volunteer emergency communications for Merseyside<br>
+    Affiliated to RAYNET-UK · {{ \App\Helpers\RaynetSetting::groupName() }}<br>
     <span style="color:#dde2e8;">·</span>
     <a href="{{ url('/members') }}" style="color:#6b7f96;">Members Portal</a>
   </div>

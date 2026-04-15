@@ -5,7 +5,7 @@
             {{-- Left: brand --}}
             <div class="flex items-center space-x-3">
                 <a href="{{ route('home') }}" class="text-sky-400 font-semibold tracking-wide">
-                    Liverpool RAYNET
+                    {{ \App\Helpers\RaynetSetting::groupName() }}
                 </a>
             </div>
 

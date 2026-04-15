@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Access Restricted — Liverpool RAYNET</title>
+    <title>Access Restricted — {{ \App\Helpers\RaynetSetting::groupName() }}</title>
     <style>
         :root {
             --navy:       #003366;
@@ -437,7 +437,7 @@
 {{-- ── BRAND HEADER ── --}}
 <div class="brand">
     <div class="brand-logo"><span>RAY<br>NET</span></div>
-    <span class="brand-name">Liverpool RAYNET</span>
+    <span class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</span>
     <div class="brand-divider"></div>
     <span class="brand-sub">Members Portal</span>
 </div>
@@ -520,8 +520,8 @@
 
 {{-- ── PAGE FOOTER ── --}}
 <div class="page-footer">
-    Liverpool RAYNET · Group 10/ME/179<br>
-    Volunteer emergency communications for Merseyside
+    {{ \App\Helpers\RaynetSetting::groupName() }}<br>
+    Volunteer emergency communications for {{ \App\Helpers\RaynetSetting::groupRegion() }}
 </div>
 
 </body>

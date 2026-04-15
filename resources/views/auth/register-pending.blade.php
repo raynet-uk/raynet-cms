@@ -239,7 +239,7 @@ main, .content-wrap, [class*="container"], [class*="page-content"] {
             <div class="brand">
                 <div class="rn-logo"><span>RAY<br>NET</span></div>
                 <div>
-                    <div class="brand-name">Liverpool RAYNET</div>
+                    <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                     <div class="brand-sub">Members' Portal</div>
                 </div>
             </div>
@@ -251,9 +251,9 @@ main, .content-wrap, [class*="container"], [class*="page-content"] {
                     Your account is in our system. There are two quick steps before you can access the portal — verify your email and wait for Group Controller approval.
                 </div>
                 <div class="left-chips">
-                    <span class="chip">📻 Liverpool RAYNET</span>
-                    <span class="chip">Zone 10 · Merseyside</span>
-                    <span class="chip">Group 179</span>
+                    <span class="chip">📻 {{ \App\Helpers\RaynetSetting::groupName() }}</span>
+                    <span class="chip">{{ \App\Helpers\RaynetSetting::groupRegion() }}</span>
+                    @if(\App\Helpers\RaynetSetting::groupNumber())<span class="chip">Group {{ \App\Helpers\RaynetSetting::groupNumber() }}</span>@endif
                 </div>
             </div>
 

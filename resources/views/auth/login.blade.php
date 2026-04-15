@@ -287,7 +287,7 @@ body { font-family: var(--font); font-size: 14px; color: var(--text); background
             <div class="brand">
                 <div class="rn-logo"><span>RAY<br>NET</span></div>
                 <div>
-                    <div class="brand-name">Liverpool RAYNET</div>
+                    <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                     <div class="brand-sub">Members' Portal</div>
                 </div>
             </div>
@@ -298,9 +298,9 @@ body { font-family: var(--font); font-size: 14px; color: var(--text); background
                     Access your operator profile, activity log, upcoming events, and group communications — all in one place.
                 </div>
                 <div class="left-chips">
-                    <span class="chip"><span class="chip-dot"></span>Liverpool RAYNET</span>
-                    <span class="chip"><span class="chip-dot"></span>Zone 10 · Merseyside</span>
-                    <span class="chip"><span class="chip-dot"></span>Group 179</span>
+                    <span class="chip"><span class="chip-dot"></span>{{ \App\Helpers\RaynetSetting::groupName() }}</span>
+                    <span class="chip"><span class="chip-dot"></span>{{ \App\Helpers\RaynetSetting::groupRegion() }}</span>
+                    @if(\App\Helpers\RaynetSetting::groupNumber())<span class="chip"><span class="chip-dot"></span>Group {{ \App\Helpers\RaynetSetting::groupNumber() }}</span>@endif
                 </div>
                 <div class="left-status">
                     <div class="left-status-dot"></div>
@@ -364,7 +364,7 @@ body { font-family: var(--font); font-size: 14px; color: var(--text); background
             <div class="right-head-title">
                 <div>
                     <div class="right-eyebrow">Member sign-in</div>
-                    <div class="right-title">Liverpool RAYNET Portal</div>
+                    <div class="right-title">{{ \App\Helpers\RaynetSetting::groupName() }} Portal</div>
                     <div class="right-sub">Authorised members only — all activity logged</div>
                 </div>
                 <div class="secure-badge">🔒 Secure</div>

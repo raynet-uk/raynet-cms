@@ -29,7 +29,7 @@
                 <div class="cm-logo-block"><span>RAY<br>NET</span></div>
                 <div>
                     <div class="cm-title">Cookie Preferences</div>
-                    <div class="cm-sub">Liverpool RAYNET · raynet-liverpool.net</div>
+                    <div class="cm-sub">{{ \App\Helpers\RaynetSetting::groupName() }} · {{ \App\Helpers\RaynetSetting::siteUrl() }}</div>
                 </div>
             </div>
             <button class="cm-close" onclick="closeCookieSettings()" aria-label="Close">✕</button>

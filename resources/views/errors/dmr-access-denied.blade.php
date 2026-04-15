@@ -15,7 +15,7 @@
         <div style="font-size:48px;margin-bottom:16px;">📡</div>
         <h2 style="color:#003366;font-size:18px;font-weight:700;margin-bottom:10px;">Access Not Granted</h2>
         <p style="color:#555;font-size:14px;line-height:1.7;margin-bottom:24px;">
-            Your account does not currently have permission to access the Liverpool RAYNET DMR Network Dashboard.
+            Your account does not currently have permission to access the {{ \App\Helpers\RaynetSetting::groupName() }} DMR Network Dashboard.
             If you believe you should have access, please contact an administrator.
         </p>
 

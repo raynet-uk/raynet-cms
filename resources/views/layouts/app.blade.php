@@ -651,7 +651,7 @@
 <footer class="footer">
     <div class="footer-inner">
         <span>© {{ date('Y') }} {{ \App\Helpers\RaynetSetting::groupName() }} (Group 10/ME/179). All rights reserved.</span>
-        <span>Affiliated to RAYNET-UK · Volunteer emergency communications for Merseyside.</span>
+        <span>Affiliated to RAYNET-UK · Volunteer emergency communications for {{ \App\Helpers\RaynetSetting::groupRegion() }}.</span>
     </div>
     <div class="credits">
         Website designed &amp; built by

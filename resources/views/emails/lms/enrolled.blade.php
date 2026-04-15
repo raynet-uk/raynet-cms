@@ -1,6 +1,6 @@
 <x-emails.layouts.lms
     headerTitle="You've been enrolled on a new course"
-    headerSubtitle="Liverpool RAYNET Training Portal">
+    headerSubtitle="{{ \App\Helpers\RaynetSetting::groupName() }} Training Portal">
 
 <div class="body">
     <div class="greeting">Hello {{ $user->name }},</div>

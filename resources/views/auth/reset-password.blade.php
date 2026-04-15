@@ -195,7 +195,7 @@ body { font-family: var(--font); font-size: 14px; color: var(--text); background
             <div class="brand">
                 <div class="rn-logo"><span>RAY<br>NET</span></div>
                 <div>
-                    <div class="brand-name">Liverpool RAYNET</div>
+                    <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                     <div class="brand-sub">Members' Portal</div>
                 </div>
             </div>

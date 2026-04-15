@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Authorise Application — Liverpool RAYNET</title>
+    <title>Authorise Application — {{ \App\Helpers\RaynetSetting::groupName() }}</title>
     <style>
         :root {
             --navy:#003366; --red:#C8102E; --light:#F2F2F2;
@@ -130,7 +130,7 @@
 
 <div class="card">
     <div class="card-header">
-        <img src="/images/raynet-uk-liverpool-banner.png" alt="Liverpool RAYNET" class="header-logo">
+        <img src="{{ asset('images/raynet-uk-liverpool-banner.png') }}" alt="{{ \App\Helpers\RaynetSetting::groupName() }}" class="header-logo">
         <div class="header-title">Single Sign-On</div>
     </div>
 
@@ -156,7 +156,7 @@
         {{-- Arrow --}}
         <div class="connector">
             <span>This app wants to access your</span>
-            <span class="connector-arrow">Liverpool RAYNET</span>
+            <span class="connector-arrow">{{ \App\Helpers\RaynetSetting::groupName() }}</span>
             <span>account</span>
         </div>
 
@@ -264,7 +264,7 @@
     </div>
 
     <div class="card-footer">
-        Authorised by <a href="/">Liverpool RAYNET</a> ·
+        Authorised by <a href="/">{{ \App\Helpers\RaynetSetting::groupName() }}</a> ·
         Your credentials are never shared with this application ·
         <a href="{{ route('privacy') }}">Privacy Notice</a>
     </div>

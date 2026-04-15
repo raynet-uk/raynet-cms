@@ -76,7 +76,7 @@ body { background:#f0f4f8; font-family:Arial,'Helvetica Neue',Helvetica,sans-ser
         <div class="footer">
             <div class="footer-text">
                 {{ \App\Helpers\RaynetSetting::groupName() }} Group ({{ \App\Helpers\RaynetSetting::groupNumber() }}) · Affiliated to RAYNET-UK<br>
-                Volunteer emergency communications for Merseyside<br>
+                Volunteer emergency communications for {{ \App\Helpers\RaynetSetting::groupRegion() }}<br>
                 <a href="https://{{ \App\Helpers\RaynetSetting::siteUrl() }}" class="footer-link">{{ \App\Helpers\RaynetSetting::siteUrl() }}</a>
                 &nbsp;·&nbsp;
                 <a href="https://{{ \App\Helpers\RaynetSetting::siteUrl() }}/my-training" class="footer-link">Training Portal</a>

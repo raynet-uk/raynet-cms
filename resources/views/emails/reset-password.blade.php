@@ -215,7 +215,7 @@
                     <div style="font-size:11px;font-weight:bold;color:#003366;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;">{{ \App\Helpers\RaynetSetting::groupName() }} · Members' Portal</div>
                     <div style="font-size:11px;color:#9aa3ae;line-height:1.55;">
                         This is an automated security email. Do not reply.<br>
-                        Radio Amateurs' Emergency Network · Zone 10 · Merseyside
+                        Radio Amateurs' Emergency Network · {{ \App\Helpers\RaynetSetting::groupRegion() }}
                     </div>
                 </td>
             </tr>
