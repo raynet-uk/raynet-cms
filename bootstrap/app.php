@@ -23,6 +23,7 @@ return Application::configure(
         'oauth/token/refresh',
         'oauth/introspect',
         'oauth/logout',
+        'api/cms/*',
     ]);
     $middleware->alias([
         // Standard auth aliases

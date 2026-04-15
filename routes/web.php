@@ -771,6 +771,24 @@ Route::get('/emergency-access/{token}', function ($token) {
 */
 Route::get('/dmr-auth',     [App\Http\Controllers\DmrAuthController::class, 'redirect'])      ->name('dmr.auth');
 Route::get('/dmr-validate', [App\Http\Controllers\DmrAuthController::class, 'validateToken'])->name('dmr.validate');
+
+/*
+|--------------------------------------------------------------------------
+| CMS LICENCE MANAGER & API
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['web', 'auth', 'super.admin'])->prefix('admin/cms-licences')->name('admin.cms-licences.')->group(function () {
+    Route::get('/',                   [\App\Http\Controllers\Admin\CmsLicenceController::class, 'index'])  ->name('index');
+    Route::post('/',                  [\App\Http\Controllers\Admin\CmsLicenceController::class, 'store'])  ->name('store');
+    Route::patch('/{licence}/revoke', [\App\Http\Controllers\Admin\CmsLicenceController::class, 'revoke'])->name('revoke');
+    Route::delete('/{licence}',       [\App\Http\Controllers\Admin\CmsLicenceController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware('throttle:10,1')->prefix('api/cms')->group(function () {
+    Route::post('/validate-licence', [\App\Http\Controllers\Api\CmsLicenceApiController::class, 'validateLicence']);
+    Route::post('/validate-key',     [\App\Http\Controllers\Api\CmsLicenceApiController::class, 'check']);
+});
+
 require __DIR__ . '/auth.php';
 /*
 |--------------------------------------------------------------------------
