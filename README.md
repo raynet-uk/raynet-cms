@@ -88,11 +88,22 @@
 
 ## 🚀 Installation
 
+### One command install
+
+```bash
+git clone https://github.com/raynet-uk/raynet-cms.git . && bash install.sh
+```
+
+Run this from your domain's web root directory via SSH. That's it — the interactive installer handles everything else.
+
 ### Option A — Automated (recommended)
 
 ```bash
-git clone https://github.com/raynet-uk/raynet-cms.git .
-bash install.sh
+# 1. Navigate to your domain's web root
+cd /home/yourusername/public_html/yourdomain.com
+
+# 2. Clone and install
+git clone https://github.com/raynet-uk/raynet-cms.git . && bash install.sh
 ```
 
 The install script handles everything interactively:
