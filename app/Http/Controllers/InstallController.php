@@ -76,6 +76,7 @@ class InstallController extends Controller
             'password'          => Hash::make($request->password),
             'email_verified_at' => now(),
             'is_admin'          => true,
+            'is_super_admin'    => true,
         ]);
 
         // Assign super-admin role if roles table exists
