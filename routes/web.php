@@ -69,6 +69,10 @@ Route::middleware('not.installed')->group(function () {
     Route::post('/install/complete', [InstallController::class, 'complete']) ->name('install.complete');
 });
 
+Route::get('/install/welcome', function () {
+    return view('install.welcome');
+})->middleware(['web', 'auth'])->name('install.welcome');
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC PAGES (NO LOGIN REQUIRED)
