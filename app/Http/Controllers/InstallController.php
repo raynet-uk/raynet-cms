@@ -96,7 +96,7 @@ class InstallController extends Controller
     {
         if ($this->isInstalled()) return redirect('/');
         return view('install.index', [
-            'groupName' => Setting::get('group_name'),
+            'step' => 'step3', 'groupName' => Setting::get('group_name'),
         ]);
     }
 
