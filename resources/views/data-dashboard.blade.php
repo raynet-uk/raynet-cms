@@ -417,7 +417,7 @@ body { background: var(--bg); font-family: Arial, 'Helvetica Neue', Helvetica, s
         <div class="brand-logo">RAY<br>NET</div>
         <div>
             <div class="brand-name">Liverpool RAYNET</div>
-            <div class="brand-sub">{{ AppHelpersRaynetSetting::groupRegion() }} · Group {{ AppHelpersRaynetSetting::groupNumber() }}</div>
+            <div class="brand-sub">{{ \App\Helpers\RaynetSetting::groupNumber() }}</div>
         </div>
     </div>
     <div class="live-chip">
