@@ -188,6 +188,27 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
                 @if($errors->any())
                 <div class="iz-err-banner">⚠ Please fix the errors below.</div>
                 @endif
+
+                {{-- Licence key --}}
+                <div class="iz-field" id="licence-field">
+                    <label class="iz-label" for="licence_key">RAYNET CMS Licence Key <span class="iz-label-opt">(required)</span></label>
+                    <div style="display:flex;gap:.5rem">
+                        <input type="text" id="licence_key" name="licence_key" class="iz-input iz-input-mono"
+                               value="{{ old('licence_key') }}"
+                               placeholder="RAYNET-XXXXXX-XXXXXXXXXXXXXXXX"
+                               oninput="this.value=this.value.toUpperCase()"
+                               style="flex:1" required>
+                        <button type="button" onclick="validateLicence()" class="iz-btn iz-btn-primary" id="validate-btn" style="white-space:nowrap">
+                            Validate
+                        </button>
+                    </div>
+                    <div class="iz-hint">Request a licence key from <a href="https://raynet-liverpool.net/request-support" target="_blank" style="color:#003366">RAYNET Liverpool</a>. Keys are free for all RAYNET UK affiliated groups.</div>
+                    <div id="licence-status" style="margin-top:.35rem;font-size:.78rem;font-weight:bold"></div>
+                    @error('licence_key')<div class="iz-err">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="iz-divider"></div>
+
                 <div class="iz-field">
                     <label class="iz-label" for="group_name">Group Name <span class="iz-label-opt">(required)</span></label>
                     <input type="text" id="group_name" name="group_name" class="iz-input" value="{{ old('group_name') }}" placeholder="e.g. Liverpool RAYNET" required autofocus>
@@ -378,5 +399,49 @@ body{font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;background:#0a0f1a;
     </div>
 
 </div>
+<script>
+async function validateLicence() {
+    const key = document.getElementById('licence_key').value.trim();
+    const status = document.getElementById('licence-status');
+    const btn = document.getElementById('validate-btn');
+
+    if (!key) {
+        status.innerHTML = '<span style="color:#C8102E">⚠ Please enter a licence key first.</span>';
+        return;
+    }
+
+    btn.textContent = 'Checking...';
+    btn.disabled = true;
+    status.innerHTML = '<span style="color:#6b7f96">Validating...</span>';
+
+    try {
+        const resp = await fetch('https://raynet-liverpool.net/api/cms/validate-key', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ key: key })
+        });
+        const data = await resp.json();
+
+        if (data.valid) {
+            status.innerHTML = '<span style="color:#1a6b3c">✓ Valid licence — pre-filling your details</span>';
+            // Pre-fill form fields from licence data
+            if (data.group_name)   document.getElementById('group_name').value   = data.group_name;
+            if (data.group_number) document.getElementById('group_number').value = data.group_number;
+            if (data.gc_name)      document.getElementById('gc_name').value      = data.gc_name;
+            if (data.gc_email) {
+                document.getElementById('gc_email').value              = data.gc_email;
+                document.getElementById('support_request_email').value = data.gc_email;
+            }
+        } else {
+            status.innerHTML = '<span style="color:#C8102E">✗ ' + (data.message || 'Invalid licence key.') + '</span>';
+        }
+    } catch(e) {
+        status.innerHTML = '<span style="color:#f59e0b">⚠ Could not connect to licence server — you can still continue manually.</span>';
+    }
+
+    btn.textContent = 'Validate';
+    btn.disabled = false;
+}
+</script>
 </body>
 </html>
