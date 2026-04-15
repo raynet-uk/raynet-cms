@@ -236,7 +236,7 @@ body { background: var(--grey); color: var(--text); font-family: var(--font); fo
         <div class="page-band-left">
             <div class="page-eyebrow">Viewing</div>
             <div class="cal-month-name">{{ $monthName }} {{ $year }}</div>
-            <div class="cal-month-sub">Group training, exercises &amp; event support — Liverpool &amp; Merseyside.</div>
+            <div class="cal-month-sub">Group training, exercises &amp; event support — {{ AppHelpersRaynetSetting::groupName() }}</div>
         </div>
         <div class="cal-controls">
             <div class="nav-grp">

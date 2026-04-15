@@ -354,7 +354,7 @@
                 <div class="chip c-amber"><span class="chip-dot"></span>Support Available</div>
                 @endif
                 <div class="chip c-grey"><span class="chip-dot"></span>Group 10/ME/179</div>
-                <div class="chip c-grey"><span class="chip-dot"></span>Merseyside</div>
+                <div class="chip c-grey"><span class="chip-dot"></span>{{ AppHelpersRaynetSetting::groupRegion() }}</div>
             </div>
 
             <div class="admin-sep">
@@ -481,7 +481,7 @@
         <div class="footer-stats">
             <div class="f-stat"><div class="f-val">10/ME/179</div><div class="f-lbl">Group Ref</div></div>
             <div class="footer-vsep"></div>
-            <div class="f-stat"><div class="f-val">Zone 10</div><div class="f-lbl">Area</div></div>
+            <div class="f-stat"><div class="f-val">{{ AppHelpersRaynetSetting::groupRegion() }}</div><div class="f-lbl">Area</div></div>
             <div class="footer-vsep"></div>
             <div class="f-stat"><div class="f-val" id="footerTimer">—</div><div class="f-lbl">Offline Duration</div></div>
         </div>

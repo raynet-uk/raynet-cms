@@ -1067,7 +1067,7 @@ $storageOk = is_writable(storage_path());
                             Expected back: <span id="prevReturnVal">{{ $maintReturnAt ? \Carbon\Carbon::parse($maintReturnAt)->format('D d M H:i') : '' }}</span>
                         </div>
                     </div>
-                    <div class="maint-preview-footer">Liverpool RAYNET (Group 10/ME/179) · Merseyside</div>
+                    <div class="maint-preview-footer">{{ AppHelpersRaynetSetting::groupName() }} (Group {{ AppHelpersRaynetSetting::groupNumber() }}) · {{ AppHelpersRaynetSetting::groupRegion() }}</div>
                     <div style="padding:.65rem .85rem;border-top:1px solid var(--grey-mid);background:var(--grey);display:flex;flex-direction:column;gap:.3rem;">
                         <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:.2rem;">System Status</div>
                         @foreach([['DB',$dbOk,$dbOk?'Connected':'Error'],['Cache',$cacheOk,$cacheOk?'Working':'Check config'],['Storage',$storageOk,$storageOk?'Writable':'Read-only'],['Portal',true,'Laravel '.app()->version()]] as [$lbl,$ok,$val])

@@ -278,7 +278,7 @@ body { background: var(--grey); color: var(--text); font-family: var(--font); fo
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div>
                 <div class="rn-org">Liverpool RAYNET</div>
-                <div class="rn-sub">Zone 10 · Merseyside · Group 179</div>
+                <div class="rn-sub">{{ AppHelpersRaynetSetting::groupRegion() }} · Group {{ AppHelpersRaynetSetting::groupNumber() }}</div>
             </div>
         </div>
         <div class="rn-badge">
