@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
@@ -13,9 +14,7 @@ class InstallController extends Controller
 {
     public function index()
     {
-        if ($this->isInstalled()) {
-            return redirect('/');
-        }
+        if ($this->isInstalled()) return redirect('/');
         return view('install.index', ['step' => 'index', 'groupName' => '']);
     }
 
@@ -28,15 +27,15 @@ class InstallController extends Controller
     public function step1Post(Request $request)
     {
         $request->validate([
-            'group_name'     => ['required', 'string', 'max:80'],
-            'group_number'   => ['nullable', 'string', 'max:20'],
-            'group_callsign' => ['nullable', 'string', 'max:20'],
-            'group_region'   => ['nullable', 'string', 'max:80'],
-            'gc_name'        => ['required', 'string', 'max:80'],
-            'gc_email'       => ['required', 'email', 'max:120'],
+            'group_name'            => ['required', 'string', 'max:80'],
+            'group_number'          => ['nullable', 'string', 'max:20'],
+            'group_callsign'        => ['nullable', 'string', 'max:20'],
+            'group_region'          => ['nullable', 'string', 'max:80'],
+            'gc_name'               => ['required', 'string', 'max:80'],
+            'gc_email'              => ['required', 'email', 'max:120'],
             'support_request_email' => ['required', 'email', 'max:120'],
-            'site_url'       => ['required', 'url', 'max:120'],
-            'raynet_zone'    => ['nullable', 'string', 'max:20'],
+            'site_url'              => ['required', 'url', 'max:120'],
+            'raynet_zone'           => ['nullable', 'string', 'max:20'],
         ]);
 
         $fields = [
@@ -48,7 +47,6 @@ class InstallController extends Controller
             Setting::set($field, $request->input($field, ''));
         }
 
-        // Also set site_name from group_name
         Setting::set('site_name', $request->input('group_name'));
 
         return redirect()->route('install.step2');
@@ -63,10 +61,10 @@ class InstallController extends Controller
     public function step2Post(Request $request)
     {
         $request->validate([
-            'name'                  => ['required', 'string', 'max:100'],
-            'callsign'              => ['required', 'string', 'max:15'],
-            'email'                 => ['required', 'email', 'max:120', 'unique:users,email'],
-            'password'              => ['required', 'string', 'min:10', 'confirmed'],
+            'name'     => ['required', 'string', 'max:100'],
+            'callsign' => ['required', 'string', 'max:15'],
+            'email'    => ['required', 'email', 'max:120', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:10', 'confirmed'],
         ]);
 
         $user = User::create([
@@ -79,16 +77,19 @@ class InstallController extends Controller
             'is_super_admin'    => true,
         ]);
 
-        // Assign super-admin role if roles table exists
+        // Seed Spatie roles and assign super-admin
         try {
-            DB::table('model_has_roles')->insert([
-                'role_id'    => DB::table('roles')->where('name', 'super-admin')->value('id') ?? 1,
-                'model_type' => 'App\Models\User',
-                'model_id'   => $user->id,
-            ]);
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+            foreach (['super-admin', 'admin', 'committee', 'member'] as $role) {
+                \Spatie\Permission\Models\Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
+            }
+            $user->assignRole('super-admin');
         } catch (\Throwable $e) {
-            // Roles not set up yet — fine, is_admin flag is enough
+            // Fallback
         }
+
+        // Store user ID in session for auto-login after complete
+        session(['install_user_id' => $user->id]);
 
         return redirect()->route('install.step3');
     }
@@ -97,16 +98,29 @@ class InstallController extends Controller
     {
         if ($this->isInstalled()) return redirect('/');
         return view('install.index', [
-            'step' => 'step3', 'groupName' => Setting::get('group_name'),
+            'step'      => 'step3',
+            'groupName' => Setting::get('group_name'),
         ]);
     }
 
     public function complete(Request $request)
     {
         Setting::set('installed', '1');
+
         Artisan::call('route:clear');
         Artisan::call('view:clear');
         Artisan::call('cache:clear');
+
+        // Auto-login the installer user
+        $userId = session('install_user_id');
+        if ($userId) {
+            $user = User::find($userId);
+            if ($user) {
+                Auth::login($user, true);
+                session()->forget('install_user_id');
+                return redirect()->route('install.welcome');
+            }
+        }
 
         return redirect()->route('admin.login')
             ->with('success', 'Installation complete! Log in with your admin account.');

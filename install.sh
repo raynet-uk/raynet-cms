@@ -221,9 +221,9 @@ install_deps() {
 
     # Run as account user if we are root, to avoid root-owned vendor/
     if [ "$(whoami)" = "root" ] && [ -n "$ACCOUNT_USER" ] && [ "$ACCOUNT_USER" != "root" ]; then
-        su -s /bin/bash "$ACCOUNT_USER" -c             "cd $INSTALL_DIR && $COMPOSER install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs 2>&1"             | grep -v "OPcache" | grep -v "^$" | tail -8
+        su -s /bin/bash "$ACCOUNT_USER" -c             "cd $INSTALL_DIR && $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1"             | grep -v "OPcache" | grep -v "^$" | tail -8
     else
-        $COMPOSER install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs 2>&1             | grep -v "OPcache" | grep -v "^$" | tail -8
+        $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1             | grep -v "OPcache" | grep -v "^$" | tail -8
     fi
 
     if [ ! -d "vendor" ]; then
@@ -372,6 +372,7 @@ main() {
     install_deps     # Composer runs as account user to avoid root-owned vendor/
     generate_key
     run_migrations
+    seed_roles
     setup_storage
     final_permissions
     clear_caches
