@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
 #  RAYNET CMS — Interactive Install Script
-#  Run from your web root directory: bash install.sh
+#  Run from your RAYNET CMS directory: bash install.sh
 #  Developed by RAYNET Liverpool (G4BDS & M7NDN)
 # ============================================================
 
@@ -15,11 +15,13 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 ok()   { echo -e "${GREEN}  ✓ $1${NC}"; }
-fail() { echo -e "${RED}  ✗ $1${NC}"; }
+fail() { echo -e "${RED}  ✗ $1${NC}"; exit 1; }
 info() { echo -e "${CYAN}  → $1${NC}"; }
 warn() { echo -e "${YELLOW}  ⚠ $1${NC}"; }
 step() { echo -e "\n${BOLD}${BLUE}━━━ $1 ━━━${NC}"; }
 ask()  { echo -e "${YELLOW}  ? $1${NC}"; }
+
+INSTALL_DIR=$(pwd)
 
 header() {
     clear
@@ -39,125 +41,127 @@ header() {
     echo ""
 }
 
-# ── Detect PHP binary ─────────────────────────────────────────
+# ── Detect PHP ────────────────────────────────────────────────
 detect_php() {
     for bin in \
         /usr/local/bin/ea-php84 \
         /usr/local/bin/ea-php83 \
         /usr/local/bin/ea-php82 \
         /usr/local/bin/ea-php81 \
-        php8.4 php8.3 php8.2 php8.1 \
+        php8.4 php8.3 php8.2 \
         /usr/local/bin/php \
         /usr/bin/php \
         php; do
         if [ -x "$bin" ] 2>/dev/null || command -v "$bin" &>/dev/null; then
             TEST=$("$bin" -r "echo PHP_VERSION;" 2>/dev/null)
-            if [ -z "$TEST" ]; then continue; fi
+            [ -z "$TEST" ] && continue
             PHP_VER=$(echo "$TEST" | tr -d "\r\n ")
             MAJOR=$(echo "$PHP_VER" | cut -d. -f1 | tr -dc "0-9")
             MINOR=$(echo "$PHP_VER" | cut -d. -f2 | tr -dc "0-9")
-            if [ -n "$MAJOR" ] && [ -n "$MINOR" ]; then
-                if [ "$MAJOR" -ge 8 ] && [ "$MINOR" -ge 2 ]; then
-                    PHP="$bin"
-                    return 0
-                fi
+            if [ -n "$MAJOR" ] && [ -n "$MINOR" ] && [ "$MAJOR" -ge 8 ] && [ "$MINOR" -ge 2 ]; then
+                PHP="$bin"
+                return 0
             fi
         fi
     done
     return 1
 }
 
-# ── Detect Composer ───────────────────────────────────────────
-detect_composer() {
-    if command -v composer &>/dev/null; then
-        COMPOSER="composer"
-    elif [ -f "composer.phar" ]; then
-        COMPOSER="$PHP composer.phar"
-    elif [ -f "../composer.phar" ]; then
-        COMPOSER="$PHP ../composer.phar"
+# ── Detect account user (not root) ───────────────────────────
+detect_account_user() {
+    ACCOUNT_USER=""
+    # Try parent directories to find the cPanel account username
+    local dir="$INSTALL_DIR"
+    for i in 1 2 3 4; do
+        local owner
+        owner=$(stat -c '%U' "$dir" 2>/dev/null)
+        if [ -n "$owner" ] && [ "$owner" != "root" ] && [ "$owner" != "nobody" ]; then
+            ACCOUNT_USER="$owner"
+            return 0
+        fi
+        dir=$(dirname "$dir")
+    done
+    # Fallback: look for home directory owner
+    if [ -d "/home" ]; then
+        ACCOUNT_USER=$(ls /home | head -1)
+    fi
+}
+
+# ── Run as account user if we're root ────────────────────────
+run_as_user() {
+    if [ "$(whoami)" = "root" ] && [ -n "$ACCOUNT_USER" ] && [ "$ACCOUNT_USER" != "root" ]; then
+        su -s /bin/bash "$ACCOUNT_USER" -c "cd $INSTALL_DIR && $*" 2>&1 | grep -v "OPcache"
     else
-        COMPOSER=""
+        eval "$@" 2>&1 | grep -v "OPcache"
     fi
 }
 
-# ── Detect web server user ────────────────────────────────────
-detect_web_user() {
-    WEB_USER=$(ps aux 2>/dev/null | grep -E '(apache|nginx|www-data|nobody|httpd|nobody)' \
-        | grep -v grep | head -1 | awk '{print $1}')
-    # On cPanel the owner of public_html is usually the account user
-    if [ -z "$WEB_USER" ] || [ "$WEB_USER" = "root" ]; then
-        # Try to detect from the parent directory owner
-        WEB_USER=$(stat -c '%U' "$(pwd)" 2>/dev/null || echo "")
+# ── Step 0: Fix ownership BEFORE anything else ────────────────
+fix_ownership() {
+    step "Fixing Ownership & Permissions"
+
+    detect_account_user
+
+    if [ -n "$ACCOUNT_USER" ] && [ "$ACCOUNT_USER" != "root" ]; then
+        info "Account user detected: $ACCOUNT_USER"
+        chown -R "$ACCOUNT_USER":"$ACCOUNT_USER" "$INSTALL_DIR" 2>/dev/null && \
+            ok "Ownership set to $ACCOUNT_USER" || \
+            warn "chown failed — continuing anyway"
+    else
+        warn "Could not detect account user — files may stay owned by root"
     fi
-    if [ -z "$WEB_USER" ] || [ "$WEB_USER" = "root" ]; then
-        WEB_USER="nobody"
-    fi
+
+    chmod -R 755 "$INSTALL_DIR" 2>/dev/null
+    mkdir -p storage/logs storage/framework/cache storage/framework/sessions \
+             storage/framework/views storage/app/public bootstrap/cache 2>/dev/null
+    chmod -R 775 storage bootstrap/cache 2>/dev/null && ok "Permissions set (755/775)"
+    find storage -type f -exec chmod 664 {} \; 2>/dev/null
+    ok "Ownership and permissions complete"
 }
 
-# ── Step 0: Preflight ─────────────────────────────────────────
+# ── Step 1: Preflight ─────────────────────────────────────────
 preflight() {
     step "Pre-flight Checks"
 
-    # Must not be run as root in production — but warn rather than block
-    if [ "$(whoami)" = "root" ]; then
-        warn "Running as root — files will be owned by root. We'll fix ownership after install."
+    if ! detect_php; then
+        fail "PHP 8.2+ not found. Install PHP 8.2 or higher and try again."
     fi
+    ok "PHP $PHP_VER found ($PHP)"
 
-    # PHP
-    if detect_php; then
-        ok "PHP $PHP_VER found ($PHP)"
-    else
-        fail "PHP 8.2+ not found. Cannot continue."
-        exit 1
-    fi
-
-    # Extensions
     for ext in pdo pdo_mysql mbstring openssl curl zip fileinfo; do
         if $PHP -r "echo extension_loaded('$ext') ? 'yes' : 'no';" 2>/dev/null | grep -q "yes"; then
             ok "PHP extension: $ext"
         else
-            warn "PHP extension missing: $ext (may cause issues)"
+            warn "PHP extension possibly missing: $ext"
         fi
     done
 
-    # .env
-    if [ -f ".env" ]; then
-        warn ".env already exists — values will be overwritten"
-    elif [ -f ".env.example" ]; then
-        ok ".env.example found"
-    else
+    if [ ! -f ".env.example" ] && [ ! -f ".env" ]; then
         fail "No .env.example found. Run this from the RAYNET CMS root directory."
-        exit 1
     fi
-
-    # Writable check (attempt to fix)
-    for dir in storage bootstrap/cache; do
-        mkdir -p "$dir" 2>/dev/null
-        chmod -R 775 "$dir" 2>/dev/null
-        if [ -w "$dir" ]; then
-            ok "Directory writable: $dir"
-        else
-            warn "Cannot make $dir writable — will attempt chown after install"
-        fi
-    done
+    ok "Directory looks correct"
 }
 
-# ── Step 1: Environment ───────────────────────────────────────
+# ── Step 2: Environment ───────────────────────────────────────
 setup_env() {
     step "Environment Configuration"
 
     if [ ! -f ".env" ]; then
         cp .env.example .env
         ok "Created .env from .env.example"
+    else
+        warn ".env already exists — updating values"
     fi
 
     echo ""
-    info "Enter your site details (press Enter for defaults where shown):"
+    info "Enter your site details:"
     echo ""
 
     ask "Site URL (e.g. https://yourgroup.net):"
     read -r APP_URL
     APP_URL=${APP_URL:-https://example.com}
+    # Strip trailing spaces
+    APP_URL=$(echo "$APP_URL" | tr -d '[:space:]')
 
     ask "Database host [localhost]:"
     read -r DB_HOST
@@ -173,68 +177,85 @@ setup_env() {
     read -rs DB_PASSWORD
     echo ""
 
-    ask "Mail host (e.g. mail.yourgroup.net) [optional]:"
+    ask "Mail host (optional, e.g. mail.yourgroup.net):"
     read -r MAIL_HOST
 
-    ask "Mail from address (e.g. noreply@yourgroup.net) [optional]:"
+    ask "Mail from address (optional, e.g. noreply@yourgroup.net):"
     read -r MAIL_FROM
 
-    ask "Mail username [leave blank if same as from address]:"
-    read -r MAIL_USER
-    MAIL_USER=${MAIL_USER:-$MAIL_FROM}
-
-    ask "Mail password [optional]:"
+    ask "Mail password (optional):"
     read -rs MAIL_PASS
     echo ""
 
     # Write to .env
-    sed -i "s|APP_URL=.*|APP_URL=$APP_URL|g"           .env
-    sed -i "s|DB_HOST=.*|DB_HOST=$DB_HOST|g"           .env
+    sed -i "s|APP_URL=.*|APP_URL=$APP_URL|g"             .env
+    sed -i "s|DB_HOST=.*|DB_HOST=$DB_HOST|g"             .env
     sed -i "s|DB_DATABASE=.*|DB_DATABASE=$DB_DATABASE|g" .env
     sed -i "s|DB_USERNAME=.*|DB_USERNAME=$DB_USERNAME|g" .env
     sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=$DB_PASSWORD|g" .env
     [ -n "$MAIL_HOST" ] && sed -i "s|MAIL_HOST=.*|MAIL_HOST=$MAIL_HOST|g" .env
     [ -n "$MAIL_FROM" ] && sed -i "s|MAIL_FROM_ADDRESS=.*|MAIL_FROM_ADDRESS=\"$MAIL_FROM\"|g" .env
-    [ -n "$MAIL_USER" ] && sed -i "s|MAIL_USERNAME=.*|MAIL_USERNAME=$MAIL_USER|g" .env
     [ -n "$MAIL_PASS" ] && sed -i "s|MAIL_PASSWORD=.*|MAIL_PASSWORD=$MAIL_PASS|g" .env
+
+    # Clear APP_KEY so we generate a fresh one
+    sed -i "s|APP_KEY=.*|APP_KEY=|g" .env
 
     ok ".env configured"
 }
 
-# ── Step 2: Composer ──────────────────────────────────────────
+# ── Step 3: Composer ──────────────────────────────────────────
 install_deps() {
     step "Installing PHP Dependencies"
 
-    detect_composer
-
-    if [ -z "$COMPOSER" ]; then
+    # Find composer
+    if command -v composer &>/dev/null; then
+        COMPOSER="composer"
+    elif [ -f "composer.phar" ]; then
+        COMPOSER="$PHP composer.phar"
+    else
         info "Downloading composer.phar..."
-        curl -sS https://getcomposer.org/installer | $PHP
+        curl -sS https://getcomposer.org/installer | $PHP -- --quiet
         COMPOSER="$PHP composer.phar"
         ok "composer.phar downloaded"
+    fi
+    ok "Composer: $COMPOSER"
+
+    info "Running composer install (this may take 1-2 minutes)..."
+
+    # Run composer as the account user if possible, to avoid root-owned vendor/
+    if [ "$(whoami)" = "root" ] && [ -n "$ACCOUNT_USER" ] && [ "$ACCOUNT_USER" != "root" ]; then
+        su -s /bin/bash "$ACCOUNT_USER" -c \
+            "cd $INSTALL_DIR && $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1" \
+            | grep -v "OPcache" | tail -5
     else
-        ok "Composer found: $COMPOSER"
+        $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1 \
+            | grep -v "OPcache" | tail -5
     fi
 
-    info "Running composer install (this may take a minute)..."
-    $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1 | grep -v "OPcache" | tail -5
-    ok "Dependencies installed"
+    if [ ! -d "vendor" ]; then
+        fail "vendor/ directory not created — composer install failed. Check your PHP version and try again."
+    fi
+    ok "Dependencies installed (vendor/ created)"
 }
 
-# ── Step 3: App key ───────────────────────────────────────────
+# ── Step 4: App key ───────────────────────────────────────────
 generate_key() {
     step "Application Key"
 
-    CURRENT_KEY=$(grep "^APP_KEY=" .env | cut -d= -f2 | tr -d '"')
-    if [ -n "$CURRENT_KEY" ] && [ "$CURRENT_KEY" != "" ]; then
-        warn "APP_KEY already set — skipping"
-    else
-        $PHP artisan key:generate --force 2>&1 | grep -v "OPcache"
-        ok "Application key generated"
+    if [ ! -f "vendor/autoload.php" ]; then
+        fail "vendor/autoload.php missing — composer did not complete successfully."
     fi
+
+    $PHP artisan key:generate --force 2>&1 | grep -v "OPcache"
+
+    KEY=$(grep "^APP_KEY=" .env | cut -d= -f2)
+    if [ -z "$KEY" ]; then
+        fail "APP_KEY is still empty after key:generate. Check PHP and artisan are working."
+    fi
+    ok "Application key generated"
 }
 
-# ── Step 4: Database ──────────────────────────────────────────
+# ── Step 5: Database ──────────────────────────────────────────
 run_migrations() {
     step "Database Setup"
 
@@ -243,46 +264,30 @@ run_migrations() {
     ok "Migrations complete"
 }
 
-# ── Step 5: Storage link ──────────────────────────────────────
+# ── Step 6: Storage ───────────────────────────────────────────
 setup_storage() {
     step "Storage Link"
 
-    if [ -L "public/storage" ]; then
-        rm public/storage
-    fi
+    rm -f public/storage 2>/dev/null
     $PHP artisan storage:link 2>&1 | grep -v "OPcache"
     ok "Storage link created"
 }
 
-# ── Step 6: Fix ownership & permissions ───────────────────────
-fix_permissions() {
-    step "File Permissions & Ownership"
+# ── Step 7: Final permissions ─────────────────────────────────
+final_permissions() {
+    step "Final Permissions"
 
-    INSTALL_DIR=$(pwd)
-    detect_web_user
-
-    # Determine the account user from directory ownership
-    ACCOUNT_USER=$(stat -c '%U' "$INSTALL_DIR" 2>/dev/null || echo "$(whoami)")
-    if [ "$ACCOUNT_USER" = "root" ]; then
-        # Try parent directory
-        ACCOUNT_USER=$(stat -c '%U' "$(dirname $INSTALL_DIR)" 2>/dev/null || echo "nobody")
+    if [ -n "$ACCOUNT_USER" ] && [ "$ACCOUNT_USER" != "root" ]; then
+        chown -R "$ACCOUNT_USER":"$ACCOUNT_USER" "$INSTALL_DIR" 2>/dev/null && \
+            ok "Final ownership set to $ACCOUNT_USER" || \
+            warn "Could not set final ownership"
     fi
-
-    info "Setting ownership to $ACCOUNT_USER..."
-    chown -R "$ACCOUNT_USER":"$ACCOUNT_USER" . 2>/dev/null && \
-        ok "Ownership set to $ACCOUNT_USER" || \
-        warn "Could not set ownership — files may be owned by root"
-
-    chmod -R 755 . 2>/dev/null
-    chmod -R 775 storage bootstrap/cache 2>/dev/null && \
-        ok "Directory permissions set (755/775)"
-    find storage -type f -exec chmod 664 {} \; 2>/dev/null && \
-        ok "File permissions set (664)"
-
-    ok "Permissions complete"
+    chmod -R 775 storage bootstrap/cache 2>/dev/null
+    find storage -type f -exec chmod 664 {} \; 2>/dev/null
+    ok "Permissions finalised"
 }
 
-# ── Step 7: Cache clear ───────────────────────────────────────
+# ── Step 8: Cache clear ───────────────────────────────────────
 clear_caches() {
     step "Clearing Caches"
     $PHP artisan route:clear  2>&1 | grep -v "OPcache" && ok "Routes cleared"
@@ -291,63 +296,58 @@ clear_caches() {
     $PHP artisan cache:clear  2>&1 | grep -v "OPcache" && ok "Cache cleared"
 }
 
-# ── Step 8: Document root hint ────────────────────────────────
-docroot_hint() {
+# ── Step 9: Document root ─────────────────────────────────────
+setup_docroot() {
     step "Web Server Configuration"
 
-    INSTALL_DIR=$(pwd)
     PUBLIC_DIR="$INSTALL_DIR/public"
+    PARENT_DIR=$(dirname "$INSTALL_DIR")
+    FOLDER_NAME=$(basename "$INSTALL_DIR")
 
     echo ""
-    info "Your document root must point to the public/ folder:"
-    echo ""
+    info "Your document root must point to:"
     echo -e "  ${BOLD}$PUBLIC_DIR${NC}"
     echo ""
-    info "In cPanel → Domains → find your domain → set Document Root to:"
-    echo -e "  ${YELLOW}$PUBLIC_DIR${NC}"
-    echo ""
-    info "Or add this to your domain root .htaccess:"
-    echo -e "  ${YELLOW}RewriteEngine On"
-    echo -e "  RewriteRule ^(.*)$ public/\$1 [L]${NC}"
+    info "In cPanel → Domains → set Document Root to the above path."
     echo ""
 
-    # Try to auto-detect if there's a parent .htaccess we can write
-    PARENT_DIR=$(dirname "$INSTALL_DIR")
+    # Auto-create .htaccess in parent if writable
     if [ -d "$PARENT_DIR" ] && [ -w "$PARENT_DIR" ]; then
-        ask "Auto-create .htaccess in parent directory to redirect to public/? (y/N)"
-        read -r AUTO_HTACCESS
-        if [[ "$AUTO_HTACCESS" =~ ^[Yy]$ ]]; then
-            FOLDER_NAME=$(basename "$INSTALL_DIR")
+        ask "Auto-create redirect .htaccess in parent directory? (y/N)"
+        read -r AUTO_HT
+        if [[ "$AUTO_HT" =~ ^[Yy]$ ]]; then
             cat > "$PARENT_DIR/.htaccess" << HTEOF
 RewriteEngine On
 RewriteRule ^(.*)$ ${FOLDER_NAME}/public/\$1 [L]
 HTEOF
+            # Fix ownership on the .htaccess
+            [ -n "$ACCOUNT_USER" ] && chown "$ACCOUNT_USER":"$ACCOUNT_USER" "$PARENT_DIR/.htaccess" 2>/dev/null
             ok "Created $PARENT_DIR/.htaccess → redirects to $FOLDER_NAME/public/"
         fi
     fi
 }
 
-# ── Step 9: Cron ──────────────────────────────────────────────
+# ── Step 10: Cron ─────────────────────────────────────────────
 cron_reminder() {
     step "Scheduled Tasks (Optional)"
     echo ""
-    INSTALL_DIR=$(pwd)
     echo -e "  ${YELLOW}* * * * * cd $INSTALL_DIR && $PHP artisan schedule:run >> /dev/null 2>&1${NC}"
     echo ""
-    info "Add the above to cPanel → Cron Jobs"
+    info "Add the above line to cPanel → Cron Jobs"
     echo ""
 }
 
-# ── Final summary ─────────────────────────────────────────────
+# ── Summary ───────────────────────────────────────────────────
 summary() {
     step "Installation Complete"
     echo ""
     echo -e "  ${GREEN}${BOLD}RAYNET CMS is ready!${NC}"
     echo ""
     echo -e "  ${CYAN}Next steps:${NC}"
-    echo -e "  1. Make sure your domain points to: ${BOLD}$(pwd)/public${NC}"
-    echo -e "  2. Visit ${BOLD}$APP_URL${NC} in your browser"
-    echo -e "  3. The installation wizard will guide you through group setup"
+    echo -e "  1. Make sure your domain's document root is set to:"
+    echo -e "     ${BOLD}$INSTALL_DIR/public${NC}"
+    echo -e "  2. Visit ${BOLD}$APP_URL${NC}"
+    echo -e "  3. Complete the setup wizard (group name, callsign, admin account)"
     echo ""
     echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
@@ -360,9 +360,8 @@ summary() {
 main() {
     header
 
-    echo -e "  This script will install RAYNET CMS on your server."
-    echo -e "  It will configure your environment, install dependencies,"
-    echo -e "  run migrations, set permissions, and prepare the install wizard."
+    echo -e "  This script will fully install RAYNET CMS with no manual steps."
+    echo -e "  It handles dependencies, database, permissions, and document root."
     echo ""
     echo -e "  ${YELLOW}Run this from your RAYNET CMS root directory.${NC}"
     echo ""
@@ -373,15 +372,16 @@ main() {
         exit 0
     fi
 
+    fix_ownership    # Fix ownership FIRST before anything else
     preflight
     setup_env
-    install_deps
+    install_deps     # Composer runs as account user to avoid root-owned vendor/
     generate_key
     run_migrations
     setup_storage
-    fix_permissions
+    final_permissions
     clear_caches
-    docroot_hint
+    setup_docroot
     cron_reminder
     summary
 }
