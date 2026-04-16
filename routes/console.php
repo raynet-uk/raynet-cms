@@ -58,3 +58,5 @@ Schedule::command('lms:daily')
     ->dailyAt('08:00')
     ->timezone('Europe/London')
     ->withoutOverlapping();
+// Push report to Command Centre daily
+\Illuminate\Support\Facades\Schedule::command('raynet:push-report')->dailyAt('06:00');
