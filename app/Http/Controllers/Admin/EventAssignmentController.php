@@ -381,7 +381,7 @@ class EventAssignmentController extends Controller
         }
         return $last;
     }
-}
+
     // ── Notify crew ────────────────────────────────────────────────────────────
     public function notifyCrew(Request $request, \App\Models\Event $event)
     {
@@ -411,3 +411,4 @@ class EventAssignmentController extends Controller
 
         return redirect()->back()->with('status', "Notification sent to {$sent} crew member(s).");
     }
+}
