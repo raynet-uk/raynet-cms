@@ -3129,29 +3129,65 @@ function updateBriefingMemberCount() {
             <div class="modal-title">✉ Send Crew Briefings</div>
             <button class="modal-close" onclick="document.getElementById('briefingModal').classList.remove('open')">✕</button>
         </div>
-        <form method="POST" action="{{ route('admin.events.assignments.briefings-bulk', $event->id) }}">
+        <form method="POST" action="{{ route('admin.events.assignments.briefings-bulk', $event->id) }}" id="bulkBriefingForm">
             @csrf
+            <input type="hidden" name="send_mode" id="briefing-send-mode" value="status">
             <div class="modal-body">
-                <div class="section-divider">Who to send to</div>
-                <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem;">
-                    <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="confirmed" checked style="accent-color:var(--navy);"> <span style="color:var(--green);font-weight:bold;">✓ Confirmed ({{ $stats['confirmed'] }})</span></label>
-                    <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="standby" checked style="accent-color:var(--navy);"> <span style="color:var(--amber);font-weight:bold;">⏳ Standby ({{ $stats['standby'] ?? 0 }})</span></label>
-                    <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="pending" style="accent-color:var(--navy);"> <span style="color:var(--navy);font-weight:bold;">⋯ Pending ({{ $stats['pending'] }})</span></label>
+                <div style="display:flex;gap:0;margin-bottom:1rem;border:1px solid var(--grey-mid);overflow:hidden;">
+                    <button type="button" id="mode-btn-status" onclick="setBriefingMode('status')"
+                        style="flex:1;padding:.55rem;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;border:none;cursor:pointer;font-family:var(--font);background:var(--navy);color:#fff;border-right:1px solid rgba(255,255,255,.2);">By Status</button>
+                    <button type="button" id="mode-btn-individual" onclick="setBriefingMode('individual')"
+                        style="flex:1;padding:.55rem;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;border:none;cursor:pointer;font-family:var(--font);background:var(--grey);color:var(--text-muted);">Select Individuals</button>
                 </div>
-                <div class="section-divider">Optional message from Group Controller</div>
+                <div id="briefing-mode-status">
+                    <div class="section-divider">Who to send to</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem;">
+                        <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="confirmed" checked style="accent-color:var(--navy);"> <span style="color:var(--green);font-weight:bold;">&#10003; Confirmed ({{ $stats['confirmed'] }})</span></label>
+                        <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="standby" checked style="accent-color:var(--navy);"> <span style="color:var(--amber);font-weight:bold;">Standby ({{ $stats['standby'] ?? 0 }})</span></label>
+                        <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="pending" style="accent-color:var(--navy);"> <span style="color:var(--navy);font-weight:bold;">Pending ({{ $stats['pending'] }})</span></label>
+                        <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="declined" style="accent-color:var(--navy);"> <span style="color:var(--red);font-weight:bold;">Declined ({{ $stats['declined'] }})</span></label>
+                    </div>
+                </div>
+                <div id="briefing-mode-individual" style="display:none;">
+                    <div class="section-divider">Select members to brief</div>
+                    <input type="text" placeholder="Search crew..." oninput="filterBriefingMembers(this.value)"
+                        style="width:100%;border:1px solid var(--grey-mid);padding:.4rem .65rem;font-family:var(--font);font-size:12px;outline:none;margin-bottom:.4rem;">
+                    <div style="display:flex;gap:.3rem;margin-bottom:.35rem;">
+                        <button type="button" onclick="selectAllBriefingMembers()" style="font-size:10px;font-weight:bold;padding:.28rem .65rem;border:1px solid var(--grey-mid);background:var(--white);color:var(--navy);cursor:pointer;font-family:var(--font);">All</button>
+                        <button type="button" onclick="clearAllBriefingMembers()" style="font-size:10px;font-weight:bold;padding:.28rem .65rem;border:1px solid var(--grey-mid);background:var(--white);color:var(--red);cursor:pointer;font-family:var(--font);">Clear</button>
+                        <span id="briefing-member-count" style="font-size:11px;color:var(--text-muted);line-height:2;margin-left:.25rem;">0 selected</span>
+                    </div>
+                    <div style="max-height:220px;overflow-y:auto;border:1px solid var(--grey-mid);">
+                        @foreach($assignments->whereNotIn('status',['declined']) as $asgn)
+                        <label class="briefing-member-row" data-name="{{ strtolower($asgn->user->name) }}"
+                            style="display:flex;align-items:center;gap:.65rem;padding:.55rem .75rem;border-bottom:1px solid var(--grey-mid);cursor:pointer;">
+                            <input type="checkbox" name="assignment_ids[]" value="{{ $asgn->id }}"
+                                onchange="updateBriefingMemberCount()"
+                                style="width:16px;height:16px;flex-shrink:0;accent-color:var(--navy);cursor:pointer;">
+                            <span style="flex:1;">
+                                <span style="display:block;font-size:13px;font-weight:bold;color:var(--text);">{{ $asgn->user->name }}</span>
+                                <span style="font-size:10px;color:var(--text-muted);">{{ $asgn->callsign ?: 'No callsign' }} · {{ ucfirst($asgn->status) }} · {{ $asgn->role ?: 'No role' }}</span>
+                            </span>
+                        </label>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="section-divider" style="margin-top:1rem;">Optional message</div>
                 <div class="ff" style="margin-bottom:1rem;">
                     <label>Custom message <small style="text-transform:none;letter-spacing:0;font-weight:normal;">(optional)</small></label>
-                    <textarea name="custom_message" rows="4" placeholder="e.g. Please ensure you have read the event plan before arriving..." style="width:100%;border:1px solid var(--grey-mid);padding:.5rem .7rem;font-family:var(--font);font-size:13px;resize:vertical;outline:none;"></textarea>
+                    <textarea name="custom_message" rows="3" placeholder="e.g. Please ensure you have read the event plan..."
+                        style="width:100%;border:1px solid var(--grey-mid);padding:.5rem .7rem;font-family:var(--font);font-size:13px;resize:vertical;outline:none;"></textarea>
                 </div>
                 <div style="font-size:11px;color:var(--text-muted);padding:.5rem .75rem;background:var(--grey);border:1px solid var(--grey-mid);">
-                    Each member receives a personalised email with their shifts, frequency, location and equipment list, plus a PDF briefing sheet attached.
+                    Each member receives a personalised email with their shifts, frequency, location and equipment, plus a PDF attached.
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" onclick="return confirm('Send briefing emails with PDF to selected crew?')">✉ Send Briefings</button>
+                <button type="submit" class="btn btn-primary" onclick="return confirm('Send briefing emails to selected crew?')">&#9993; Send Briefings</button>
                 <button type="button" class="btn btn-ghost" onclick="document.getElementById('briefingModal').classList.remove('open')">Cancel</button>
             </div>
         </form>
+
     </div>
 </div>
 
