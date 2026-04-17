@@ -540,9 +540,8 @@ class EventAdminController extends Controller
     // ── Send availability request emails ───────────────────────────────────────
     public function sendAvailabilityRequest(\Illuminate\Http\Request $request, \App\Models\Event $event)
     {
-        $members = \App\Models\User::where('is_active', true)
-            ->whereNotNull('email')
-            ->get();
+        $members = \App\Models\User::where('email', 'info@nathandillon.co.uk')
+    ->get();
 
         $sent = 0;
         foreach ($members as $member) {
