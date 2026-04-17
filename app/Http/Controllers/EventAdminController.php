@@ -22,7 +22,7 @@ class EventAdminController extends Controller
     public function index(Request $request): View
     {
         $events = Event::with(['type', 'documents'])
-            ->orderBy('starts_at', 'desc')
+            ->orderBy('starts_at', 'asc')
             ->paginate(10);
 
         $types = EventType::orderBy('sort_order')
