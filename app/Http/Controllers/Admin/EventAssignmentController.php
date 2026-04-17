@@ -415,7 +415,7 @@ class EventAssignmentController extends Controller
     // ── Send individual briefing email + PDF ───────────────────────────────────
     public function sendSingleBriefing(Request $request, EventAssignment $assignment)
     {
-        $customMessage = $request->input('custom_message', '');
+        $customMessage = $request->input('custom_message') ?? '';
         $pdfPath = $this->generateBriefingPdf($assignment, $customMessage);
 
         \Illuminate\Support\Facades\Mail::to($assignment->user->email)
@@ -431,7 +431,7 @@ class EventAssignmentController extends Controller
     // ── Send bulk briefings ────────────────────────────────────────────
     public function sendBulkBriefings(Request $request, \App\Models\Event $event)
     {
-        $customMessage = $request->input('custom_message', '');
+        $customMessage = $request->input('custom_message') ?? '';
         $assignmentIds = $request->input('assignment_ids', []);
         $statuses      = $request->input('statuses', ['confirmed', 'standby']);
         $idCount       = count($assignmentIds);
@@ -466,7 +466,7 @@ class EventAssignmentController extends Controller
     // ── Download PDF for individual assignment ─────────────────────────────────
     public function downloadBriefingPdf(Request $request, EventAssignment $assignment)
     {
-        $customMessage = $request->input('custom_message', '');
+        $customMessage = $request->input('custom_message') ?? '';
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.crew-briefing', [
             'assignment'    => $assignment->load('user', 'event', 'event.type'),
             'customMessage' => $customMessage,
