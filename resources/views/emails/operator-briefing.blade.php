@@ -209,6 +209,7 @@
         <div class="spacer"></div>
 
         {{-- ── CUSTOM MESSAGE ── --}}
+        @if(!empty($customMessage ?? ''))
         <div style="margin:0 32px 0;">
             <div style="background:#e8eef5;border-left:4px solid #003366;border-top:3px solid #003366;padding:16px 20px;">
                 <p style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.14em;color:#003366;margin:0 0 8px;">Message from Group Controller</p>
