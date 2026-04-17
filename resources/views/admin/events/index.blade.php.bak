@@ -1003,12 +1003,6 @@ $openRsvp   = (request('rsvp') == $event->id);
                                        class="dd-item dd-crew">
                                         <span class="dd-icon">👥</span> Crew
                                     </a>
-                                    <form method="POST" action="{{ route('admin.events.availability-request', $event->id) }}" style="display:contents;" onsubmit="return confirm('Send availability request email to ALL active members?')">
-                                        @csrf
-                                        <button type="submit" class="dd-item" style="color:#0e7490;">
-                                            <span class="dd-icon">📣</span> Request Availability
-                                        </button>
-                                    </form>
                                     <button type="button"
         class="dd-item"
         style="color:var(--green);"
