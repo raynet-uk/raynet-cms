@@ -59,7 +59,7 @@ class PushReportToCommandCentre extends Command
                 'lat'           => $e->lat ?? null,
                 'lng'           => $e->lng ?? null,
                 'crew_count'    => $e->assignments?->count() ?? 0,
-                'crew'          => $e->assignments?->map(fn($a) => [
+                'team'          => $e->assignments?->map(fn($a) => [
                     'name'      => $a->user?->name,
                     'callsign'  => $a->user?->callsign,
                     'role'      => $a->role,

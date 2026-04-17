@@ -511,7 +511,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
 
 /* ─ PRINT ─ */
 @media print {
-    .rn-header,.tab-bar,.action-bar,.bulk-bar,#tab-crew,#tab-schedule,#tab-map,#tab-attendance,.ac-actions,.btn,header,nav,#assignModal{display:none!important;}
+    .rn-header,.tab-bar,.action-bar,.bulk-bar,#tab-team,#tab-schedule,#tab-map,#tab-attendance,.ac-actions,.btn,header,nav,#assignModal{display:none!important;}
     #tab-briefing{display:block!important;}
     body{background:#fff;font-size:11pt;}
     .panel{box-shadow:none;border:1px solid #ccc;}
@@ -537,7 +537,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div>
                 <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
-                <div class="rn-sub">Admin · Event Crew Management</div>
+                <div class="rn-sub">Admin · Event Team Management</div>
             </div>
         </div>
         <nav class="rn-nav">
@@ -554,7 +554,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
 <div class="event-hero fade-in">
     <div class="event-hero-inner">
         <div class="event-hero-left">
-            <div class="event-eyebrow">Event Crew Management</div>
+            <div class="event-eyebrow">Event Team Management</div>
             <div class="event-title">{{ $event->title }}</div>
             <div class="event-meta">
                 @if ($event->starts_at)
@@ -585,7 +585,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
 {{-- TAB BAR --}}
 <div class="tab-bar fade-in">
     <div class="tab-bar-inner">
-        <button class="tab-btn active" onclick="switchTab('crew')"     id="tabbtn-crew">    <span class="tab-icon">👥</span> Crew</button>
+        <button class="tab-btn active" onclick="switchTab('team')"     id="tabbtn-team">    <span class="tab-icon">👥</span> Team</button>
         <button class="tab-btn"        onclick="switchTab('schedule')" id="tabbtn-schedule"><span class="tab-icon">🕐</span> Schedule</button>
         <button class="tab-btn"        onclick="switchTab('map')"      id="tabbtn-map">     <span class="tab-icon">🗺</span> Map</button>
         <button class="tab-btn"        onclick="switchTab('briefing')" id="tabbtn-briefing"><span class="tab-icon">📋</span> Briefing</button>
@@ -604,7 +604,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
     @endif
 
     {{-- ══════════════════════════════ TAB: CREW ══════════════════════════════ --}}
-    <div id="tab-crew" class="tab-pane active fade-in">
+    <div id="tab-team" class="tab-pane active fade-in">
 
         <div class="action-bar">
             <button class="btn btn-primary" onclick="openAddModal()">+ Assign Member</button>
@@ -1118,7 +1118,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
                     </table>
 
                     {{-- Crew roster with QR codes --}}
-                    <div class="brief-page-title">👥 Crew Roster</div>
+                    <div class="brief-page-title">👥 Team Roster</div>
                     <table class="briefing-table">
                         <thead>
                             <tr>
@@ -3126,7 +3126,7 @@ function updateBriefingMemberCount() {
 <div class="modal-backdrop" id="briefingModal" onclick="if(event.target===this)document.getElementById('briefingModal').classList.remove('open')">
     <div class="modal" style="max-width:540px;">
         <div class="modal-head">
-            <div class="modal-title">✉ Send Crew Briefings</div>
+            <div class="modal-title">✉ Send Team Briefings</div>
             <button class="modal-close" onclick="document.getElementById('briefingModal').classList.remove('open')">✕</button>
         </div>
         <form method="POST" action="{{ route('admin.events.assignments.briefings-bulk', $event->id) }}" id="bulkBriefingForm">

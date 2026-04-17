@@ -280,7 +280,7 @@ td.td-actions { text-align: right; white-space: nowrap; padding-right: .9rem; }
     transition: background .1s; white-space: nowrap;
 }
 .dd-item:hover       { background: var(--navy-faint); color: var(--navy); }
-.dd-item.dd-crew:hover  { background: var(--green-bg);  color: var(--green); }
+.dd-item.dd-team:hover  { background: var(--green-bg);  color: var(--green); }
 .dd-item.dd-docs:hover  { background: var(--amber-bg);  color: var(--amber); }
 .dd-item.dd-delete      { color: var(--red); }
 .dd-item.dd-delete:hover { background: var(--red-faint); color: var(--red); }
@@ -379,8 +379,8 @@ td.td-actions { text-align: right; white-space: nowrap; padding-right: .9rem; }
 .m-act-view:hover  { background: var(--navy-faint); border-color: var(--navy); }
 .m-act-edit   { color: var(--text-mid); border-color: var(--grey-mid); }
 .m-act-edit:hover  { background: var(--navy-faint); color: var(--navy); border-color: var(--navy); }
-.m-act-crew   { color: var(--green); border-color: var(--green-border); background: var(--green-bg); }
-.m-act-crew:hover  { background: #d5ece0; border-color: var(--green); }
+.m-act-team   { color: var(--green); border-color: var(--green-border); background: var(--green-bg); }
+.m-act-team:hover  { background: #d5ece0; border-color: var(--green); }
 .m-act-docs   { color: var(--amber); border-color: var(--amber-border); background: var(--amber-bg); }
 .m-act-docs:hover  { background: #fdeec5; border-color: #c8a030; }
 .m-act-delete { color: var(--red); border-color: rgba(200,16,46,.25); }
@@ -1000,7 +1000,7 @@ $openRsvp   = (request('rsvp') == $event->id);
                                         title="More actions">⋯</button>
                                 <div class="act-dropdown" id="dd-{{ $event->id }}">
                                     <a href="{{ route('admin.events.assignments', $event->id) }}"
-                                       class="dd-item dd-crew">
+                                       class="dd-item dd-team">
                                         <span class="dd-icon">👥</span> Crew
                                     </a>
                                     <form method="POST" action="{{ route('admin.events.availability-request', $event->id) }}" style="display:contents;" onsubmit="return confirm('Send availability request email to ALL active members?')">
@@ -1263,7 +1263,7 @@ $openRsvp   = (request('rsvp') == $event->id);
                 <div class="m-card-actions">
                     <a href="{{ $event->url() }}" target="_blank" class="m-act m-act-view">View ↗</a>
                     <a href="{{ route('admin.events', ['edit' => $event->id]) }}" class="m-act m-act-edit">Edit</a>
-                    <a href="{{ route('admin.events.assignments', $event->id) }}" class="m-act m-act-crew">👥 Crew</a>
+                    <a href="{{ route('admin.events.assignments', $event->id) }}" class="m-act m-act-team">👥 Team</a>
                     <button type="button" class="m-act m-act-docs" onclick="toggleMDocs({{ $event->id }})">📎 Docs</button>
                     <form method="POST"
                           action="{{ route('admin.events.delete', $event->id) }}"
@@ -1352,7 +1352,7 @@ $openRsvp   = (request('rsvp') == $event->id);
             </div>
             @endforeach
 @if($rsvps->count() > 0)
-<button type="button" class="m-act m-act-crew" onclick="toggleMRsvp({{ $event->id }})">
+<button type="button" class="m-act m-act-team" onclick="toggleMRsvp({{ $event->id }})">
     👥 RSVPs <span style="margin-left:3px;opacity:.7;">{{ $rsvps->count() }}</span>
 </button>
 @endif

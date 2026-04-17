@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CrewNotification extends Mailable
+class TeamNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -29,6 +29,6 @@ class CrewNotification extends Mailable
 
     public function content(): Content
     {
-        return new Content(view: 'emails.crew-notification');
+        return new Content(view: 'emails.team-notification');
     }
 }

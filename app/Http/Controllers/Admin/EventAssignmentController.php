@@ -95,7 +95,7 @@ class EventAssignmentController extends Controller
         ]));
     }
 
-    return redirect()->back()->with('status', 'Crew members assigned successfully.');
+    return redirect()->back()->with('status', 'Team members assigned successfully.');
 }
 
     // ── Update ─────────────────────────────────────────────────────────────────
@@ -401,7 +401,7 @@ class EventAssignmentController extends Controller
         foreach ($assignments as $assignment) {
             if (!$assignment->user->email) continue;
             \Illuminate\Support\Facades\Mail::to($assignment->user->email)
-                ->send(new \App\Mail\CrewNotification(
+                ->send(new \App\Mail\TeamNotification(
                     $assignment,
                     $request->notify_type,
                     $request->custom_message ?? ''
@@ -409,7 +409,7 @@ class EventAssignmentController extends Controller
             $sent++;
         }
 
-        return redirect()->back()->with('status', "Notification sent to {$sent} crew member(s).");
+        return redirect()->back()->with('status', "Notification sent to {$sent} team member(s).");
     }
 
     // ── Send individual briefing email + PDF ───────────────────────────────────
@@ -419,7 +419,7 @@ class EventAssignmentController extends Controller
         $pdfPath = $this->generateBriefingPdf($assignment, $customMessage);
 
         \Illuminate\Support\Facades\Mail::to($assignment->user->email)
-            ->send(new \App\Mail\CrewBriefing($assignment, $customMessage, $pdfPath));
+            ->send(new \App\Mail\TeamBriefing($assignment, $customMessage, $pdfPath));
 
         $assignment->update(['briefing_sent' => true, 'briefing_sent_at' => now()]);
 
@@ -454,20 +454,20 @@ class EventAssignmentController extends Controller
         foreach ($assignments as $assignment) {
             $pdfPath = $this->generateBriefingPdf($assignment, $customMessage);
             \Illuminate\Support\Facades\Mail::to($assignment->user->email)
-                ->send(new \App\Mail\CrewBriefing($assignment, $customMessage, $pdfPath));
+                ->send(new \App\Mail\TeamBriefing($assignment, $customMessage, $pdfPath));
             $assignment->update(['briefing_sent' => true, 'briefing_sent_at' => now()]);
             if ($pdfPath && file_exists($pdfPath)) @unlink($pdfPath);
             $sent++;
         }
 
-        return redirect()->back()->with('status', "Briefing sent to {$sent} crew member(s).");
+        return redirect()->back()->with('status', "Briefing sent to {$sent} team member(s).");
     }
 
     // ── Download PDF for individual assignment ─────────────────────────────────
     public function downloadBriefingPdf(Request $request, EventAssignment $assignment)
     {
         $customMessage = $request->input('custom_message') ?? '';
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.crew-briefing', [
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.team-briefing', [
             'assignment'    => $assignment->load('user', 'event', 'event.type'),
             'customMessage' => $customMessage,
         ])->setPaper('a4', 'portrait');
@@ -479,7 +479,7 @@ class EventAssignmentController extends Controller
     private function generateBriefingPdf(EventAssignment $assignment, string $customMessage = ''): ?string
     {
         try {
-            $pdf  = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.crew-briefing', [
+            $pdf  = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.team-briefing', [
                 'assignment'    => $assignment->load('user', 'event', 'event.type'),
                 'customMessage' => $customMessage,
             ])->setPaper('a4', 'portrait');
