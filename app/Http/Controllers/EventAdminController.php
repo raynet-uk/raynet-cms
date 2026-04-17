@@ -537,4 +537,59 @@ class EventAdminController extends Controller
 
         return empty($clean) ? null : $clean;
     }
+    // ── Send availability request emails ───────────────────────────────────────
+    public function sendAvailabilityRequest(\Illuminate\Http\Request $request, \App\Models\Event $event)
+    {
+        $members = \App\Models\User::where('is_active', true)
+            ->whereNotNull('email')
+            ->get();
+
+        $sent = 0;
+        foreach ($members as $member) {
+            $token = base64_encode($member->id . '|' . $event->id . '|' . hash_hmac('sha256', $member->id . '|' . $event->id, config('app.key')));
+            $availableUrl   = route('events.availability.respond', ['token' => $token, 'response' => 'available']);
+            $unavailableUrl = route('events.availability.respond', ['token' => $token, 'response' => 'unavailable']);
+
+            \Illuminate\Support\Facades\Mail::to($member->email)
+                ->send(new \App\Mail\EventAvailabilityRequest(
+                    $event,
+                    $member,
+                    $availableUrl,
+                    $unavailableUrl
+                ));
+            $sent++;
+        }
+
+        return redirect()->back()->with('status', "Availability request sent to {$sent} members.");
+    }
+
+    // ── Handle availability response ───────────────────────────────────────────
+    public function availabilityResponse(\Illuminate\Http\Request $request, string $token)
+    {
+        $response = $request->query('response');
+        if (!in_array($response, ['available', 'unavailable'])) abort(404);
+
+        try {
+            $decoded = base64_decode($token);
+            [$userId, $eventId, $hash] = explode('|', $decoded);
+            $expected = hash_hmac('sha256', $userId . '|' . $eventId, config('app.key'));
+            if (!hash_equals($expected, $hash)) abort(403, 'Invalid token');
+        } catch (\Throwable $e) {
+            abort(403, 'Invalid token');
+        }
+
+        $event  = \App\Models\Event::findOrFail($eventId);
+        $member = \App\Models\User::findOrFail($userId);
+
+        \App\Models\UserEventAvailability::updateOrCreate(
+            ['user_id' => $userId, 'event_id' => $eventId],
+            ['available' => $response === 'available', 'responded_at' => now()]
+        );
+
+        return view('events.availability-confirmed', [
+            'event'    => $event,
+            'member'   => $member,
+            'response' => $response,
+        ]);
+    }
 }

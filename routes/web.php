@@ -233,6 +233,8 @@ Route::get('/events/{year}/{month}/{slug}.ics', [EventController::class, 'ics'])
 Route::get('/events/documents/{document}/download', [EventController::class, 'downloadDocument'])
     ->name('events.documents.download');
 
+Route::get('/events/availability/{token}', [EventAdminController::class, 'availabilityResponse'])->name('events.availability.respond');
+
 /*
 |--------------------------------------------------------------------------
 | OPERATOR BRIEF & CHECK-IN — public, no auth required
@@ -720,6 +722,7 @@ Route::middleware('admin')->group(function () {
 
     // ── Events ────────────────────────────────────────────────────────────
     Route::get('/admin/events',            [EventAdminController::class, 'index'])         ->name('admin.events');
+    Route::post('/admin/events/{event}/availability-request', [EventAdminController::class, 'sendAvailabilityRequest'])->name('admin.events.availability-request');
     Route::post('/admin/events',           [EventAdminController::class, 'store'])         ->name('admin.events.store');
     Route::get('/admin/events/export/csv', [EventAdminController::class, 'exportCsv'])     ->name('admin.events.export.csv');
     Route::get('/admin/events/import',     [EventAdminController::class, 'showImportForm'])->name('admin.events.import');
