@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Event Crew — ' . $event->title)
+@section('title', 'Event Team — ' . $event->title)
 
 @section('content')
 
 {{--
 =============================================================================
-MIGRATION — php artisan make:migration add_enhanced_crew_fields_to_event_assignments_table
+MIGRATION — php artisan make:migration add_enhanced_team_fields_to_event_assignments_table
 
 Schema::table('event_assignments', function (Blueprint $table) {
     $table->json('shifts')->nullable()->after('depart_time');          // multi-shift JSON
@@ -30,7 +30,7 @@ EventAssignment model:
 
 Backend routes needed:
     POST   admin/events/{event}/assignments/bulk-status    → bulkStatus()
-    POST   admin/events/{event}/duplicate-crew            → duplicateCrew()
+    POST   admin/events/{event}/duplicate-team            → duplicateTeam()
     PATCH  admin/assignments/{assignment}/position        → updatePosition()   ← existing
 =============================================================================
 --}}
@@ -63,13 +63,13 @@ $calcHours = function($shifts) {
     return $m>0 ? round($m/60,1) : null;
 };
 
-$totalCrewHours = 0;
+$totalTeamHours = 0;
 foreach ($assignments as $a) {
     $sh = $normaliseShifts($a);
     $h  = $calcHours($sh);
-    if ($h) $totalCrewHours += $h;
+    if ($h) $totalTeamHours += $h;
 }
-$totalCrewHours = $totalCrewHours > 0 ? round($totalCrewHours,1) : 0;
+$totalTeamHours = $totalTeamHours > 0 ? round($totalTeamHours,1) : 0;
 
 /* ── Build JS assignments data ── */
 $assignmentsJs = $assignments->map(function($a) use ($normaliseShifts, $calcHours) {
@@ -236,8 +236,8 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
 .bulk-status-select option{background:var(--navy);color:#fff;}
 
 /* ─ ASSIGNMENT CARDS ─ */
-.crew-select-row{display:flex;align-items:center;gap:.75rem;}
-.crew-checkbox{width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:var(--navy);}
+.team-select-row{display:flex;align-items:center;gap:.75rem;}
+.team-checkbox{width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:var(--navy);}
 .assignment-card{background:var(--white);border:1px solid var(--grey-mid);margin-bottom:.65rem;transition:box-shadow .15s;border-left:4px solid var(--grey-mid);}
 .assignment-card.confirmed{border-left-color:var(--green);}
 .assignment-card.standby{border-left-color:var(--amber-bdr);}
@@ -574,7 +574,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
             <div class="stat-card"><div class="stat-val green">{{ $stats['confirmed'] }}</div><div class="stat-lbl">Confirmed</div></div>
             <div class="stat-card"><div class="stat-val amber">{{ $stats['pending'] }}</div><div class="stat-lbl">Pending</div></div>
             <div class="stat-card"><div class="stat-val red">{{ $stats['declined'] }}</div><div class="stat-lbl">Declined</div></div>
-            <div class="stat-card"><div class="stat-val blue">{{ $totalCrewHours }}h</div><div class="stat-lbl">Crew Hrs</div></div>
+            <div class="stat-card"><div class="stat-val blue">{{ $totalTeamHours }}h</div><div class="stat-lbl">Team Hrs</div></div>
             <div class="stat-card"><div class="stat-val">{{ $stats['mapped'] }}</div><div class="stat-lbl">Mapped</div></div>
             <div class="stat-card"><div class="stat-val">{{ $stats['vehicles'] }}</div><div class="stat-lbl">Vehicles</div></div>
             <div class="stat-card"><div class="stat-val">{{ $stats['first_aid'] }}</div><div class="stat-lbl">First Aid</div></div>
@@ -611,19 +611,19 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
 
             <button class="btn btn-primary" onclick="document.getElementById('briefingModal').classList.add('open');">✉ Send Briefings</button>
 
-            {{-- Duplicate crew from past event --}}
+            {{-- Duplicate team from past event --}}
             @if (isset($pastEvents) && $pastEvents->isNotEmpty())
-            <form method="POST" action="{{ route('admin.events.duplicate-crew', $event->id) }}"
+            <form method="POST" action="{{ route('admin.events.duplicate-team', $event->id) }}"
                   style="display:inline;display:flex;align-items:center;gap:.3rem;">
                 @csrf
                 <select name="source_event_id" style="padding:.38rem .6rem;border:1px solid var(--grey-mid);font-family:var(--font);font-size:11px;outline:none;">
-                    <option value="">Copy crew from…</option>
+                    <option value="">Copy team from…</option>
                     @foreach ($pastEvents as $pe)
                         <option value="{{ $pe->id }}">{{ $pe->title }} ({{ $pe->starts_at?->format('j M Y') }})</option>
                     @endforeach
                 </select>
                 <button type="submit" class="btn btn-ghost"
-                        onclick="return confirm('Copy all crew assignments from that event to this one?')">↓ Duplicate</button>
+                        onclick="return confirm('Copy all team assignments from that event to this one?')">↓ Duplicate</button>
             </form>
             @endif
 
@@ -636,7 +636,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
             <div class="panel">
                 <div class="empty-state">
                     <div class="empty-icon">👥</div>
-                    <div class="empty-text">No crew assigned yet. Click <strong>Assign Member</strong> to get started.</div>
+                    <div class="empty-text">No team assigned yet. Click <strong>Assign Member</strong> to get started.</div>
                 </div>
             </div>
         @else
@@ -668,7 +668,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
                     <div class="assignment-card {{ $asgn->status }}" id="card-{{ $asgn->id }}">
                         <div class="ac-head" onclick="handleCardClick(event, {{ $asgn->id }})">
                             {{-- Bulk checkbox (hidden until bulk mode) --}}
-                            <input type="checkbox" class="crew-checkbox bulk-cb" id="cb-{{ $asgn->id }}"
+                            <input type="checkbox" class="team-checkbox bulk-cb" id="cb-{{ $asgn->id }}"
                                    value="{{ $asgn->id }}" style="display:none;" onclick="event.stopPropagation();toggleSelect({{ $asgn->id }})">
                             <div class="ac-avatar">{{ $initials }}</div>
                             <div class="ac-info">
@@ -813,10 +813,10 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
 
         <div class="schedule-grid">
             <div class="timeline">
-                <div class="timeline-title">Crew Schedule — {{ $event->title }}</div>
+                <div class="timeline-title">Team Schedule — {{ $event->title }}</div>
 
                 @if ($withTimes->isEmpty())
-                    <div class="no-schedule">No schedule times set. Edit assignments in the Crew tab to add shift times.</div>
+                    <div class="no-schedule">No schedule times set. Edit assignments in the Team tab to add shift times.</div>
                 @else
                     {{-- Hour headers --}}
                     <div class="timeline-hours">
@@ -1089,7 +1089,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
 
         <div class="panel">
 
-            {{-- PAGE 1: Event details + crew roster --}}
+            {{-- PAGE 1: Event details + team roster --}}
             <div class="brief-page">
                 <div class="briefing-header">
                     <div class="briefing-logo"><span style="font-size:14px;font-weight:bold;color:#fff;line-height:1.2;text-align:center;">RAY<br>NET</span></div>
@@ -1117,7 +1117,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
                         </tbody>
                     </table>
 
-                    {{-- Crew roster with QR codes --}}
+                    {{-- Team roster with QR codes --}}
                     <div class="brief-page-title">👥 Team Roster</div>
                     <table class="briefing-table">
                         <thead>
@@ -1165,7 +1165,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
                         <span><strong style="color:var(--navy);">{{ $stats['confirmed'] }}</strong> Confirmed</span>
                         <span><strong style="color:var(--amber);">{{ $stats['pending'] }}</strong> Pending</span>
                         <span><strong style="color:var(--green);">{{ $stats['standby'] ?? 0 }}</strong> Standby</span>
-                        <span><strong style="color:var(--navy);">{{ $totalCrewHours }}h</strong> Total crew hours</span>
+                        <span><strong style="color:var(--navy);">{{ $totalTeamHours }}h</strong> Total team hours</span>
                     </div>
                 </div>
             </div>
@@ -3150,7 +3150,7 @@ function updateBriefingMemberCount() {
                 </div>
                 <div id="briefing-mode-individual" style="display:none;">
                     <div class="section-divider">Select members to brief</div>
-                    <input type="text" placeholder="Search crew..." oninput="filterBriefingMembers(this.value)"
+                    <input type="text" placeholder="Search team..." oninput="filterBriefingMembers(this.value)"
                         style="width:100%;border:1px solid var(--grey-mid);padding:.4rem .65rem;font-family:var(--font);font-size:12px;outline:none;margin-bottom:.4rem;">
                     <div style="display:flex;gap:.3rem;margin-bottom:.35rem;">
                         <button type="button" onclick="selectAllBriefingMembers()" style="font-size:10px;font-weight:bold;padding:.28rem .65rem;border:1px solid var(--grey-mid);background:var(--white);color:var(--navy);cursor:pointer;font-family:var(--font);">All</button>
@@ -3183,7 +3183,7 @@ function updateBriefingMemberCount() {
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" onclick="return confirm('Send briefing emails to selected crew?')">&#9993; Send Briefings</button>
+                <button type="submit" class="btn btn-primary" onclick="return confirm('Send briefing emails to selected team?')">&#9993; Send Briefings</button>
                 <button type="button" class="btn btn-ghost" onclick="document.getElementById('briefingModal').classList.remove('open')">Cancel</button>
             </div>
         </form>

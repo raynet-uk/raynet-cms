@@ -38,7 +38,7 @@ body { font-family: Arial, sans-serif; font-size: 14px; color: #001f40; backgrou
     <div class="body">
         <div class="greeting">Hi {{ $member->name }}@if($member->callsign) ({{ $member->callsign }})@endif,</div>
         <p class="intro">
-            We're planning crew for an upcoming event and would like to know if you're available to attend.
+            We're planning our team for an upcoming event and would like to know if you're available to attend.
             Please let us know using the buttons below — it only takes one click.
         </p>
 

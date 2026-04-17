@@ -1001,7 +1001,7 @@ $openRsvp   = (request('rsvp') == $event->id);
                                 <div class="act-dropdown" id="dd-{{ $event->id }}">
                                     <a href="{{ route('admin.events.assignments', $event->id) }}"
                                        class="dd-item dd-team">
-                                        <span class="dd-icon">👥</span> Crew
+                                        <span class="dd-icon">👥</span> Team
                                     </a>
                                     <form method="POST" action="{{ route('admin.events.availability-request', $event->id) }}" style="display:contents;" onsubmit="return confirm('Send availability request email to ALL active members?')">
                                         @csrf

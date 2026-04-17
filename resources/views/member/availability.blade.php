@@ -75,7 +75,7 @@ body { font-family:var(--font); background:var(--grey); color:var(--text); }
     @endif
 
     <div class="info-box">
-        When you mark yourself unavailable, your name will be shown greyed-out in the event crew assignment panel for those dates. You won't be automatically removed from any existing assignments — the admin will see your unavailability and can decide how to handle it.
+        When you mark yourself unavailable, your name will be shown greyed-out in the event team assignment panel for those dates. You won't be automatically removed from any existing assignments — the admin will see your unavailability and can decide how to handle it.
     </div>
 
     {{-- ── ADD FORM ──────────────────────────────────────────────────── --}}

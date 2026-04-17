@@ -32,7 +32,7 @@ body { font-family: Arial, sans-serif; background: #f4f5f7; min-height: 100vh; d
         @if($response === 'available')
             <div class="icon">✅</div>
             <div class="status available">You're marked as available</div>
-            <p class="message">Thanks {{ $member->name }} — we've recorded that you're available for this event. The group controller will be in touch if you're selected for the crew.</p>
+            <p class="message">Thanks {{ $member->name }} — we've recorded that you're available for this event. The group controller will be in touch if you're selected for the team.</p>
         @else
             <div class="icon">❌</div>
             <div class="status unavailable">You're marked as unavailable</div>

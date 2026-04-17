@@ -747,7 +747,7 @@ Route::middleware('admin')->group(function () {
     Route::post('/admin/events/{event}/assignments/bulk-status',     [EventAssignmentController::class, 'bulkStatus'])      ->name('admin.events.assignments.bulk-status');
     Route::get('/admin/events/{event}/assignments/attendance-status',[EventAssignmentController::class, 'attendanceStatus'])->name('admin.events.assignments.attendance-status');
     Route::post('/admin/assignments/{assignment}/reset-attendance',  [EventAssignmentController::class, 'resetAttendance']) ->name('admin.events.assignments.reset-attendance');
-    Route::post('/admin/events/{event}/duplicate-crew',              [EventAssignmentController::class, 'duplicateCrew'])   ->name('admin.events.duplicate-crew');
+    Route::post('/admin/events/{event}/duplicate-crew',              [EventAssignmentController::class, 'duplicateTeam'])   ->name('admin.events.duplicate-team');
 
     // ── Equipment Registry ────────────────────────────────────────────────
     Route::get('/admin/equipment',                [\App\Http\Controllers\Admin\EquipmentController::class, 'index'])  ->name('admin.equipment');

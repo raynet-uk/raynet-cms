@@ -148,7 +148,7 @@ class EventAssignmentController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    // ── Attendance status (AJAX poll for crew map pulse animations) ───────────
+    // ── Attendance status (AJAX poll for team map pulse animations) ───────────
 
     public function attendanceStatus(Event $event): JsonResponse
     {
@@ -193,9 +193,9 @@ class EventAssignmentController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    // ── Duplicate crew ─────────────────────────────────────────────────────────
+    // ── Duplicate team ─────────────────────────────────────────────────────────
 
-    public function duplicateCrew(Request $request, Event $event): RedirectResponse
+    public function duplicateTeam(Request $request, Event $event): RedirectResponse
     {
         $request->validate([
             'source_event_id' => 'required|exists:events,id',
@@ -382,8 +382,8 @@ class EventAssignmentController extends Controller
         return $last;
     }
 
-    // ── Notify crew ────────────────────────────────────────────────────────────
-    public function notifyCrew(Request $request, \App\Models\Event $event)
+    // ── Notify team ────────────────────────────────────────────────────────────
+    public function notifyTeam(Request $request, \App\Models\Event $event)
     {
         $request->validate([
             'notify_type'    => 'required|in:custom,reminder',
