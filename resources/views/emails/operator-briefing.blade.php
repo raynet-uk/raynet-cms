@@ -208,6 +208,16 @@
         </div>
         <div class="spacer"></div>
 
+        {{-- ── CUSTOM MESSAGE ── --}}
+        <div style="margin:0 32px 0;">
+            <div style="background:#e8eef5;border-left:4px solid #003366;border-top:3px solid #003366;padding:16px 20px;">
+                <p style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.14em;color:#003366;margin:0 0 8px;">Message from Group Controller</p>
+                <p style="font-size:14px;color:#2d4a6b;line-height:1.7;margin:0;white-space:pre-line;">{{ $customMessage }}</p>
+            </div>
+        </div>
+        <div class="spacer"></div>
+        @endif
+
         {{-- ── CHECK-IN CTA ── --}}
         <div class="cta-section" style="margin:0 32px;background:#003366;border-top:3px solid #C8102E;padding:24px;">
             <h3 class="cta-title" style="font-size:16px;font-weight:bold;color:#ffffff;margin:0 0 8px;">📱 Check In on the Day</h3>

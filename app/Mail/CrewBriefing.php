@@ -22,13 +22,14 @@ class CrewBriefing extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Operator Briefing — ' . $this->assignment->event->title . ' · ' . \App\Helpers\RaynetSetting::groupName()
+            subject: 'Operator Briefing — ' . $this->assignment->event->title
+                   . ' · ' . ($this->assignment->event->starts_at?->format('D j M Y') ?? '')
         );
     }
 
     public function content(): Content
     {
-        return new Content(view: 'emails.crew-briefing');
+        return new Content(view: 'emails.operator-briefing');
     }
 
     public function attachments(): array
