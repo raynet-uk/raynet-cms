@@ -3091,6 +3091,35 @@ function printBriefing() {
             @endif
         @endif
     </div>
+<script>
+function setBriefingMode(mode) {
+    document.getElementById("briefing-send-mode").value = mode;
+    document.getElementById("briefing-mode-status").style.display = mode === "status" ? "" : "none";
+    document.getElementById("briefing-mode-individual").style.display = mode === "individual" ? "" : "none";
+    document.getElementById("mode-btn-status").style.background = mode === "status" ? "var(--navy)" : "var(--grey)";
+    document.getElementById("mode-btn-status").style.color = mode === "status" ? "#fff" : "var(--text-muted)";
+    document.getElementById("mode-btn-individual").style.background = mode === "individual" ? "var(--navy)" : "var(--grey)";
+    document.getElementById("mode-btn-individual").style.color = mode === "individual" ? "#fff" : "var(--text-muted)";
+}
+function filterBriefingMembers(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll(".briefing-member-row").forEach(row => {
+    });
+}
+function selectAllBriefingMembers() {
+    document.querySelectorAll(".briefing-member-row input").forEach(cb => cb.checked = true);
+    updateBriefingMemberCount();
+}
+function clearAllBriefingMembers() {
+    document.querySelectorAll(".briefing-member-row input").forEach(cb => cb.checked = false);
+    updateBriefingMemberCount();
+}
+function updateBriefingMemberCount() {
+    const n = document.querySelectorAll(".briefing-member-row input:checked").length;
+    const el = document.getElementById("briefing-member-count");
+    if (el) el.textContent = n + " selected";
+}
+</script>
 @endsection
 
 {{-- ════════════════ BULK BRIEFING MODAL ════════════════ --}}
