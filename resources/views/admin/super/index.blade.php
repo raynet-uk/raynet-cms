@@ -1,5 +1,5 @@
 {{-- resources/views/admin/super/index.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Super Admin Panel')
 @section('content')
 
@@ -120,7 +120,7 @@ $storageOk = is_writable(storage_path());
 
 <style>
 /* ══════════════════════════════════════════════════════
-   SUPER ADMIN PANEL — Liverpool RAYNET
+   SUPER ADMIN PANEL — {{ \App\Helpers\RaynetSetting::groupName() }}
    Purple-on-navy premium design
 ══════════════════════════════════════════════════════ */
 :root {
@@ -857,7 +857,7 @@ $storageOk = is_writable(storage_path());
         <div class="sa-hero-brand">
             <div class="sa-logo"><span>RAY<br>NET</span></div>
             <div>
-                <div class="sa-org">Liverpool RAYNET</div>
+                <div class="sa-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="sa-sub">Super Admin Control Panel</div>
             </div>
         </div>
@@ -971,7 +971,7 @@ $storageOk = is_writable(storage_path());
             <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">Click to pre-fill the form below</span>
         </div>
         <div class="maint-presets">
-            <button class="maint-preset-btn" type="button" data-title="Back Soon" data-headline="Planned Maintenance" data-msg="Liverpool RAYNET Members Portal is temporarily offline for scheduled maintenance. We'll be back shortly. Thank you for your patience." onclick="applyPreset(this)">
+            <button class="maint-preset-btn" type="button" data-title="Back Soon" data-headline="Planned Maintenance" data-msg="{{ \App\Helpers\RaynetSetting::groupName() }} Members Portal is temporarily offline for scheduled maintenance. We'll be back shortly. Thank you for your patience." onclick="applyPreset(this)">
                 <div class="maint-preset-icon">🔧</div><div class="maint-preset-name">Planned Maintenance</div><div class="maint-preset-desc">Scheduled downtime with friendly message</div>
             </button>
             <button class="maint-preset-btn" type="button" data-title="Emergency Downtime" data-headline="Unplanned Outage" data-msg="We are currently experiencing an unexpected issue and the portal is temporarily unavailable. Our team is working to restore access as quickly as possible." onclick="applyPreset(this)">
@@ -1017,7 +1017,7 @@ $storageOk = is_writable(storage_path());
                         </div>
                         <div class="maint-field">
                             <label class="maint-label">Contact Email</label>
-                            <input type="email" name="maintenance_contact" class="maint-input" value="{{ old('maintenance_contact', $maintContact) }}" placeholder="gc@raynet-liverpool.net" oninput="updateMaintPreview()">
+                            <input type="email" name="maintenance_contact" class="maint-input" value="{{ old('maintenance_contact', $maintContact) }}" placeholder="gc@{{ \App\Helpers\RaynetSetting::siteUrl() }}" oninput="updateMaintPreview()">
                         </div>
                     </div>
                     <div class="sa-card-head" style="margin:-1px -1px 0;background:rgba(124,58,237,.05);border:1px solid rgba(124,58,237,.15);">
@@ -1060,14 +1060,14 @@ $storageOk = is_writable(storage_path());
                         <div class="maint-preview-icon-wrap">🔧</div>
                         <div>
                             <div class="maint-preview-title-text" id="prevTitle">{{ $maintTitle ?: 'Back Soon' }}</div>
-                            <div class="maint-preview-headline-text" id="prevHeadline">{{ $maintHeadline ?: 'Liverpool RAYNET' }}</div>
+                            <div class="maint-preview-headline-text" id="prevHeadline">{{ $maintHeadline ?: AppHelpersRaynetSetting::groupName() }}</div>
                         </div>
-                        <div class="maint-preview-msg-text" id="prevMsg">{{ $maintMsg ?: 'Liverpool RAYNET Members Portal is temporarily offline.' }}</div>
+                        <div class="maint-preview-msg-text" id="prevMsg">{{ $maintMsg ?: \App\Helpers\RaynetSetting::groupName() . ' Members Portal is temporarily offline.' }}</div>
                         <div id="prevReturn" style="display:{{ $maintReturnAt ? 'block' : 'none' }};font-size:11px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:.3rem .65rem;">
                             Expected back: <span id="prevReturnVal">{{ $maintReturnAt ? \Carbon\Carbon::parse($maintReturnAt)->format('D d M H:i') : '' }}</span>
                         </div>
                     </div>
-                    <div class="maint-preview-footer">{{ AppHelpersRaynetSetting::groupName() }} (Group {{ AppHelpersRaynetSetting::groupNumber() }}) · {{ AppHelpersRaynetSetting::groupRegion() }}</div>
+                    <div class="maint-preview-footer">{{ \App\Helpers\RaynetSetting::groupName() }} (Group {{ \App\Helpers\RaynetSetting::groupNumber() }}) · {{ \App\Helpers\RaynetSetting::groupRegion() }}</div>
                     <div style="padding:.65rem .85rem;border-top:1px solid var(--grey-mid);background:var(--grey);display:flex;flex-direction:column;gap:.3rem;">
                         <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:.2rem;">System Status</div>
                         @foreach([['DB',$dbOk,$dbOk?'Connected':'Error'],['Cache',$cacheOk,$cacheOk?'Working':'Check config'],['Storage',$storageOk,$storageOk?'Writable':'Read-only'],['Portal',true,'Laravel '.app()->version()]] as [$lbl,$ok,$val])
@@ -1961,8 +1961,8 @@ function updateMaintPreview(){
     const prevR=document.getElementById('prevReturn');
     const prevRV=document.getElementById('prevReturnVal');
     if(prevT)prevT.textContent=title||'Back Soon';
-    if(prevH)prevH.textContent=headline||'Liverpool RAYNET';
-    if(prevM)prevM.textContent=msg||'Liverpool RAYNET Members Portal is temporarily offline.';
+    if(prevH)prevH.textContent=headline||'{{ \App\Helpers\RaynetSetting::groupName() }}';
+    if(prevM)prevM.textContent=msg||'{{ \App\Helpers\RaynetSetting::groupName() }} Members Portal is temporarily offline.';
     if(prevR&&returnAt){prevR.style.display='block';const d=new Date(returnAt);if(prevRV)prevRV.textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
     else if(prevR){prevR.style.display='none';}
 }

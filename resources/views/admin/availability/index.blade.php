@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Member Availability')
 @section('content')
 
@@ -200,7 +200,7 @@
         <div class="rn-brand">
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div>
-                <div class="rn-org">Liverpool RAYNET</div>
+                <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="rn-sub">Admin · Member Availability</div>
             </div>
         </div>

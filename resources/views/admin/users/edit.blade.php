@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Edit – ' . $user->name)
 
@@ -477,7 +477,7 @@ body { background: var(--grey); color: var(--text); font-family: var(--font); fo
         <div class="rn-brand">
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div>
-                <div class="rn-org">Liverpool RAYNET</div>
+                <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="rn-sub">Admin · Edit Member</div>
             </div>
         </div>
@@ -1579,7 +1579,7 @@ $pct             = $totalCourses > 0 ? round(($completedCount / $totalCourses) *
         <div class="card-icon">📡</div>
         <div>
             <div class="card-title">DMR Network Access</div>
-            <div class="card-sub">Control access level to the Liverpool RAYNET DMR Network</div>
+            <div class="card-sub">Control access level to the {{ \App\Helpers\RaynetSetting::groupName() }} DMR Network</div>
         </div>
     </div>
 

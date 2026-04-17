@@ -1,7 +1,7 @@
 {{-- resources/views/members/dmr-network.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'DMR Network — Liverpool RAYNET')
+@section('title', 'DMR Network — {{ \App\Helpers\RaynetSetting::groupName() }}')
 
 @section('content')
 <style>
@@ -104,7 +104,7 @@
         <div class="dmr-hero-left">
             <div class="dmr-hero-icon">📡</div>
             <div>
-                <div class="dmr-hero-title">Liverpool RAYNET DMR Network</div>
+                <div class="dmr-hero-title">{{ \App\Helpers\RaynetSetting::groupName() }} DMR Network</div>
                 <div class="dmr-hero-sub">Live EmComm Network · Members Only · HBLink Server M0KKN</div>
             </div>
         </div>
@@ -227,7 +227,7 @@
 </div>
 
 <script>
-// ── Liverpool RAYNET DMR Network ──────────────────────────────────────────
+// ── {{ \App\Helpers\RaynetSetting::groupName() }} DMR Network ──────────────────────────────────────────
 // SSE stream: /members/dmr-network/stream
 // Data polls: /members/dmr-network/lastheard + /peers  (every 20s)
 // ─────────────────────────────────────────────────────────────────────────
@@ -352,7 +352,7 @@ function startWS() {
 
     wsConn.onopen = function() {
         setWsUi('live');
-        addLine('Connected — Liverpool RAYNET HBLink', 'conn');
+        addLine('Connected — {{ \App\Helpers\RaynetSetting::groupName() }} HBLink', 'conn');
     };
 
     wsConn.onmessage = function(e) {

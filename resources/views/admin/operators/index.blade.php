@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Manage operators')
 
 @section('content')
@@ -169,7 +169,7 @@ td{padding:.6rem .85rem;vertical-align:middle;}
         <div class="brand">
             <div class="brand-badge">📡</div>
             <div>
-                <div class="brand-name">Liverpool RAYNET</div>
+                <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="brand-sub">admin control panel</div>
             </div>
         </div>
@@ -178,7 +178,7 @@ td{padding:.6rem .85rem;vertical-align:middle;}
 
     <div class="page-header fade-in">
         <h1>Manage operators</h1>
-        <p>Master list of Liverpool RAYNET operators — callsigns, roles, statuses, login credentials and admin flags.</p>
+        <p>Master list of {{ \App\Helpers\RaynetSetting::groupName() }} operators — callsigns, roles, statuses, login credentials and admin flags.</p>
     </div>
 
     @if (session('status'))

@@ -17,7 +17,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Name *</label>
-                    <input type="text" name="name" value="{{ old('name', $network->name) }}" required placeholder="e.g. Liverpool RAYNET Calling">
+                    <input type="text" name="name" value="{{ old('name', $network->name) }}" required placeholder="e.g. {{ \App\Helpers\RaynetSetting::groupName() }} Calling">
                 </div>
                 <div class="form-group">
                     <label>Type *</label>

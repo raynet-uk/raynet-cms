@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Training & LMS')
 @section('content')
 <style>
@@ -53,7 +53,7 @@ body{font-family:var(--font);background:var(--grey);color:var(--text);}
         <div class="lms-brand">
             <div class="lms-logo">RAY<br>NET</div>
             <div>
-                <div class="lms-title">Liverpool RAYNET</div>
+                <div class="lms-title">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="lms-sub">Training &amp; LMS</div>
             </div>
         </div>

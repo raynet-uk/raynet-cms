@@ -111,7 +111,7 @@ body { background:var(--light); color:var(--text); font-family:var(--font); font
         <div class="brand">
             <div class="brand-badge">📻</div>
             <div>
-                <div class="brand-name">Liverpool RAYNET</div>
+                <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="brand-sub">members' portal</div>
             </div>
         </div>

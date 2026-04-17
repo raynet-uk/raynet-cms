@@ -448,7 +448,7 @@ body {
                             <div class="cap-dot" style="background:var(--navy);"></div>
                             <div>
                                 <div class="cap-item-title">Practical Field Exercises</div>
-                                <div class="cap-item-desc">Hands-on deployments across Merseyside: rapid setup, portable ops, navigation, team coordination.</div>
+                                <div class="cap-item-desc">Hands-on deployments across {{ \App\Helpers\RaynetSetting::groupRegion() }}: rapid setup, portable ops, navigation, team coordination.</div>
                             </div>
                         </div>
                         <div class="cap-item">

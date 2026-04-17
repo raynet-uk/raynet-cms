@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('operator_roles', function (Blueprint $table) {
+        if (!Schema::hasTable('operator_roles')) Schema::create('operator_roles', function (Blueprint $table) {
             $table->id();
             $table->string('name');              // Human label – e.g. Group Controller
             $table->string('slug')->unique();    // Internal key – e.g. group-controller

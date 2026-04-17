@@ -27,7 +27,7 @@ return new class extends Migration
             // Fall through — will try bigint
         }
 
-        Schema::create('event_documents', function (Blueprint $table) use ($eventsIdType) {
+        if (!Schema::hasTable('event_documents')) Schema::create('event_documents', function (Blueprint $table) use ($eventsIdType) {
 
             $table->id(); // bigint auto-increment — always fine for this table's own PK
 

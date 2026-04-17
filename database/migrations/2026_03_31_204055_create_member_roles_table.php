@@ -7,7 +7,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('member_roles')) Schema::create('member_roles', function (Blueprint $table) {
+        if (!Schema::hasTable('member_roles')) if (!Schema::hasTable('member_roles')) Schema::create('member_roles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('sort_order')->default(0);

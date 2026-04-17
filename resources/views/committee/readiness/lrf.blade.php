@@ -130,12 +130,12 @@
         <span style="font-size:11px; color:#9ca3af;">Companion note to the Readiness Index</span>
     </div>
     <div class="committee-panel__body" style="font-size:13px; line-height:1.8; color:#374151;">
-        <p><strong>Purpose</strong> — Liverpool RAYNET is a volunteer auxiliary communications capability based in Liverpool and intended to support local resilience partners with disciplined communications, message handling, and liaison tasks where primary systems are degraded, overloaded, or temporarily unavailable.</p>
-        <p><strong>Likely role</strong> — The model is weighted towards the tasks Liverpool RAYNET is most likely to perform credibly: rapid local mobilisation within the Liverpool footprint; short-notice deployment of trained operators; temporary links between sites; formal traffic handling and logs; and support to rendezvous points, welfare centres, local authority coordination points, and similar defined locations.</p>
+        <p><strong>Purpose</strong> — {{ \App\Helpers\RaynetSetting::groupName() }} is a volunteer auxiliary communications capability based in Liverpool and intended to support local resilience partners with disciplined communications, message handling, and liaison tasks where primary systems are degraded, overloaded, or temporarily unavailable.</p>
+        <p><strong>Likely role</strong> — The model is weighted towards the tasks {{ \App\Helpers\RaynetSetting::groupName() }} is most likely to perform credibly: rapid local mobilisation within the Liverpool footprint; short-notice deployment of trained operators; temporary links between sites; formal traffic handling and logs; and support to rendezvous points, welfare centres, local authority coordination points, and similar defined locations.</p>
         <p><strong>Assurance method</strong> — The readiness score is evidence-based. High scores require named operators, recent test dates, current records, and proof under exercise or operational conditions. Low scores should be read as improvement priorities rather than as marketing problems.</p>
         <p><strong>Operating boundaries</strong> — This remains a volunteer capability. Availability depends on member turnout, safety, access, transport, power, internet conditions, and the clarity of the task requested.</p>
         <p style="background:#fef9c3; padding:10px 14px; border-radius:6px; border-left:3px solid #fde68a;">
-            <strong>Important caveat:</strong> This summary is deliberately conservative. It should be published with scope, time-to-deploy, duration sustainable, and clear operating assumptions. Liverpool RAYNET is an auxiliary volunteer capability and should not be described as a substitute for statutory primary systems.
+            <strong>Important caveat:</strong> This summary is deliberately conservative. It should be published with scope, time-to-deploy, duration sustainable, and clear operating assumptions. {{ \App\Helpers\RaynetSetting::groupName() }} is an auxiliary volunteer capability and should not be described as a substitute for statutory primary systems.
         </p>
     </div>
 </div>

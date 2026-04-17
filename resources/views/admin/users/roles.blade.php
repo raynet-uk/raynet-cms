@@ -1,12 +1,12 @@
 {{-- resources/views/admin/users/roles.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Role Management — Admin')
 
 @section('content')
 <style>
 /* ═══════════════════════════════════════════════════
-   ROLE MANAGEMENT — Liverpool RAYNET
+   ROLE MANAGEMENT — {{ \App\Helpers\RaynetSetting::groupName() }}
    Brand: Navy #003366 · Red #C8102E · Grey #F2F2F2
 ═══════════════════════════════════════════════════ */
 :root {

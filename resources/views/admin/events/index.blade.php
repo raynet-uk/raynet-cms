@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Manage Events')
 
@@ -587,7 +587,7 @@ td.td-actions { text-align: right; white-space: nowrap; padding-right: .9rem; }
         <div class="rn-brand">
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div>
-                <div class="rn-org">Liverpool RAYNET</div>
+                <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="rn-sub">Admin · Events</div>
             </div>
         </div>

@@ -82,7 +82,7 @@
         <!-- FOOTER -->
         <tr>
           <td style="background:#003366;border-radius:0 0 8px 8px;padding:20px 40px;text-align:center;">
-            <p style="margin:0;font-size:13px;color:#aac4e0;">{{ \App\Helpers\RaynetSetting::groupName() }} · 10/ME/179/ · <a href="https://{{ \App\Helpers\RaynetSetting::siteUrl() }}" style="color:#ffffff;">{{ \App\Helpers\RaynetSetting::siteUrl() }}</a></p>
+            <p style="margin:0;font-size:13px;color:#aac4e0;">{{ \App\Helpers\RaynetSetting::groupName() }} · {{ \App\Helpers\RaynetSetting::groupNumber() }}/ · <a href="https://{{ \App\Helpers\RaynetSetting::siteUrl() }}" style="color:#ffffff;">{{ \App\Helpers\RaynetSetting::siteUrl() }}</a></p>
             <p style="margin:6px 0 0;font-size:12px;color:#6a8faf;">This email was automatically generated from a website form submission.</p>
           </td>
         </tr>

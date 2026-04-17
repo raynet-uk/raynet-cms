@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             // Whether the member attended at least one event in the current
             // RAYNET year (1 Sep → 31 Aug). Reset to false on 1 September.
-            $table->boolean('attended_event_this_year')
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'attended_event_this_year')) { $table->boolean('attended_event_this_year')
                   ->default(false)
-                  ;
+                  ; }
 
             // Count of individual events attended in the current year.
             $table->unsignedSmallInteger('events_attended_this_year')
@@ -22,9 +22,9 @@ return new class extends Migration
 
             // Cumulative volunteering hours in the current year.
             // Sourced from the hours value on each attended event.
-            $table->decimal('volunteering_hours_this_year', 6, 1)
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'volunteering_hours_this_year')) { $table->decimal('volunteering_hours_this_year', 6, 1)
                   ->default(0)
-                  ->after('events_attended_this_year');
+                  ->after('events_attended_this_year'); }
         });
     }
 

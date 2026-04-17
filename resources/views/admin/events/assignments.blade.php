@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Event Crew — ' . $event->title)
 
@@ -536,7 +536,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
         <div class="rn-brand">
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div>
-                <div class="rn-org">Liverpool RAYNET</div>
+                <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="rn-sub">Admin · Event Crew Management</div>
             </div>
         </div>
@@ -1101,10 +1101,10 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
                     <div class="briefing-logo"><span style="font-size:14px;font-weight:bold;color:#fff;line-height:1.2;text-align:center;">RAY<br>NET</span></div>
                     <div>
                         <div class="briefing-h1">{{ $event->title }}</div>
-                        <div class="briefing-h2">Liverpool RAYNET Group · Operator Briefing Sheet{{ $event->starts_at ? ' · '.$event->starts_at->format('D j M Y') : '' }}</div>
+                        <div class="briefing-h2">{{ \App\Helpers\RaynetSetting::groupName() }} Group · Operator Briefing Sheet{{ $event->starts_at ? ' · '.$event->starts_at->format('D j M Y') : '' }}</div>
                     </div>
                     <div style="margin-left:auto;text-align:right;font-size:11px;color:rgba(255,255,255,.55);">
-                        Group Ref: 10/ME/179<br>
+                        Group Ref: {{ \App\Helpers\RaynetSetting::groupNumber() }}<br>
                         Printed: {{ now()->format('j M Y H:i') }}<br>
                         RESTRICTED — MEMBERS ONLY
                     </div>
@@ -1355,7 +1355,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
 
             {{-- Global footer --}}
             <div style="padding:1rem 1.5rem;border-top:2px solid var(--grey-mid);text-align:center;font-size:10px;color:var(--text-muted);">
-                Liverpool RAYNET Group (10/ME/179) · Member of RAYNET-UK · This document is for authorised personnel only
+                {{ \App\Helpers\RaynetSetting::groupName() }} Group ({{ \App\Helpers\RaynetSetting::groupNumber() }}) · Member of RAYNET-UK · This document is for authorised personnel only
             </div>
         </div>
     </div>

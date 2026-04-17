@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Admin Login')
 @section('content')
 
@@ -188,7 +188,7 @@ body {
         <div class="login-header">
             <div class="login-brand-badge">📡</div>
             <div>
-                <div class="login-brand-name">Liverpool RAYNET</div>
+                <div class="login-brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="login-brand-sub">Admin Control Panel</div>
             </div>
         </div>

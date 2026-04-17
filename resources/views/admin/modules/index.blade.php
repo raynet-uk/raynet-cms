@@ -1,5 +1,5 @@
 {{-- resources/views/admin/modules/index.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Module Manager')
 @section('content')
 

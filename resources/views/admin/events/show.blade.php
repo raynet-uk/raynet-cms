@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', $event->title)
 
@@ -11,7 +11,7 @@
 
     <h1>{{ $event->title }}</h1>
     <p style="margin-top:0.4rem; color:#9ca3af; max-width:40rem;">
-        Operational view of a Liverpool RAYNET activity – timing, location and key details.
+        Operational view of a {{ \App\Helpers\RaynetSetting::groupName() }} activity – timing, location and key details.
     </p>
 
     <div style="margin-top:1.2rem; padding:1rem 1.2rem; border-radius:0.8rem;

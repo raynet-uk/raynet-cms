@@ -8,7 +8,7 @@
             <span style="color:white;font-weight:900;font-size:18px;letter-spacing:2px;">RAY<br>NET</span>
         </div>
         <h1 style="color:white;font-size:22px;font-weight:700;margin:0;">DMR Network Dashboard</h1>
-        <p style="color:#aac4e8;font-size:13px;margin-top:6px;">Liverpool RAYNET &middot; Zone 10 &middot; Merseyside</p>
+        <p style="color:#aac4e8;font-size:13px;margin-top:6px;">{{ \App\Helpers\RaynetSetting::groupName() }} &middot; {{ \App\Helpers\RaynetSetting::groupRegion() }} &middot; {{ \App\Helpers\RaynetSetting::groupRegion() }}</p>
     </div>
 
     <div style="background:white;padding:32px;border-radius:0 0 12px 12px;border:1px solid #e2e8f0;border-top:none;box-shadow:0 4px 16px rgba(0,40,100,0.08);">

@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('alert_statuses', function (Blueprint $table) {
+        if (!Schema::hasTable('alert_statuses')) Schema::create('alert_statuses', function (Blueprint $table) {
             $table->id();
             $table->unsignedTinyInteger('level')->default(5); // 1–5
             $table->string('headline')->nullable();

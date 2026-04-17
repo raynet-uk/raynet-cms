@@ -390,7 +390,7 @@
 <div class="top-bar fade-in">
     <div class="top-bar-logo"><span>RAY<br>NET</span></div>
     <div class="top-bar-title">
-        <div class="top-bar-org">Liverpool RAYNET</div>
+        <div class="top-bar-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
         <div class="top-bar-sub">Operator Brief</div>
     </div>
     <div class="top-bar-status">
@@ -902,7 +902,7 @@
 
 {{-- FOOTER --}}
 <div class="page-footer fade-in">
-    Liverpool RAYNET Group (10/ME/179) · Member of RAYNET-UK<br>
+    {{ \App\Helpers\RaynetSetting::groupName() }} Group ({{ \App\Helpers\RaynetSetting::groupNumber() }}) · Member of RAYNET-UK<br>
     This page is for authorised personnel only · {{ now()->format('j M Y') }}
 </div>
 

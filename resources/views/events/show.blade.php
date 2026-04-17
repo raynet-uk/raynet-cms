@@ -4,6 +4,7 @@
 
 @section('content')
 
+
 <style>
 :root {
     --navy:   #003366;
@@ -229,7 +230,7 @@ a:hover { text-decoration: underline; }
     <div class="rn-masthead-brand">
         <div class="rn-logo-mark">RAY<br>NET</div>
         <div>
-            <div class="rn-masthead-title">Liverpool RAYNET</div>
+            <div class="rn-masthead-title">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
             <div class="rn-masthead-sub">Events Calendar</div>
         </div>
     </div>

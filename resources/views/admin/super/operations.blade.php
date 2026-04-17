@@ -1,7 +1,7 @@
 {{-- resources/views/admin/super/operations.blade.php --}}
 {{-- Route: GET /admin/super/operations  name: admin.super.operations --}}
 {{-- Middleware: auth, verified, role:super-admin --}}
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Operations Centre — Super Admin')
 
@@ -325,7 +325,7 @@ $alertMeta   = $alertStatus?->meta();
     <div class="ops-head-inner">
         <div>
             <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.16em;margin-bottom:.35rem;">
-                Super Admin · Liverpool RAYNET · Group 10/ME/179
+                Super Admin · {{ \App\Helpers\RaynetSetting::groupName() }} · Group {{ \App\Helpers\RaynetSetting::groupNumber() }}
             </div>
             <div class="ops-title">⚡ Operations Centre</div>
             <div class="ops-sub">Live group status · Readiness · Command tools</div>
@@ -739,7 +739,7 @@ $alertMeta   = $alertStatus?->meta();
                     <span class="ops-link-icon">⛈</span> Met Office
                 </a>
                 <a href="https://www.merseysidefire.gov.uk" target="_blank" class="ops-link">
-                    <span class="ops-link-icon">🚒</span> Merseyside Fire
+                    <span class="ops-link-icon">🚒</span> {{ \App\Helpers\RaynetSetting::groupRegion() }} Fire
                 </a>
                 <a href="https://www.qrz.com" target="_blank" class="ops-link">
                     <span class="ops-link-icon">📻</span> QRZ Lookup

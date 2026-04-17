@@ -10,7 +10,7 @@ return new class extends Migration {
         // In dev I don't care about nuking test data: drop and recreate.
         Schema::dropIfExists('operators');
 
-        Schema::create('operators', function (Blueprint $table) {
+        if (!Schema::hasTable('operators')) Schema::create('operators', function (Blueprint $table) {
             $table->id();
 
             // Core identity

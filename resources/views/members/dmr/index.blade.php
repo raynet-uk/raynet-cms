@@ -153,7 +153,7 @@
             <div class="dmr-brand">
                 <div class="dmr-brand-badge">RAY<br>NET</div>
                 <div>
-                    <div class="dmr-brand-name">Liverpool RAYNET</div>
+                    <div class="dmr-brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                     <div class="dmr-brand-sub">DMR Network Monitor</div>
                 </div>
             </div>

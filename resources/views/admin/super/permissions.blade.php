@@ -1,5 +1,5 @@
 {{-- resources/views/admin/super/permissions.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Permission Management — Super Admin')
 

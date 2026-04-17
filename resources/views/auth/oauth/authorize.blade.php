@@ -192,7 +192,7 @@
         {{-- Warning for non-RAYNET domains --}}
         @php
             $redirectHost = parse_url(is_array($client->redirect_uris ?? null) ? $client->redirect_uris[0] ?? '' : ($client->redirect ?? ''), PHP_URL_HOST);
-            $trusted = in_array($redirectHost, ['raynet-liverpool.net', 'localhost', '127.0.0.1']);
+            $trusted = in_array($redirectHost, ['{{ \App\Helpers\RaynetSetting::siteUrl() }}', 'localhost', '127.0.0.1']);
         @endphp
         @unless($trusted)
         <div class="warning-strip">

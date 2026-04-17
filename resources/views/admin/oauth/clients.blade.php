@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'SSO — OAuth Clients')
 
 @section('content')
@@ -73,7 +73,7 @@ input[type=text]:focus,input[type=url]:focus,textarea:focus{border-color:var(--n
     <div class="oa-header">
         <div>
             <div class="oa-title">🔐 SSO — OAuth 2.0 Clients</div>
-            <div class="oa-sub">Manage applications that can authenticate against the Liverpool RAYNET portal</div>
+            <div class="oa-sub">Manage applications that can authenticate against the {{ \App\Helpers\RaynetSetting::groupName() }} portal</div>
         </div>
         <button class="btn btn-navy" onclick="document.getElementById('newClientForm').classList.toggle('open')">
             + Register new client

@@ -167,7 +167,7 @@
                 </td>
                 <td style="padding-left:16px;">
                     <p class="hdr-org" style="font-size:15px;font-weight:bold;color:#ffffff;letter-spacing:.04em;text-transform:uppercase;margin:0;">{{ \App\Helpers\RaynetSetting::groupName() }}</p>
-                    <p class="hdr-sub" style="font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.06em;margin:3px 0 0;">Group Reference 10/ME/179</p>
+                    <p class="hdr-sub" style="font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.06em;margin:3px 0 0;">Group Reference {{ \App\Helpers\RaynetSetting::groupNumber() }}</p>
                 </td>
             </tr>
             </table>
@@ -414,7 +414,7 @@
     {{-- FOOTER --}}
     <tr><td class="email-footer" style="background:#001f40;padding:20px 32px;">
         <p class="footer-line" style="font-size:11px;color:rgba(255,255,255,.4);margin:0 0 4px;line-height:1.5;">
-            {{ \App\Helpers\RaynetSetting::groupName() }} Group · Group Reference 10/ME/179 · Member of RAYNET-UK
+            {{ \App\Helpers\RaynetSetting::groupName() }} Group · Group Reference {{ \App\Helpers\RaynetSetting::groupNumber() }} · Member of RAYNET-UK
         </p>
         <p class="footer-line" style="font-size:11px;color:rgba(255,255,255,.4);margin:0 0 4px;line-height:1.5;">
             This email was sent to {{ $user->email }} because you are assigned to {{ $event->title }}.

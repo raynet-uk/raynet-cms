@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Core Health')
 @section('content')
 <div style="max-width:900px;margin:0 auto;padding:2rem 1rem;font-family:inherit">

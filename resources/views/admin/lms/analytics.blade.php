@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Analytics: ' . $course->title)
 @section('content')
 <style>

@@ -470,7 +470,7 @@ function makeDefaultBlock(type) {
         'two-col':  { left:'<p>Left column content.</p>', right:'<p>Right column content.</p>', gap:'2rem' },
         'three-col':{ col1:'<p>Column one.</p>', col2:'<p>Column two.</p>', col3:'<p>Column three.</p>' },
         alert:      { message:'<strong>Note:</strong> Alert message here.', style:'info' },
-        cta:        { title:'Ready to get involved?', subtitle:'Join Liverpool RAYNET today.', button_text:'Get Started', button_url:'/register', bg:'#f4f5f7' },
+        cta:        { title:'Ready to get involved?', subtitle:'Join {{ \App\Helpers\RaynetSetting::groupName() }} today.', button_text:'Get Started', button_url:'/register', bg:'#f4f5f7' },
         divider:    { style:'solid', color:'#dde2e8' },
         image:      { src:'', alt:'', caption:'', align:'center' },
         html:       { content:'<div>\n  <!-- Your HTML here -->\n</div>' },

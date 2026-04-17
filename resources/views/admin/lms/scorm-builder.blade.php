@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title','SCORM Course Builder')
 @section('content')
 <style>
@@ -419,7 +419,7 @@ body{font-family:var(--f);background:var(--grey);color:var(--text);}
     <div class="sb-logo">RAY<br>NET</div>
     <div>
       <div class="sb-title">SCORM Builder</div>
-      <div class="sb-sub">Liverpool RAYNET · Drag &amp; Drop Course Creator</div>
+      <div class="sb-sub">{{ \App\Helpers\RaynetSetting::groupName() }} · Drag &amp; Drop Course Creator</div>
     </div>
   </div>
   <div class="sb-actions">
@@ -544,7 +544,7 @@ const SLIDE_ICONS = {
 };
 
 const DEFAULT_SLIDES = {
-  hero:    { type:'hero',    label:'Hero',    eyebrow:'Liverpool RAYNET · Training', title:'Course Title', subtitle:'Subtitle Here', description:'A brief description of this module.' },
+  hero:    { type:'hero',    label:'Hero',    eyebrow:'{{ \App\Helpers\RaynetSetting::groupName() }} · Training', title:'Course Title', subtitle:'Subtitle Here', description:'A brief description of this module.' },
   text:    { type:'text',    label:'Text',    tag:'Section 01', title:'Section Title', body:'Enter your text content here.\n\nYou can use multiple paragraphs.' },
   cards:   { type:'cards',   label:'Cards',   tag:'Key Points', title:'Key Concepts', lead:'Overview of the main concepts covered.', cards:[
     {icon:'📡',title:'Point One',body:'Description of the first key point.'},

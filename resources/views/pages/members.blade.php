@@ -1155,7 +1155,7 @@ body {
                         </div>
                         <div class="condx-tile" style="grid-column:span 2;">
                             <div class="condx-tile-icon">📍</div>
-                            <div class="condx-tile-label">Local (Merseyside)</div>
+                            <div class="condx-tile-label">Local ({{ \App\Helpers\RaynetSetting::groupRegion() }})</div>
                             <div class="condx-tile-value" id="local-values">Loading…</div>
                         </div>
                     </div>
@@ -1224,7 +1224,7 @@ async function loadPropagationBrief() {
 
             const solarGeo = text.match(/Solar\/Geo:([^H]*)HF:/);
             const hfMatch  = text.match(/MUF ([\d.]+).*; LUF ([\d.]+)/);
-            const localMatch = text.match(/Merseyside:([\s\S]*)$/);
+            const localMatch = text.match(/{{ \App\Helpers\RaynetSetting::groupRegion() }}:([\s\S]*)$/);
             const idxMatch = text.match(/SFI (\d+).*?A (\d+).*?K (\d+).*?X-ray ([A-Z])/);
 
             tSolarGeo.textContent = solarGeo ? solarGeo[1].trim() : 'N/A';

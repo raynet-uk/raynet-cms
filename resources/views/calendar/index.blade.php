@@ -223,7 +223,7 @@ body { background: var(--grey); color: var(--text); font-family: var(--font); fo
         <div class="rn-brand">
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div>
-                <div class="rn-org">Liverpool RAYNET</div>
+                <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="rn-sub">Events Calendar</div>
             </div>
         </div>

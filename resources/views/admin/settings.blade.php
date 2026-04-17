@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Admin Settings')
 @section('content')
 
@@ -59,14 +59,14 @@
                         <label class="as-label" for="group_name">Group Name</label>
                         <input type="text" id="group_name" name="group_name" class="as-input"
                                value="{{ old('group_name', \App\Models\Setting::get('group_name', '')) }}"
-                               placeholder="e.g. Liverpool RAYNET" maxlength="80">
+                               placeholder="e.g. {{ \App\Helpers\RaynetSetting::groupName() }}" maxlength="80">
                         <div class="as-hint">Appears throughout the site, emails and footer.</div>
                     </div>
                     <div class="as-field">
                         <label class="as-label" for="site_name">Site Name</label>
                         <input type="text" id="site_name" name="site_name" class="as-input"
                                value="{{ old('site_name', \App\Models\Setting::get('site_name', '')) }}"
-                               placeholder="e.g. Liverpool RAYNET" maxlength="80">
+                               placeholder="e.g. {{ \App\Helpers\RaynetSetting::groupName() }}" maxlength="80">
                         <div class="as-hint">Used in browser title and emails. Usually same as group name.</div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                         <label class="as-label" for="group_number">Group Number</label>
                         <input type="text" id="group_number" name="group_number" class="as-input"
                                value="{{ old('group_number', \App\Models\Setting::get('group_number', '')) }}"
-                               placeholder="e.g. 10/ME/179" maxlength="20">
+                               placeholder="e.g. {{ \App\Helpers\RaynetSetting::groupNumber() }}" maxlength="20">
                     </div>
                     <div class="as-field">
                         <label class="as-label" for="group_callsign">Group Callsign</label>
@@ -89,7 +89,7 @@
                         <label class="as-label" for="raynet_zone">RAYNET Zone</label>
                         <input type="text" id="raynet_zone" name="raynet_zone" class="as-input"
                                value="{{ old('raynet_zone', \App\Models\Setting::get('raynet_zone', '')) }}"
-                               placeholder="e.g. Zone 10" maxlength="20">
+                               placeholder="e.g. {{ \App\Helpers\RaynetSetting::groupRegion() }}" maxlength="20">
                     </div>
                 </div>
 
@@ -98,7 +98,7 @@
                         <label class="as-label" for="group_region">Region / Area</label>
                         <input type="text" id="group_region" name="group_region" class="as-input"
                                value="{{ old('group_region', \App\Models\Setting::get('group_region', '')) }}"
-                               placeholder="e.g. Merseyside" maxlength="80">
+                               placeholder="e.g. {{ \App\Helpers\RaynetSetting::groupRegion() }}" maxlength="80">
                         <div class="as-hint">Used in footers and emails.</div>
                     </div>
                     <div class="as-field">

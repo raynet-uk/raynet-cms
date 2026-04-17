@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Notifications — Admin')
 @section('content')
 
@@ -537,7 +537,7 @@ body { font-family: var(--sans); background: var(--grey); color: var(--text); fo
         <div class="rn-brand">
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div class="rn-brand-text">
-                <div class="rn-org">Liverpool RAYNET</div>
+                <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="rn-sub">Admin · Notifications</div>
             </div>
         </div>

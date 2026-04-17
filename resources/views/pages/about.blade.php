@@ -306,7 +306,7 @@ body {
         <div class="stat-card">
             <div class="stat-label">Group Ref</div>
             <div class="stat-value">179</div>
-            <div class="stat-sub">Zone 10 · {{ \App\Helpers\RaynetSetting::groupRegion() }}</div>
+            <div class="stat-sub">{{ \App\Helpers\RaynetSetting::groupRegion() }} · {{ \App\Helpers\RaynetSetting::groupRegion() }}</div>
         </div>
         <div class="stat-card">
             <div class="stat-label">Members</div>
@@ -333,7 +333,7 @@ body {
                 <div class="card-body">
                     <p>RAYNET-UK is the national voluntary communications service provided by licensed radio amateurs, formed in 1953 after severe East Coast flooding to organise amateur radio resources for emergencies.</p>
                     <p>Registered with Ofcom and working closely with police, ambulance, fire &amp; rescue, local authorities, and voluntary agencies, RAYNET supplies resilient communications when normal systems fail or become overwhelmed.</p>
-                    <p>{{ \App\Helpers\RaynetSetting::groupName() }} (Group {{ \App\Helpers\RaynetSetting::groupNumber() }}) is one of many groups in Zone 10, serving {{ \App\Helpers\RaynetSetting::groupRegion() }} and surrounding areas with trained volunteers and self-sufficient equipment.</p>
+                    <p>{{ \App\Helpers\RaynetSetting::groupName() }} (Group {{ \App\Helpers\RaynetSetting::groupNumber() }}) is one of many groups in {{ \App\Helpers\RaynetSetting::groupRegion() }}, serving {{ \App\Helpers\RaynetSetting::groupRegion() }} and surrounding areas with trained volunteers and self-sufficient equipment.</p>
                 </div>
             </div>
 

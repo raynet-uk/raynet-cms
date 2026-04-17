@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Dashboard')
 
 @section('content')
@@ -262,7 +262,7 @@
     <div class="welcome-panel__head">
         <div class="welcome-panel__title">
             <div class="welcome-panel__logo"><span>RAY<br>NET</span></div>
-            Welcome to Liverpool RAYNET Admin
+            Welcome to {{ \App\Helpers\RaynetSetting::groupName() }} Admin
         </div>
         <div class="welcome-panel__date">{{ now()->format('l, d F Y · H:i') }}</div>
     </div>
@@ -562,7 +562,7 @@
                     <div class="brand-grid" style="margin-bottom:.85rem">
                         <div class="brand-field">
                             <label>Group Name</label>
-                            <input type="text" name="branding[group_name]" value="{{ \App\Models\Setting::get('branding_group_name', 'Liverpool RAYNET') }}" placeholder="e.g. Liverpool RAYNET">
+                            <input type="text" name="branding[group_name]" value="{{ \App\Models\Setting::get('branding_group_name', \App\Helpers\RaynetSetting::groupName()) }}" placeholder="e.g. {{ \App\Helpers\RaynetSetting::groupName() }}">
                             <div class="hint">Displayed in the site header and emails</div>
                         </div>
                         <div class="brand-field">
@@ -577,7 +577,7 @@
                         </div>
                         <div class="brand-field">
                             <label>Contact Email</label>
-                            <input type="email" name="branding[contact_email]" value="{{ \App\Models\Setting::get('branding_contact_email', '') }}" placeholder="e.g. info@raynet-liverpool.net">
+                            <input type="email" name="branding[contact_email]" value="{{ \App\Models\Setting::get('branding_contact_email', '') }}" placeholder="e.g. info@{{ \App\Helpers\RaynetSetting::siteUrl() }}">
                             <div class="hint">Shown on public-facing pages</div>
                         </div>
                         <div class="brand-field">
@@ -587,7 +587,7 @@
                         </div>
                         <div class="brand-field">
                             <label>Site URL</label>
-                            <input type="url" name="branding[site_url]" value="{{ \App\Models\Setting::get('branding_site_url', config('app.url')) }}" placeholder="https://raynet-liverpool.net">
+                            <input type="url" name="branding[site_url]" value="{{ \App\Models\Setting::get('branding_site_url', config('app.url')) }}" placeholder="{{ \App\Helpers\RaynetSetting::siteUrl() }}">
                             <div class="hint">Canonical URL used in emails and feeds</div>
                         </div>
                     </div>

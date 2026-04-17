@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', $course ? 'Build: ' . $course->title : 'New Course')
 @section('content')
 <style>
@@ -300,7 +300,7 @@ $csrf       = csrf_token();
     <div style="width:100%;max-width:620px;">
         <div style="background:var(--navy);border-bottom:4px solid var(--red);padding:28px 32px 24px;position:relative;overflow:hidden;">
             <div style="position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:rgba(200,16,46,.07);pointer-events:none;"></div>
-            <div style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.35);margin-bottom:14px;">Liverpool RAYNET · LMS · Course Builder</div>
+            <div style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.35);margin-bottom:14px;">{{ \App\Helpers\RaynetSetting::groupName() }} · LMS · Course Builder</div>
             <div style="font-size:22px;font-weight:bold;color:#fff;text-transform:uppercase;letter-spacing:.05em;line-height:1.15;margin-bottom:8px;">Create New Course</div>
             <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.65;">Build a structured training course with modules, quizzes, certificates and badge awards.</div>
         </div>
@@ -373,7 +373,7 @@ $csrf       = csrf_token();
                 </div>
             </form>
         </div>
-        <div style="text-align:center;padding:14px 0;font-size:10px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.12em;">Liverpool RAYNET Training Portal</div>
+        <div style="text-align:center;padding:14px 0;font-size:10px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.12em;">{{ \App\Helpers\RaynetSetting::groupName() }} Training Portal</div>
     </div>
 </div>
 

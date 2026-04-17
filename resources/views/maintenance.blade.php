@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Maintenance — Liverpool RAYNET</title>
+    <title>Maintenance — {{ \App\Helpers\RaynetSetting::groupName() }}</title>
     <style>
         :root {
             --navy:  #003366; --navy-2: #002244; --navy-3: #001428; --navy-4: #000d1a;
@@ -311,11 +311,11 @@
 <div class="shell">
 
     <div class="top-bar">
-        <img class="logo-img" src="/images/raynet-uk-liverpool-banner.png" alt="Liverpool RAYNET"
+        <img class="logo-img" src="/images/raynet-uk-liverpool-banner.png" alt="{{ \App\Helpers\RaynetSetting::groupName() }}"
              onerror="this.style.display='none';document.getElementById('logo-fb').style.display='flex';">
         <div id="logo-fb" class="logo-fallback">
             <div class="logo-block"><span>RAY<br>NET</span></div>
-            <div><div class="logo-name">Liverpool RAYNET</div><div class="logo-sub">Members Portal</div></div>
+            <div><div class="logo-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div><div class="logo-sub">Members Portal</div></div>
         </div>
         <div class="top-right">
             <div class="utc-block">
@@ -344,7 +344,7 @@
             @endif
 
             <p class="message-text">
-                {{ $message ?: 'The Liverpool RAYNET Members Portal is currently undergoing scheduled maintenance. All services will be restored as soon as possible. We apologise for any inconvenience caused.' }}
+                {{ $message ?: 'The {{ \App\Helpers\RaynetSetting::groupName() }} Members Portal is currently undergoing scheduled maintenance. All services will be restored as soon as possible. We apologise for any inconvenience caused.' }}
             </p>
 
             <div class="chips">
@@ -353,7 +353,7 @@
                 @if(!empty($maintContact))
                 <div class="chip c-amber"><span class="chip-dot"></span>Support Available</div>
                 @endif
-                <div class="chip c-grey"><span class="chip-dot"></span>Group 10/ME/179</div>
+                <div class="chip c-grey"><span class="chip-dot"></span>Group {{ \App\Helpers\RaynetSetting::groupNumber() }}</div>
                 <div class="chip c-grey"><span class="chip-dot"></span>{{ AppHelpersRaynetSetting::groupRegion() }}</div>
             </div>
 
@@ -476,10 +476,10 @@
 
     <div class="footer">
         <div class="footer-left">
-            Liverpool RAYNET &nbsp;·&nbsp; Volunteer Emergency Communications &nbsp;·&nbsp; Affiliated to RAYNET-UK
+            {{ \App\Helpers\RaynetSetting::groupName() }} &nbsp;·&nbsp; Volunteer Emergency Communications &nbsp;·&nbsp; Affiliated to RAYNET-UK
         </div>
         <div class="footer-stats">
-            <div class="f-stat"><div class="f-val">10/ME/179</div><div class="f-lbl">Group Ref</div></div>
+            <div class="f-stat"><div class="f-val">{{ \App\Helpers\RaynetSetting::groupNumber() }}</div><div class="f-lbl">Group Ref</div></div>
             <div class="footer-vsep"></div>
             <div class="f-stat"><div class="f-val">{{ AppHelpersRaynetSetting::groupRegion() }}</div><div class="f-lbl">Area</div></div>
             <div class="footer-vsep"></div>

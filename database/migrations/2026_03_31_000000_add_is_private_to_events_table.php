@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            $table->boolean('is_private')->default(false);
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('events', 'is_private')) { $table->boolean('is_private')->default(false); }
         });
 
         // Backfill: rows where is_public = 0 were already "private",

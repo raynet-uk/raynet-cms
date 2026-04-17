@@ -12,7 +12,7 @@ return new class extends Migration
             // Flags a user as a brand-new registration awaiting admin approval.
             // Completely separate from pending_callsign which is used for
             // callsign-change requests on already-active accounts.
-            $table->boolean('registration_pending')->default(false);
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'registration_pending')) { $table->boolean('registration_pending')->default(false); }
         });
     }
 

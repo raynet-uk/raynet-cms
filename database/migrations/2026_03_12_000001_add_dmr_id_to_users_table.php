@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             // Stored as a string — DMR IDs are numeric but we never do
             // arithmetic on them, and leading-zero edge cases are avoided.
-            $table->string('dmr_id', 20)->nullable();
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'dmr_id')) { $table->string('dmr_id', 20)->nullable(); }
         });
     }
 

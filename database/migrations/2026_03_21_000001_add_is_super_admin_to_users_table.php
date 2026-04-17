@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_super_admin')->default(false);
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'is_super_admin')) { $table->boolean('is_super_admin')->default(false); }
         });
     }
 

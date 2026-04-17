@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Activity Logs — Admin')
 @section('content')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
@@ -221,7 +221,7 @@ body{font-family:var(--font);background:var(--grey);color:var(--text);font-size:
         <div class="rn-brand">
             <div class="rn-logo-block"><span>RAY<br>NET</span></div>
             <div>
-                <div class="rn-org">Liverpool RAYNET</div>
+                <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="rn-sub">Admin · Activity &amp; Hours Analytics</div>
             </div>
         </div>

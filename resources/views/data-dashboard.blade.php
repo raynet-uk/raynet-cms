@@ -416,7 +416,7 @@ body { background: var(--bg); font-family: Arial, 'Helvetica Neue', Helvetica, s
     <div class="brand">
         <div class="brand-logo">RAY<br>NET</div>
         <div>
-            <div class="brand-name">Liverpool RAYNET</div>
+            <div class="brand-name">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
             <div class="brand-sub">{{ \App\Helpers\RaynetSetting::groupNumber() }}</div>
         </div>
     </div>
@@ -603,7 +603,7 @@ body { background: var(--bg); font-family: Arial, 'Helvetica Neue', Helvetica, s
                     <div class="prop-section">
                         <div class="prop-section-header">
                             <span class="prop-section-icon">📍</span>
-                            <span class="prop-section-title">Merseyside / Zone 10 Note</span>
+                            <span class="prop-section-title">{{ \App\Helpers\RaynetSetting::groupRegion() }} / {{ \App\Helpers\RaynetSetting::groupRegion() }} Note</span>
                         </div>
                         <div class="prop-section-body">
                             40 m NVIS: Best 08:00–11:00 local; 60 m fallback 14:00–17:00.
@@ -851,7 +851,7 @@ function updatePropBrief(d) {
     const kp = parseFloat(d.kp);
     let vhfSummary = 'Troposcatter/ducting: depends on local pressure systems. ';
     vhfSummary += kp >= 4
-        ? `Auroral activity <strong>likely</strong> (Kp ${d.kp}) — VHF aurora may be workable on 2m/6m from Merseyside. `
+        ? `Auroral activity <strong>likely</strong> (Kp ${d.kp}) — VHF aurora may be workable on 2m/6m from {{ \App\Helpers\RaynetSetting::groupRegion() }}. `
         : `Auroral activity <strong>low</strong> (Kp ${d.kp}). `;
     vhfSummary += 'Standard repeater paths reliable for local RAYNET ops.';
     document.getElementById('briefVHF').innerHTML = vhfSummary;

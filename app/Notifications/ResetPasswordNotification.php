@@ -15,7 +15,7 @@ class ResetPasswordNotification extends ResetPassword
         ], false));
 
         return (new MailMessage)
-            ->subject('Reset your password — ' . \App\Helpers\RaynetSetting::groupName() Members\' Portal')
+            ->subject('Reset your password â ' . \App\Helpers\RaynetSetting::groupName() . ' Members Portal')
             ->view('emails.reset-password', [
                 'url'        => $url,
                 'notifiable' => $notifiable,

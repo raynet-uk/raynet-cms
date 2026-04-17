@@ -277,7 +277,7 @@ body { background: var(--grey); color: var(--text); font-family: var(--font); fo
         <div class="rn-brand">
             <div class="rn-logo"><span>RAY<br>NET</span></div>
             <div>
-                <div class="rn-org">Liverpool RAYNET</div>
+                <div class="rn-org">{{ \App\Helpers\RaynetSetting::groupName() }}</div>
                 <div class="rn-sub">{{ \App\Helpers\RaynetSetting::groupNumber() }}</div>
             </div>
         </div>
@@ -294,7 +294,7 @@ body { background: var(--grey); color: var(--text); font-family: var(--font); fo
         <div>
             <div class="page-eyebrow">Calendar</div>
             <div class="cal-month-name">{{ $currentMonth->format('F Y') }}</div>
-            <div class="cal-month-sub">Public training, exercises and event support for Liverpool RAYNET. Hover any event for details.</div>
+            <div class="cal-month-sub">Public training, exercises and event support for {{ \App\Helpers\RaynetSetting::groupName() }}. Hover any event for details.</div>
         </div>
         <div class="cal-controls">
             <div class="nav-grp">
