@@ -609,16 +609,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
         <div class="action-bar">
             <button class="btn btn-primary" onclick="openAddModal()">+ Assign Member</button>
 
-            @if (($stats['confirmed'] ?? 0) > 0 || ($stats['standby'] ?? 0) > 0)
-            <form method="POST" action="{{ route('admin.events.assignments.briefings', $event->id) }}" style="display:inline;">
-                @csrf
-                <button type="submit"
-                        onclick="return confirm('Send briefing emails to all confirmed/standby operators?')"
-                        class="btn btn-ghost">
-                    ✉ Send Briefings
-                </button>
-            </form>
-            @endif
+            <button class="btn btn-primary" onclick="document.getElementById('briefingModal').classList.add('open');">✉ Send Briefings</button>
 
             {{-- Duplicate crew from past event --}}
             @if (isset($pastEvents) && $pastEvents->isNotEmpty())
@@ -778,6 +769,8 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
 
                             <div class="ac-actions">
                                 <button class="btn btn-primary" onclick="openEditModal({{ $asgn->id }})">✏ Edit</button>
+                                <button class="btn btn-ghost" onclick="openSingleBriefingModal({{ $asgn->id }}, '{{ addslashes($asgn->user->name) }}');">✉ Briefing</button>
+                                <a href="{{ route('admin.events.assignments.briefing-pdf', $asgn->id) }}" class="btn btn-ghost" target="_blank">⬇ PDF</a>
                                 @if ($asgn->lat && $asgn->lng)
                                     <button class="btn btn-ghost" onclick="switchTab('map');setTimeout(function(){flyToMarker({{ $asgn->id }});},300)">🗺 Locate on Map</button>
                                 @endif
@@ -3099,3 +3092,70 @@ function printBriefing() {
         @endif
     </div>
 @endsection
+
+{{-- ════════════════ BULK BRIEFING MODAL ════════════════ --}}
+<div class="modal-backdrop" id="briefingModal" onclick="if(event.target===this)document.getElementById('briefingModal').classList.remove('open')">
+    <div class="modal" style="max-width:540px;">
+        <div class="modal-head">
+            <div class="modal-title">✉ Send Crew Briefings</div>
+            <button class="modal-close" onclick="document.getElementById('briefingModal').classList.remove('open')">✕</button>
+        </div>
+        <form method="POST" action="{{ route('admin.events.assignments.briefings-bulk', $event->id) }}">
+            @csrf
+            <div class="modal-body">
+                <div class="section-divider">Who to send to</div>
+                <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem;">
+                    <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="confirmed" checked style="accent-color:var(--navy);"> <span style="color:var(--green);font-weight:bold;">✓ Confirmed ({{ $stats['confirmed'] }})</span></label>
+                    <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="standby" checked style="accent-color:var(--navy);"> <span style="color:var(--amber);font-weight:bold;">⏳ Standby ({{ $stats['standby'] ?? 0 }})</span></label>
+                    <label style="display:flex;align-items:center;gap:.4rem;font-size:13px;cursor:pointer;"><input type="checkbox" name="statuses[]" value="pending" style="accent-color:var(--navy);"> <span style="color:var(--navy);font-weight:bold;">⋯ Pending ({{ $stats['pending'] }})</span></label>
+                </div>
+                <div class="section-divider">Optional message from Group Controller</div>
+                <div class="ff" style="margin-bottom:1rem;">
+                    <label>Custom message <small style="text-transform:none;letter-spacing:0;font-weight:normal;">(optional)</small></label>
+                    <textarea name="custom_message" rows="4" placeholder="e.g. Please ensure you have read the event plan before arriving..." style="width:100%;border:1px solid var(--grey-mid);padding:.5rem .7rem;font-family:var(--font);font-size:13px;resize:vertical;outline:none;"></textarea>
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);padding:.5rem .75rem;background:var(--grey);border:1px solid var(--grey-mid);">
+                    Each member receives a personalised email with their shifts, frequency, location and equipment list, plus a PDF briefing sheet attached.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" onclick="return confirm('Send briefing emails with PDF to selected crew?')">✉ Send Briefings</button>
+                <button type="button" class="btn btn-ghost" onclick="document.getElementById('briefingModal').classList.remove('open')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ════════════════ SINGLE BRIEFING MODAL ════════════════ --}}
+<div class="modal-backdrop" id="singleBriefingModal" onclick="if(event.target===this)document.getElementById('singleBriefingModal').classList.remove('open')">
+    <div class="modal" style="max-width:480px;">
+        <div class="modal-head">
+            <div class="modal-title">✉ Send Briefing — <span id="single-briefing-name"></span></div>
+            <button class="modal-close" onclick="document.getElementById('singleBriefingModal').classList.remove('open')">✕</button>
+        </div>
+        <form method="POST" id="singleBriefingForm">
+            @csrf
+            <div class="modal-body">
+                <div class="ff" style="margin-bottom:1rem;">
+                    <label>Custom message <small style="text-transform:none;letter-spacing:0;font-weight:normal;">(optional)</small></label>
+                    <textarea name="custom_message" rows="4" placeholder="Optional personal message for this operator..." style="width:100%;border:1px solid var(--grey-mid);padding:.5rem .7rem;font-family:var(--font);font-size:13px;resize:vertical;outline:none;"></textarea>
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);padding:.5rem .75rem;background:var(--grey);border:1px solid var(--grey-mid);">
+                    A personalised briefing email with PDF attachment will be sent to this operator.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">✉ Send Briefing</button>
+                <button type="button" class="btn btn-ghost" onclick="document.getElementById('singleBriefingModal').classList.remove('open')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openSingleBriefingModal(id, name) {
+    document.getElementById('single-briefing-name').textContent = name;
+    document.getElementById('singleBriefingForm').action = '/admin/assignments/' + id + '/briefing';
+    document.getElementById('singleBriefingModal').classList.add('open');
+}
+</script>
