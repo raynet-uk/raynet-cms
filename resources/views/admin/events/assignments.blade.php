@@ -590,6 +590,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
         <button class="tab-btn"        onclick="switchTab('map')"      id="tabbtn-map">     <span class="tab-icon">🗺</span> Map</button>
         <button class="tab-btn"        onclick="switchTab('briefing')" id="tabbtn-briefing"><span class="tab-icon">📋</span> Briefing</button>
         <button class="tab-btn"        onclick="switchTab('attendance')" id="tabbtn-attendance"><span class="tab-icon">✅</span> Attendance</button>
+        <button class="tab-btn" onclick="switchTab('availability')" id="tabbtn-availability"><span class="tab-icon">📣</span> Availability</button>
     </div>
 </div>
 
@@ -3030,4 +3031,71 @@ function printBriefing() {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
+<div id="tab-availability" class="tab-pane fade-in">
+        @php
+            $availabilityResponses = \App\Models\UserEventAvailability::with('user')
+                ->where('event_id', $event->id)
+                ->orderByDesc('responded_at')
+                ->get();
+            $availableCount   = $availabilityResponses->where('available', true)->count();
+            $unavailableCount = $availabilityResponses->where('available', false)->count();
+            $totalMembers     = \App\Models\User::where('registration_pending', false)->whereNull('suspended_at')->count();
+        @endphp
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+            <div style="flex:1;min-width:110px;background:#fff;border:1px solid var(--grey-mid);border-top:3px solid var(--green);padding:.75rem 1rem;text-align:center;">
+                <div style="font-size:26px;font-weight:bold;color:var(--green);">{{ $availableCount }}</div>
+                <div style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-top:3px;">Available</div>
+            </div>
+            <div style="flex:1;min-width:110px;background:#fff;border:1px solid var(--grey-mid);border-top:3px solid var(--red);padding:.75rem 1rem;text-align:center;">
+                <div style="font-size:26px;font-weight:bold;color:var(--red);">{{ $unavailableCount }}</div>
+                <div style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-top:3px;">Unavailable</div>
+            </div>
+            <div style="flex:1;min-width:110px;background:#fff;border:1px solid var(--grey-mid);border-top:3px solid var(--grey-dark);padding:.75rem 1rem;text-align:center;">
+                <div style="font-size:26px;font-weight:bold;color:var(--grey-dark);">{{ $totalMembers - $availabilityResponses->count() }}</div>
+                <div style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-top:3px;">No Response</div>
+            </div>
+            <div style="flex:1;min-width:110px;background:#fff;border:1px solid var(--grey-mid);border-top:3px solid var(--navy);padding:.75rem 1rem;text-align:center;">
+                <div style="font-size:26px;font-weight:bold;color:var(--navy);">{{ $totalMembers }}</div>
+                <div style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-top:3px;">Total Members</div>
+            </div>
+        </div>
+        <div style="margin-bottom:1.25rem;">
+            <form method="POST" action="{{ route('admin.events.availability-request', $event->id) }}" style="display:inline;" onsubmit="return confirm('Send availability request email to ALL active members?')">
+                @csrf
+                <button type="submit" class="btn btn-primary">📣 Send Availability Request</button>
+            </form>
+        </div>
+        @if($availabilityResponses->isEmpty())
+            <div class="panel"><div class="empty-state"><div class="empty-icon">📣</div><div class="empty-text">No responses yet. Use the button above to request availability from all members.</div></div></div>
+        @else
+            @foreach([[true,'var(--green)','✓ Available'],[false,'var(--red)','✕ Unavailable']] as [$avail,$col,$lbl])
+            @php $group = $availabilityResponses->where('available', $avail); @endphp
+            @if($group->isNotEmpty())
+            <div style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.14em;color:{{ $col }};margin:1rem 0 .6rem;display:flex;align-items:center;gap:.5rem;">{{ $lbl }} ({{ $group->count() }})<span style="flex:1;height:1px;background:var(--grey-mid);display:inline-block;"></span></div>
+            @foreach($group as $r)
+            @php $initials = implode('', array_map(fn($w) => strtoupper($w[0]), array_slice(explode(' ', $r->user->name),0,2))); @endphp
+            <div style="background:#fff;border:1px solid var(--grey-mid);border-left:4px solid {{ $col }};margin-bottom:.5rem;padding:.65rem 1rem;display:flex;align-items:center;gap:.75rem;">
+                <div style="width:36px;height:36px;background:{{ $col }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;color:#fff;flex-shrink:0;">{{ $initials }}</div>
+                <div style="flex:1;"><div style="font-size:13px;font-weight:bold;">{{ $r->user->name }}</div>@if($r->user->callsign)<div style="font-size:11px;color:var(--text-muted);">{{ $r->user->callsign }}</div>@endif</div>
+                <div style="font-size:11px;color:var(--text-muted);">{{ $r->responded_at?->format('j M H:i') }}</div>
+            </div>
+            @endforeach
+            @endif
+            @endforeach
+            @php $noResponse = \App\Models\User::where('registration_pending', false)->whereNull('suspended_at')->whereNotIn('id', $availabilityResponses->pluck('user_id'))->orderBy('name')->get(); @endphp
+            @if($noResponse->isNotEmpty())
+            <div style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.14em;color:var(--grey-dark);margin:1rem 0 .6rem;display:flex;align-items:center;gap:.5rem;">No Response ({{ $noResponse->count() }})<span style="flex:1;height:1px;background:var(--grey-mid);display:inline-block;"></span></div>
+            <div style="background:#fff;border:1px solid var(--grey-mid);">
+            @foreach($noResponse as $m)
+            @php $initials = implode('', array_map(fn($w) => strtoupper($w[0]), array_slice(explode(' ', $m->name),0,2))); @endphp
+            <div style="display:flex;align-items:center;gap:.75rem;padding:.55rem 1rem;border-bottom:1px solid var(--grey-mid);">
+                <div style="width:30px;height:30px;background:var(--grey-mid);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;color:#fff;flex-shrink:0;">{{ $initials }}</div>
+                <div style="flex:1;"><div style="font-size:13px;font-weight:bold;color:var(--text-muted);">{{ $m->name }}</div>@if($m->callsign)<div style="font-size:11px;color:var(--grey-dark);">{{ $m->callsign }}</div>@endif</div>
+                <span style="font-size:10px;color:var(--grey-dark);">No response</span>
+            </div>
+            @endforeach
+            </div>
+            @endif
+        @endif
+    </div>
 @endsection

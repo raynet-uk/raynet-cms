@@ -411,4 +411,77 @@ class EventAssignmentController extends Controller
 
         return redirect()->back()->with('status', "Notification sent to {$sent} crew member(s).");
     }
+
+    // ── Send individual briefing email + PDF ───────────────────────────────────
+    public function sendSingleBriefing(Request $request, EventAssignment $assignment)
+    {
+        $customMessage = $request->input('custom_message', '');
+        $pdfPath = $this->generateBriefingPdf($assignment, $customMessage);
+
+        \Illuminate\Support\Facades\Mail::to($assignment->user->email)
+            ->send(new \App\Mail\CrewBriefing($assignment, $customMessage, $pdfPath));
+
+        $assignment->update(['briefing_sent' => true, 'briefing_sent_at' => now()]);
+
+        if ($pdfPath && file_exists($pdfPath)) @unlink($pdfPath);
+
+        return redirect()->back()->with('status', 'Briefing sent to ' . $assignment->user->name);
+    }
+
+    // ── Send bulk briefings ────────────────────────────────────────────────────
+    public function sendBulkBriefings(Request $request, \App\Models\Event $event)
+    {
+        $request->validate([
+            'statuses'       => 'required|array',
+            'custom_message' => 'nullable|string|max:2000',
+        ]);
+
+        $customMessage = $request->input('custom_message', '');
+        $assignments   = $event->assignments()
+            ->with('user', 'event')
+            ->whereIn('status', $request->statuses)
+            ->whereHas('user', fn($q) => $q->whereNotNull('email'))
+            ->get();
+
+        $sent = 0;
+        foreach ($assignments as $assignment) {
+            $pdfPath = $this->generateBriefingPdf($assignment, $customMessage);
+            \Illuminate\Support\Facades\Mail::to($assignment->user->email)
+                ->send(new \App\Mail\CrewBriefing($assignment, $customMessage, $pdfPath));
+            $assignment->update(['briefing_sent' => true, 'briefing_sent_at' => now()]);
+            if ($pdfPath && file_exists($pdfPath)) @unlink($pdfPath);
+            $sent++;
+        }
+
+        return redirect()->back()->with('status', "Briefing sent to {$sent} crew member(s).");
+    }
+
+    // ── Download PDF for individual assignment ─────────────────────────────────
+    public function downloadBriefingPdf(Request $request, EventAssignment $assignment)
+    {
+        $customMessage = $request->input('custom_message', '');
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.crew-briefing', [
+            'assignment'    => $assignment->load('user', 'event', 'event.type'),
+            'customMessage' => $customMessage,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download('Briefing_' . str_replace(' ', '_', $assignment->user->name) . '.pdf');
+    }
+
+    // ── Helper: generate PDF to temp file ─────────────────────────────────────
+    private function generateBriefingPdf(EventAssignment $assignment, string $customMessage = ''): ?string
+    {
+        try {
+            $pdf  = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.crew-briefing', [
+                'assignment'    => $assignment->load('user', 'event', 'event.type'),
+                'customMessage' => $customMessage,
+            ])->setPaper('a4', 'portrait');
+            $path = storage_path('app/tmp/briefing_' . $assignment->id . '_' . time() . '.pdf');
+            if (!is_dir(dirname($path))) mkdir(dirname($path), 0755, true);
+            file_put_contents($path, $pdf->output());
+            return $path;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 }

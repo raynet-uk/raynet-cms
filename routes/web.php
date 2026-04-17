@@ -737,6 +737,9 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/events/{event}/assignments',                  [EventAssignmentController::class, 'index'])           ->name('admin.events.assignments');
     Route::post('/admin/events/{event}/assignments',                 [EventAssignmentController::class, 'store'])           ->name('admin.events.assignments.store');
     Route::post('/admin/events/{event}/briefings',                   [EventAssignmentController::class, 'sendBriefings'])   ->name('admin.events.assignments.briefings');
+    Route::post('/admin/events/{event}/briefings/bulk',          [EventAssignmentController::class, 'sendBulkBriefings'])   ->name('admin.events.assignments.briefings-bulk');
+    Route::post('/admin/assignments/{assignment}/briefing',      [EventAssignmentController::class, 'sendSingleBriefing'])  ->name('admin.events.assignments.briefing-send');
+    Route::get('/admin/assignments/{assignment}/briefing-pdf',   [EventAssignmentController::class, 'downloadBriefingPdf']) ->name('admin.events.assignments.briefing-pdf');
     Route::post('/admin/events/{event}/assignments/notify',           [EventAssignmentController::class, 'notifyCrew'])          ->name('admin.events.assignments.notify');
     Route::put('/admin/assignments/{assignment}',                    [EventAssignmentController::class, 'update'])          ->name('admin.events.assignments.update');
     Route::patch('/admin/assignments/{assignment}/position',         [EventAssignmentController::class, 'updatePosition'])  ->name('admin.events.assignments.position');
