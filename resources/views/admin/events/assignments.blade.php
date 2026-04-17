@@ -1616,8 +1616,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
                 <div id="member-select-row">
                     <div class="ff" style="margin-bottom:.9rem;">
                         <label>Member *</label>
-                        <select name="user_id" id="modal-user">
-                            <option value="">— Select member —</option>
+                        <select name="user_ids[]" id="modal-user" multiple size="8" style="width:100%;border:1px solid var(--grey-mid);padding:.35rem .5rem;font-family:var(--font);font-size:13px;outline:none;background:var(--white);">
                             @php
                                 $availGroup   = $availableMembers->whereNotIn('id', $unavailableUserIds ?? []);
                                 $unavailGroup = $availableMembers->whereIn('id', $unavailableUserIds ?? []);
@@ -2965,14 +2964,28 @@ function clearModalFields() {
     document.getElementById('modal-hasveh').checked=false;
     document.getElementById('modal-fa').checked=false;
     document.querySelectorAll('.equip-cb').forEach(cb=>cb.checked=false);
+    if (document.getElementById('modal-user')) { [...document.getElementById('modal-user').options].forEach(o => o.selected = false); }
+    updateMemberCount();
+}
+
+function updateMemberCount() {
+    const sel = document.getElementById('modal-user');
+    const count = sel ? [...sel.options].filter(o => o.selected).length : 0;
+    const badge = document.getElementById('member-count-badge');
+    if (badge) badge.textContent = count + ' selected';
+}
+
+function filterMembers(query) {
+    const sel = document.getElementById('modal-user');
+    const q = query.toLowerCase().trim();
+    [...sel.options].forEach(opt => {
+        const name = opt.dataset.name || opt.textContent.toLowerCase();
+        opt.style.display = (q === '' || name.includes(q)) ? '' : 'none';
+    });
 }
 
 function closeModal() { document.getElementById('assignModal').classList.remove('open'); }
 
-document.getElementById('modal-user').addEventListener('change',function(){
-    const cs=this.options[this.selectedIndex].dataset.callsign;
-    if (cs) document.getElementById('modal-callsign').value=cs;
-});
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 
 /* ══ BRIEFING VERSION ══ */

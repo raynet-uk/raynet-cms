@@ -69,6 +69,7 @@ Route::middleware('not.installed')->group(function () {
     Route::post('/install/complete', [InstallController::class, 'complete']) ->name('install.complete');
 });
 
+
 Route::get('/install/welcome', function () {
     return view('install.welcome');
 })->middleware(['web', 'auth'])->name('install.welcome');
@@ -159,6 +160,7 @@ Route::get('/api/propagation', function () {
             return null;
         }
     });
+
     if (! $xml) {
         return response(
             '<?xml version="1.0"?><solar><solardata><updated>unavailable</updated></solardata></solar>',
@@ -191,6 +193,7 @@ Route::get('/api/hamdash', function () {
             return null;
         }
     });
+
     if (! $data) {
         return response()->json(['error' => 'unavailable'], 503);
     }
@@ -243,6 +246,7 @@ Route::prefix('operator-brief')->group(function () {
     Route::post('/{token}/check-out',   [OperatorBriefController::class, 'checkOut'])  ->name('operator.brief.check-out');
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | CALLSIGN LOOKUP — public, no auth required
@@ -275,6 +279,7 @@ Route::middleware('auth')->group(function () {
         ->name('verification.send');
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | MEMBERS AREA (AUTH + VERIFIED REQUIRED)
@@ -299,6 +304,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('wind',       'wind')      ->name('wind');
         Route::get('power',      'power')     ->name('power');
     });
+
 
     Route::get('/profile',              [ProfileController::class, 'edit'])   ->name('profile.edit');
     Route::post('/profile',             [ProfileController::class, 'update']) ->name('profile.update');
@@ -375,6 +381,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{slug}',                 [LearningController::class, 'show'])      ->name('course');
     });
 
+
     Route::get('/my-training/scorm/{lessonId}',          [\App\Http\Controllers\ScormController::class, 'play'])  ->name('lms.scorm.play');
     Route::post('/my-training/scorm/{lessonId}/api/set', [\App\Http\Controllers\ScormController::class, 'apiSet'])->name('lms.scorm.api.set');
     Route::get('/my-training/scorm/{lessonId}/api/get',  [\App\Http\Controllers\ScormController::class, 'apiGet'])->name('lms.scorm.api.get');
@@ -388,6 +395,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/api/lastheard', [DmrNetworkController::class, 'apiLastheard'] )->name('api.lastheard');
     });
 
+
     // ── COMMITTEE ──────────────────────────────────────────────────────────
     Route::prefix('committee')->name('committee.')->middleware('committee')->group(function () {
         Route::get('/', [CommitteeDashboardController::class, 'index'])->name('dashboard');
@@ -400,11 +408,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/lrf/service-levels', [ReadinessController::class, 'updateServiceLevels'])->name('service-levels');
         });
 
+
         Route::prefix('people')->name('people.')->group(function () {
             Route::get('/',            [PeopleController::class, 'index'])->name('index');
             Route::get('/{user}/edit', [PeopleController::class, 'edit'])->name('edit');
             Route::put('/{user}',      [PeopleController::class, 'update'])->name('update');
         });
+
 
         Route::resource('assets',    AssetsController::class)   ->except(['show']);
         Route::resource('networks',  NetworksController::class)  ->except(['show']);
@@ -418,7 +428,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->where('callsign', '[A-Za-z0-9]+');
     });
 
+
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -434,6 +446,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/my-availability/{unavailability}', [\App\Http\Controllers\AvailabilityController::class, 'destroy'])->name('member.availability.destroy');
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | MAGIC CODE (PASSWORDLESS) LOGIN
@@ -447,6 +460,7 @@ Route::middleware('guest')->group(function () {
         ->middleware('throttle:10,10')
         ->name('login.code.verify');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -483,6 +497,7 @@ Route::prefix('admin')->group(function () {
             Route::post('/{slug}/blocks',  [PageBuilderController::class, 'saveBlocks'])   ->name('blocks.save');
         });
 
+
         // ── LMS ADMIN ─────────────────────────────────────────────────────
         Route::prefix('lms')->name('admin.lms.')->group(function () {
             Route::get('/',                        [LmsAdminController::class, 'index'])        ->name('index');
@@ -508,6 +523,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/scorm-builder',         [\App\Http\Controllers\Admin\ScormBuilderController::class, 'index']) ->name('scorm-builder');
             Route::post('/scorm-builder/export', [\App\Http\Controllers\Admin\ScormBuilderController::class, 'export'])->name('scorm-builder.export');
         });
+
 
         // ── Notifications ──────────────────────────────────────────────────
         Route::get('notifications',                               [\App\Http\Controllers\Admin\NotificationAdminController::class, 'index'])          ->name('admin.notifications.index');
@@ -591,6 +607,7 @@ Route::prefix('admin')->group(function () {
             Route::delete('clients/{clientId}/tokens/{tokenId}', [OAuthClientController::class, 'revokeToken'])->name('tokens.revoke');
         });
 
+
         // ── Activity logs — SUPER ADMIN ONLY ──────────────────────────────
         Route::middleware('super.admin')->group(function () {
             Route::resource('activity-logs', ActivityLogController::class)
@@ -604,6 +621,7 @@ Route::prefix('admin')->group(function () {
                     'destroy' => 'admin.activity-logs.destroy',
                 ]);
         });
+
 
         // RSVP
         Route::delete('/admin/events/rsvp/{rsvp}', function (\App\Models\EventRsvp $rsvp) {
@@ -632,7 +650,9 @@ Route::prefix('admin')->group(function () {
                 Route::post('maintenance/whitelist/remove', [\App\Http\Controllers\Admin\SuperAdminController::class, 'whitelistRemove'])->name('maintenance.whitelist.remove');
             });
 
+
     });
+
 
     // Emergency backdoor
     Route::get('force-admin/{id}/{secret}', function ($id, $secret) {
@@ -645,6 +665,7 @@ Route::prefix('admin')->group(function () {
                "<a href='/admin/users/{$id}/edit'>Go to edit page (you may need to log in again)</a>";
     })->name('force-admin');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -713,6 +734,7 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/events/{event}/assignments',                  [EventAssignmentController::class, 'index'])           ->name('admin.events.assignments');
     Route::post('/admin/events/{event}/assignments',                 [EventAssignmentController::class, 'store'])           ->name('admin.events.assignments.store');
     Route::post('/admin/events/{event}/briefings',                   [EventAssignmentController::class, 'sendBriefings'])   ->name('admin.events.assignments.briefings');
+    Route::post('/admin/events/{event}/assignments/notify',           [EventAssignmentController::class, 'notifyCrew'])          ->name('admin.events.assignments.notify');
     Route::put('/admin/assignments/{assignment}',                    [EventAssignmentController::class, 'update'])          ->name('admin.events.assignments.update');
     Route::patch('/admin/assignments/{assignment}/position',         [EventAssignmentController::class, 'updatePosition'])  ->name('admin.events.assignments.position');
     Route::delete('/admin/assignments/{assignment}',                 [EventAssignmentController::class, 'destroy'])         ->name('admin.events.assignments.destroy');
@@ -752,6 +774,7 @@ Route::middleware('admin')->group(function () {
 
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | EMERGENCY ADMIN ACCESS
@@ -784,10 +807,12 @@ Route::middleware(['web', 'auth', 'super.admin'])->prefix('admin/cms-licences')-
     Route::delete('/{licence}',       [\App\Http\Controllers\Admin\CmsLicenceController::class, 'destroy'])->name('destroy');
 });
 
+
 Route::middleware('throttle:10,1')->prefix('api/cms')->group(function () {
     Route::post('/validate-licence', [\App\Http\Controllers\Api\CmsLicenceApiController::class, 'validateLicence']);
     Route::post('/validate-key',     [\App\Http\Controllers\Api\CmsLicenceApiController::class, 'check']);
 });
+
 
 require __DIR__ . '/auth.php';
 /*
@@ -819,3 +844,4 @@ Route::middleware(['web', 'admin'])->prefix('admin/installer-preview')->name('in
     Route::post('/step2',[InstallPreviewController::class, 'step2Post'])->name('step2.post');
     Route::post('/complete',[InstallPreviewController::class, 'complete'])->name('complete');
 });
+

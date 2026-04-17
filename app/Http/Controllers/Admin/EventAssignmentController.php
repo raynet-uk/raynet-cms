@@ -73,31 +73,30 @@ class EventAssignmentController extends Controller
 
     // ── Store ──────────────────────────────────────────────────────────────────
 
-    public function store(Request $request, Event $event): RedirectResponse
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'status'  => 'required|in:pending,confirmed,standby,declined',
-        ]);
+   public function store(Request $request, Event $event)
+{
+    $request->validate([
+        'user_ids'   => 'required|array|min:1',
+        'user_ids.*' => 'exists:users,id',
+        'status'     => 'nullable|string',
+    ]);
 
-        $exists = EventAssignment::where('event_id', $event->id)
-            ->where('user_id', $request->input('user_id'))
-            ->exists();
+    $shared = $request->except('user_ids', '_token');
 
-        if ($exists) {
-            return back()->with('error', 'This member is already assigned to the event.');
+    foreach ($request->user_ids as $userId) {
+        if ($event->assignments()->where('user_id', $userId)->exists()) {
+            continue;
         }
-
-        $data             = $this->prepareAssignmentData($request);
-        $data['event_id'] = $event->id;
-        $data['user_id']  = $request->input('user_id');
-
-        EventAssignment::create($data);
-
-        return redirect()
-            ->route('admin.events.assignments', $event->id)
-            ->with('status', 'Operator assigned successfully.');
+        $event->assignments()->create(array_merge($shared, [
+            'user_id'         => $userId,
+                'coverage_radius_m' => $request->input('coverage_radius_m', 0) ?? 0,
+            'shifts'          => $request->shifts_json ? json_decode($request->shifts_json, true) : null,
+            'equipment_items' => $request->equipment_items_json ? json_decode($request->equipment_items_json, true) : null,
+        ]));
     }
+
+    return redirect()->back()->with('status', 'Crew members assigned successfully.');
+}
 
     // ── Update ─────────────────────────────────────────────────────────────────
 
@@ -383,3 +382,32 @@ class EventAssignmentController extends Controller
         return $last;
     }
 }
+    // ── Notify crew ────────────────────────────────────────────────────────────
+    public function notifyCrew(Request $request, \App\Models\Event $event)
+    {
+        $request->validate([
+            'notify_type'    => 'required|in:custom,reminder',
+            'custom_message' => 'required_if:notify_type,custom|nullable|string|max:2000',
+            'notify_status'  => 'required|array',
+        ]);
+
+        $statuses    = $request->notify_status;
+        $assignments = $event->assignments()
+            ->with('user', 'event')
+            ->whereIn('status', $statuses)
+            ->get();
+
+        $sent = 0;
+        foreach ($assignments as $assignment) {
+            if (!$assignment->user->email) continue;
+            \Illuminate\Support\Facades\Mail::to($assignment->user->email)
+                ->send(new \App\Mail\CrewNotification(
+                    $assignment,
+                    $request->notify_type,
+                    $request->custom_message ?? ''
+                ));
+            $sent++;
+        }
+
+        return redirect()->back()->with('status', "Notification sent to {$sent} crew member(s).");
+    }
