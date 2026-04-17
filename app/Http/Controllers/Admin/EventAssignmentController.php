@@ -428,20 +428,27 @@ class EventAssignmentController extends Controller
         return redirect()->back()->with('status', 'Briefing sent to ' . $assignment->user->name);
     }
 
-    // ── Send bulk briefings ────────────────────────────────────────────────────
+    // ── Send bulk briefings ────────────────────────────────────────────
     public function sendBulkBriefings(Request $request, \App\Models\Event $event)
     {
-        $request->validate([
-            'statuses'       => 'required|array',
-            'custom_message' => 'nullable|string|max:2000',
-        ]);
-
         $customMessage = $request->input('custom_message', '');
-        $assignments   = $event->assignments()
-            ->with('user', 'event')
-            ->whereIn('status', $request->statuses)
-            ->whereHas('user', fn($q) => $q->whereNotNull('email'))
-            ->get();
+        $assignmentIds = $request->input('assignment_ids', []);
+        $statuses      = $request->input('statuses', ['confirmed', 'standby']);
+        $idCount       = count($assignmentIds);
+
+        if ($idCount > 0) {
+            $assignments = \App\Models\EventAssignment::with('user', 'event')
+                ->whereIn('id', $assignmentIds)
+                ->where('event_id', $event->id)
+                ->whereHas('user', fn($q) => $q->whereNotNull('email'))
+                ->get();
+        } else {
+            $assignments = $event->assignments()
+                ->with('user', 'event')
+                ->whereIn('status', $statuses)
+                ->whereHas('user', fn($q) => $q->whereNotNull('email'))
+                ->get();
+        }
 
         $sent = 0;
         foreach ($assignments as $assignment) {
