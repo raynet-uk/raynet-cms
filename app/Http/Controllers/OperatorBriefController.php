@@ -50,7 +50,20 @@ class OperatorBriefController extends Controller
                 : json_decode($event->event_route, true);
         }
 
-        return view('operator.brief', compact('assignment', 'eventPolygon', 'eventPin', 'eventPois', 'eventRoute'));
+        $eventAssignments = $event->assignments()
+            ->whereNotNull('lat')->whereNotNull('lng')
+            ->with('user:id,callsign,name')
+            ->get(['id','user_id','lat','lng','callsign','location_name','role'])
+            ->map(fn($a) => [
+                'callsign'      => $a->callsign ?: ($a->user->callsign ?? null),
+                'location_name' => $a->location_name,
+                'role'          => $a->role,
+                'lat'           => (float)$a->lat,
+                'lng'           => (float)$a->lng,
+                'is_me'         => $a->id === $assignment->id,
+            ])->values()->toArray();
+
+        return view('operator.brief', compact('assignment', 'eventPolygon', 'eventPin', 'eventPois', 'eventRoute', 'eventAssignments'));
     }
 
     // ── Attendance actions ────────────────────────────────────────────────────

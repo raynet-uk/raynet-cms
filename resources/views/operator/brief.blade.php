@@ -722,11 +722,16 @@
 
         {{-- Navigate to position --}}
         @if ($hasOpPin)
-        <div class="detail-row" style="padding:.6rem .85rem;gap:.5rem;flex-direction:column;">
-            <button class="nav-btn nav-btn-primary" onclick="navigateToPosition()">
-                🗺 Navigate to My Position
-            </button>
-            <div id="nav-dist-info" style="font-size:11px;color:var(--text-muted);text-align:center;display:none;"></div>
+        <div class="detail-row" style="padding:.75rem .85rem;gap:.6rem;flex-direction:column;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+                <button onclick="navigateToPosition('walk')" style="display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem .5rem;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(0,51,102,.25);">
+                    🚶 Walk
+                </button>
+                <button onclick="navigateToPosition('drive')" style="display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem .5rem;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(200,16,46,.25);">
+                    🚗 Drive
+                </button>
+            </div>
+            <div id="nav-dist-info" style="font-size:11px;color:var(--text-muted);text-align:center;display:none;padding:.25rem 0;"></div>
         </div>
         @endif
 
@@ -767,6 +772,335 @@
         <div id="nearest-pois-list"></div>
     </div>
 </div>
+@endif
+
+{{-- ═══════════════ ELEVATION PROFILE ═══════════════ --}}
+@if(!empty($eventRoute))
+<div class="section fade-in" id="elev-section">
+    <div class="section-head" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>⛰ Elevation Profile</span>
+        <span id="elev-live-badge" style="display:none;font-size:10px;font-weight:normal;background:var(--green-bg);color:var(--green);border:1px solid var(--green-bdr);padding:2px 8px;border-radius:999px;">● Live</span>
+    </div>
+    <div class="section-card" style="padding:.75rem .85rem;">
+        <div style="position:relative;">
+            <canvas id="brief-elev-chart" style="width:100%;height:150px;display:block;"></canvas>
+            <div id="brief-elev-loading" style="text-align:center;font-size:12px;color:#9aa3ae;padding:.5rem;">Loading elevation data…</div>
+        </div>
+        <div id="brief-elev-stats" style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.5rem;font-size:11px;color:#6b7f96;"></div>
+        <div id="brief-elev-live" style="display:none;margin-top:.6rem;padding:.5rem .75rem;background:var(--navy-faint);border-radius:6px;border-left:3px solid var(--navy);">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:2px;">Your Current Position</div>
+            <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+                <span id="brief-live-elev" style="font-size:14px;font-weight:bold;color:var(--navy);">— m</span>
+                <span id="brief-live-dist" style="font-size:14px;font-weight:bold;color:var(--text-mid);">— from start</span>
+                <span id="brief-live-remain" style="font-size:14px;font-weight:bold;color:var(--green);">— to position</span>
+            </div>
+        </div>
+        <div id="brief-elev-legend" style="margin-top:.6rem;display:flex;flex-wrap:wrap;gap:.4rem .75rem;"></div>
+    </div>
+</div>
+<script>
+(function() {
+    const EVENT_ASSIGNMENTS = {!! json_encode($eventAssignments ?? []) !!};
+    const MY_LAT = {{ $assignment->lat ? (float)$assignment->lat : 'null' }};
+    const MY_LNG = {{ $assignment->lng ? (float)$assignment->lng : 'null' }};
+
+    const routeRaw = {!! json_encode($eventRoute) !!};
+    if (!routeRaw) return;
+
+    // Flatten route to [lat,lng] pairs
+    let allCoords = [];
+    const segs = Array.isArray(routeRaw) ? routeRaw : [routeRaw];
+    segs.forEach(function(seg) {
+        const geom = seg.geometry || seg;
+        if (geom && geom.coordinates) {
+            geom.coordinates.forEach(function(c) { allCoords.push([c[1], c[0]]); });
+        }
+    });
+    if (allCoords.length < 2) {
+        var el = document.getElementById('brief-elev-loading');
+        if (el) el.textContent = 'No route data.';
+        return;
+    }
+
+    // Sample ~60 points
+    const step = Math.max(1, Math.floor(allCoords.length / 60));
+    let sample = [];
+    for (let i = 0; i < allCoords.length; i += step) sample.push(allCoords[i]);
+    if (sample[sample.length-1] !== allCoords[allCoords.length-1]) sample.push(allCoords[allCoords.length-1]);
+
+    const lats = sample.map(c => parseFloat(c[0]).toFixed(5)).join(',');
+    const lngs = sample.map(c => parseFloat(c[1]).toFixed(5)).join(',');
+
+    fetch('https://api.open-meteo.com/v1/elevation?latitude=' + lats + '&longitude=' + lngs)
+    .then(r => r.json())
+    .then(function(d) {
+        const el = document.getElementById('brief-elev-loading');
+        if (!d || !d.elevation || d.elevation.length < 2) {
+            if (el) el.textContent = 'Elevation data unavailable.';
+            return;
+        }
+        if (el) el.style.display = 'none';
+        renderBriefElevChart(d.elevation, sample);
+    })
+    .catch(function() {
+        const el = document.getElementById('brief-elev-loading');
+        if (el) el.textContent = 'Elevation data unavailable.';
+    });
+
+    // Build cumulative distance array
+    function buildCumDist(coords) {
+        const cd = [0];
+        for (let i = 1; i < coords.length; i++) {
+            const dx = (coords[i][1]-coords[i-1][1]) * Math.cos(coords[i][0]*Math.PI/180) * 111320;
+            const dy = (coords[i][0]-coords[i-1][0]) * 111320;
+            cd.push(cd[i-1] + Math.sqrt(dx*dx+dy*dy));
+        }
+        return cd;
+    }
+
+    // Find nearest index in coords to a lat/lng
+    function nearestIdx(coords, lat, lng) {
+        let best = 0, bestD = Infinity;
+        coords.forEach(function(c, i) {
+            const d = (c[0]-lat)*(c[0]-lat) + (c[1]-lng)*(c[1]-lng);
+            if (d < bestD) { bestD = d; best = i; }
+        });
+        return best;
+    }
+
+    let _elevs = null, _sample = null, _cumDist = null, _pad = null, _iW = null, _iH = null, _minE = null, _range = null;
+    let _liveGpsIdx = null;
+
+    function renderBriefElevChart(elevs, coords, liveGpsIdx) {
+        _elevs = elevs; _sample = coords;
+        _cumDist = buildCumDist(coords);
+        _liveGpsIdx = liveGpsIdx !== undefined ? liveGpsIdx : _liveGpsIdx;
+
+        const canvas = document.getElementById('brief-elev-chart');
+        if (!canvas) return;
+        canvas.width  = canvas.parentElement.offsetWidth || 560;
+        canvas.height = 150;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        _minE = Math.min.apply(null, elevs);
+        const maxE = Math.max.apply(null, elevs);
+        _range = maxE - _minE || 1;
+        _pad = {top:18, right:12, bottom:26, left:42};
+        _iW = W - _pad.left - _pad.right;
+        _iH = H - _pad.top - _pad.bottom;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Gradient fill
+        const grad = ctx.createLinearGradient(0, _pad.top, 0, _pad.top + _iH);
+        grad.addColorStop(0, 'rgba(0,51,102,.35)');
+        grad.addColorStop(1, 'rgba(0,51,102,.04)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        elevs.forEach(function(e, i) {
+            const x = _pad.left + (i/(elevs.length-1))*_iW;
+            const y = _pad.top + _iH - ((e-_minE)/_range)*_iH;
+            if (i===0) { ctx.moveTo(x, _pad.top+_iH); ctx.lineTo(x,y); }
+            else ctx.lineTo(x,y);
+        });
+        ctx.lineTo(_pad.left+_iW, _pad.top+_iH);
+        ctx.closePath();
+        ctx.fill();
+
+        // Grade colouring overlay — red steep, amber moderate
+        for (let i = 1; i < elevs.length; i++) {
+            const dx = _cumDist[i] - _cumDist[i-1];
+            if (dx < 1) continue;
+            const grade = Math.abs((elevs[i]-elevs[i-1]) / dx) * 100;
+            if (grade < 5) continue;
+            const x1 = _pad.left + ((i-1)/(elevs.length-1))*_iW;
+            const x2 = _pad.left + (i/(elevs.length-1))*_iW;
+            const y1 = _pad.top + _iH - ((elevs[i-1]-_minE)/_range)*_iH;
+            const y2 = _pad.top + _iH - ((elevs[i]-_minE)/_range)*_iH;
+            ctx.strokeStyle = grade > 15 ? 'rgba(200,16,46,.55)' : 'rgba(245,158,11,.55)';
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        }
+
+        // Main profile line
+        ctx.strokeStyle = '#003366';
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        elevs.forEach(function(e,i) {
+            const x = _pad.left + (i/(elevs.length-1))*_iW;
+            const y = _pad.top + _iH - ((e-_minE)/_range)*_iH;
+            i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+        });
+        ctx.stroke();
+
+        // Y axis labels
+        ctx.fillStyle = '#9aa3ae'; ctx.font = '9px Arial'; ctx.textAlign = 'right';
+        [0, 0.5, 1].forEach(function(t) {
+            const ev = _minE + t*_range;
+            const y  = _pad.top + _iH - t*_iH;
+            ctx.fillText(Math.round(ev)+'m', _pad.left-4, y+3);
+            ctx.strokeStyle = 'rgba(0,0,0,.06)'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(_pad.left,y); ctx.lineTo(_pad.left+_iW,y); ctx.stroke();
+        });
+
+        // X axis distance labels
+        const totalKm = _cumDist[_cumDist.length-1]/1000;
+        ctx.fillStyle = '#9aa3ae'; ctx.font = '9px Arial'; ctx.textAlign = 'center';
+        [0,0.25,0.5,0.75,1].forEach(function(t) {
+            ctx.fillText((t*totalKm).toFixed(1)+'km', _pad.left+t*_iW, H-6);
+        });
+
+        // Stats
+        let gain=0,loss=0;
+        for (let i=1;i<elevs.length;i++) {
+            const d=elevs[i]-elevs[i-1];
+            if(d>0)gain+=d;else loss+=Math.abs(d);
+        }
+        const statsEl = document.getElementById('brief-elev-stats');
+        if (statsEl) statsEl.innerHTML =
+            `<span><strong>📏</strong> ${totalKm.toFixed(2)} km</span>` +
+            `<span><strong>⬆</strong> ${Math.round(gain)} m ascent</span>` +
+            `<span><strong>⬇</strong> ${Math.round(loss)} m descent</span>` +
+            `<span><strong>🏔</strong> ${Math.round(maxE)} m high</span>`;
+
+        // Grade legend
+        const legendEl = document.getElementById('brief-elev-legend');
+        if (legendEl) legendEl.innerHTML =
+            `<span style="font-size:10px;color:#9aa3ae;">Grade: </span>` +
+            `<span style="font-size:10px;display:flex;align-items:center;gap:3px;"><span style="display:inline-block;width:14px;height:3px;background:rgba(245,158,11,.7);border-radius:2px;"></span> 5–15%</span>` +
+            `<span style="font-size:10px;display:flex;align-items:center;gap:3px;"><span style="display:inline-block;width:14px;height:3px;background:rgba(200,16,46,.7);border-radius:2px;"></span> >15%</span>`;
+
+        // Operator markers
+        const colours = ['#C8102E','#f59e0b','#059669','#7c3aed','#0ea5e9','#db2777','#ea580c'];
+        let legendHtml = '';
+        (EVENT_ASSIGNMENTS || []).forEach(function(op, oi) {
+            if (!op.lat || !op.lng) return;
+            const idx    = nearestIdx(coords, op.lat, op.lng);
+            const frac   = _cumDist[idx] / (_cumDist[_cumDist.length-1]||1);
+            const mX     = _pad.left + frac * _iW;
+            const mElev  = elevs[idx];
+            const mY     = _pad.top + _iH - ((mElev-_minE)/_range)*_iH;
+            const colour = op.is_me ? '#003366' : colours[oi % colours.length];
+            const label  = op.callsign || op.location_name || ('Op '+(oi+1));
+
+            // Dashed vertical
+            ctx.save();
+            ctx.setLineDash([3,3]);
+            ctx.strokeStyle = colour;
+            ctx.lineWidth = op.is_me ? 2 : 1.5;
+            ctx.globalAlpha = op.is_me ? 0.9 : 0.55;
+            ctx.beginPath(); ctx.moveTo(mX,_pad.top+_iH); ctx.lineTo(mX,mY); ctx.stroke();
+            ctx.restore();
+
+            // Diamond
+            ctx.save();
+            ctx.fillStyle = colour;
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = op.is_me ? 2 : 1.5;
+            const sz = op.is_me ? 7 : 5;
+            ctx.beginPath();
+            ctx.moveTo(mX,   mY-sz);
+            ctx.lineTo(mX+sz,mY);
+            ctx.lineTo(mX,   mY+sz);
+            ctx.lineTo(mX-sz,mY);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            ctx.restore();
+
+            // Label
+            ctx.save();
+            ctx.font = op.is_me ? 'bold 9px Arial' : 'bold 8px Arial';
+            ctx.fillStyle = colour;
+            ctx.textAlign = 'center';
+            let lY = mY - 12;
+            if (lY < _pad.top+8) lY = mY+18;
+            ctx.fillText(label, mX, lY);
+            ctx.font = '7px Arial'; ctx.fillStyle = '#666';
+            ctx.fillText(Math.round(mElev)+'m', mX, lY+9);
+            ctx.restore();
+
+            const distFromStart = (_cumDist[idx]/1000).toFixed(1);
+            legendHtml += `<span style="font-size:10px;display:flex;align-items:center;gap:4px;">
+                <span style="display:inline-block;width:8px;height:8px;background:${colour};transform:rotate(45deg);flex-shrink:0;"></span>
+                <strong style="color:${colour};">${label}</strong>
+                <span style="color:#9aa3ae;">${Math.round(mElev)}m · ${distFromStart}km${op.is_me?' · <strong>YOU</strong>':''}</span>
+            </span>`;
+        });
+
+        const legEl = document.getElementById('brief-elev-legend');
+        if (legEl) legEl.innerHTML += legendHtml;
+
+        // Live GPS dot
+        if (_liveGpsIdx !== null && _liveGpsIdx !== undefined) {
+            drawLiveGpsDot(ctx, _liveGpsIdx, elevs, coords);
+        }
+    }
+
+    function drawLiveGpsDot(ctx, idx, elevs, coords) {
+        const frac = _cumDist[idx] / (_cumDist[_cumDist.length-1]||1);
+        const x    = _pad.left + frac * _iW;
+        const elev = elevs[idx];
+        const y    = _pad.top + _iH - ((elev-_minE)/_range)*_iH;
+
+        // Pulse ring
+        ctx.save();
+        ctx.strokeStyle = 'rgba(0,122,255,.35)';
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI*2); ctx.stroke();
+        ctx.restore();
+
+        // Solid dot
+        ctx.save();
+        ctx.fillStyle = '#007AFF';
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2);
+        ctx.fill(); ctx.stroke();
+        ctx.restore();
+
+        // "YOU" label
+        ctx.save();
+        ctx.font = 'bold 8px Arial';
+        ctx.fillStyle = '#007AFF';
+        ctx.textAlign = 'center';
+        ctx.fillText('YOU', x, y-12);
+        ctx.fillText(Math.round(elev)+'m', x, y-3+18);
+        ctx.restore();
+    }
+
+    // Live GPS tracking — update dot on chart
+    const opStatus = '{{ $assignment->attendance_status }}';
+    if ((opStatus === 'checked_in' || opStatus === 'on_break') && navigator.geolocation && MY_LAT && MY_LNG) {
+        const badge = document.getElementById('elev-live-badge');
+        const liveEl = document.getElementById('brief-elev-live');
+        if (badge) badge.style.display = 'inline-block';
+
+        navigator.geolocation.watchPosition(function(pos) {
+            if (!_elevs || !_sample || !_cumDist) return;
+            const lat = pos.coords.latitude, lng = pos.coords.longitude;
+            const gpsIdx   = nearestIdx(_sample, lat, lng);
+            const myPosIdx = nearestIdx(_sample, MY_LAT, MY_LNG);
+            const gpsElev  = _elevs[gpsIdx];
+            const distFromStart = _cumDist[gpsIdx];
+            const distToPos = Math.abs(_cumDist[myPosIdx] - _cumDist[gpsIdx]);
+            const totalDist = _cumDist[_cumDist.length-1];
+
+            // Update live readout
+            if (liveEl) liveEl.style.display = 'block';
+            const elevEl   = document.getElementById('brief-live-elev');
+            const distEl   = document.getElementById('brief-live-dist');
+            const remainEl = document.getElementById('brief-live-remain');
+            if (elevEl)   elevEl.textContent   = Math.round(gpsElev)+'m elevation';
+            if (distEl)   distEl.textContent   = (distFromStart/1000).toFixed(2)+'km from start';
+            if (remainEl) remainEl.textContent = (distToPos/1000).toFixed(2)+'km to your position';
+
+            // Redraw chart with live dot
+            renderBriefElevChart(_elevs, _sample, gpsIdx);
+        }, null, { enableHighAccuracy: true, maximumAge: 5000 });
+    }
+})();
+</script>
 @endif
 
 {{-- ═══════════════ FREQUENCIES ═══════════════ --}}
@@ -1358,24 +1692,38 @@ const NAV_LAT = {{ (float)$assignment->lat }};
 const NAV_LNG = {{ (float)$assignment->lng }};
 const NAV_LABEL = '{{ addslashes($assignment->location_name ?: $assignment->user->name) }}';
 
-function navigateToPosition() {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const encodedLabel = encodeURIComponent(NAV_LABEL);
-    const url = isIOS
-        ? `maps://maps.apple.com/?daddr=${NAV_LAT},${NAV_LNG}&dirflg=w`
-        : `https://maps.google.com/?daddr=${NAV_LAT},${NAV_LNG}&travelmode=walking`;
-    // Try to show distance first
+function navigateToPosition(mode) {
+    mode = mode || 'walk';
+    const isIOS     = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isAndroid = /Android/.test(navigator.userAgent);
+    const dirflg    = mode === 'drive' ? 'd' : 'w';
+    const gmMode    = mode === 'drive' ? 'driving' : 'walking';
+
+    let url;
+    if (isIOS) {
+        // Try Apple Maps first; falls back gracefully
+        url = `maps://maps.apple.com/?daddr=${NAV_LAT},${NAV_LNG}&dirflg=${dirflg}&t=m`;
+    } else if (isAndroid) {
+        // Android intent opens whichever maps app the user prefers
+        url = `google.navigation:q=${NAV_LAT},${NAV_LNG}&mode=${mode === 'drive' ? 'd' : 'w'}`;
+    } else {
+        url = `https://maps.google.com/?daddr=${NAV_LAT},${NAV_LNG}&travelmode=${gmMode}`;
+    }
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(pos) {
-            const distM = haversineMetres(pos.coords.latitude, pos.coords.longitude, NAV_LAT, NAV_LNG);
-            const distStr = distM < 1000 ? Math.round(distM)+'m' : (distM/1000).toFixed(2)+'km';
-            const walkMins = Math.round(distM / 80); // ~80m per minute walking
-            const info = document.getElementById('nav-dist-info');
-            if (info) { info.style.display='block'; info.textContent=`${distStr} away · ~${walkMins} min walk`; }
-            window.open(url, '_blank');
-        }, function() { window.open(url, '_blank'); }, { timeout:5000 });
+            const distM    = haversineMetres(pos.coords.latitude, pos.coords.longitude, NAV_LAT, NAV_LNG);
+            const distStr  = distM < 1000 ? Math.round(distM)+'m' : (distM/1000).toFixed(2)+'km';
+            const speed    = mode === 'drive' ? 600 : 80; // m/min
+            const mins     = Math.round(distM / speed);
+            const timeStr  = mins < 60 ? `~${mins} min` : `~${Math.floor(mins/60)}h ${mins%60}m`;
+            const modeStr  = mode === 'drive' ? 'drive' : 'walk';
+            const info     = document.getElementById('nav-dist-info');
+            if (info) { info.style.display='block'; info.textContent=`${distStr} away · ${timeStr} ${modeStr}`; }
+            window.location.href = url;
+        }, function() { window.location.href = url; }, { timeout:5000 });
     } else {
-        window.open(url, '_blank');
+        window.location.href = url;
     }
 }
 
@@ -1574,5 +1922,338 @@ window.showNearestPois = showNearestPois;
 </script>
 @endif
 
+
+{{-- ══════════════════════════════════════════════════════════════
+     LIVE TRACKING — GPS beacon, messages, SOS, welfare
+══════════════════════════════════════════════════════════════ --}}
+<style>
+/* Message banner */
+.nc-message-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    padding: .75rem 1rem; font-family: Arial, sans-serif;
+    font-size: 13px; font-weight: bold;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    animation: slideDown .3s ease;
+}
+@keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+.nc-message-banner.info     { background: #003366; color: #fff; }
+.nc-message-banner.warning  { background: #f59e0b; color: #fff; }
+.nc-message-banner.urgent   { background: #C8102E; color: #fff; animation: slideDown .3s ease, urgentFlash 1s infinite .5s; }
+.nc-message-banner.frequency_change { background: #059669; color: #fff; }
+@keyframes urgentFlash { 0%,100% { opacity: 1; } 50% { opacity: .8; } }
+.nc-banner-ack { background: rgba(255,255,255,.25); border: 1px solid rgba(255,255,255,.5); color: #fff; padding: .3rem .75rem; border-radius: 5px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+
+/* SOS button */
+.sos-btn-wrap { position: fixed; bottom: 1.5rem; right: 1rem; z-index: 500; }
+.sos-btn {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: #C8102E; color: #fff; border: 3px solid #fff;
+    font-size: 11px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(200,16,46,.5);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    line-height: 1.2;
+}
+.sos-btn:active { transform: scale(.95); }
+
+/* Welfare prompt */
+.welfare-prompt {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 8000;
+    background: #003366; color: #fff; padding: 1rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; box-shadow: 0 -4px 16px rgba(0,51,102,.4);
+    animation: slideUp .3s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.welfare-ok-btn {
+    background: #1a6b3c; color: #fff; border: none; padding: .6rem 1.25rem;
+    border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;
+    white-space: nowrap;
+}
+
+/* GPS status dot in top bar */
+.gps-status { display: inline-flex; align-items: center; gap: .3rem; font-size: 10px; color: rgba(255,255,255,.6); }
+.gps-dot { width: 6px; height: 6px; border-radius: 50%; background: #9aa3ae; }
+.gps-dot.active { background: #4ade80; }
+.gps-dot.error  { background: #C8102E; }
+</style>
+
+@if($assignment->attendance_status === 'checked_in' || $assignment->attendance_status === 'on_break')
+<script>
+(function() {
+    const TOKEN    = '{{ $assignment->briefing_token }}';
+    const CSRF     = '{{ csrf_token() }}';
+    const PING_URL = `/operator-brief/${TOKEN}/ping`;
+    const SOS_URL  = `/operator-brief/${TOKEN}/sos`;
+    const ACK_URL  = (id) => `/operator-brief/${TOKEN}/ack/${id}`;
+    const WEL_URL  = `/operator-brief/${TOKEN}/welfare-ok`;
+
+    let lastLat = null, lastLng = null, lastHeading = null, lastSpeed = null;
+    let lastPingTime = null;
+    let deadReckonTimer = null;
+    // Persist seen message IDs across refreshes via localStorage
+    const SEEN_KEY = 'raynet_seen_msgs_{{ $assignment->id }}';
+    let shownMessageIds = new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]'));
+
+    function markSeen(id) {
+        shownMessageIds.add(id);
+        localStorage.setItem(SEEN_KEY, JSON.stringify([...shownMessageIds]));
+    }
+    let pendingWelfareId = null;
+
+    // ── Battery API ──────────────────────────────────────────────────────────
+    let batteryLevel = null;
+    if (navigator.getBattery) {
+        navigator.getBattery().then(function(b) {
+            batteryLevel = Math.round(b.level * 100);
+            b.addEventListener('levelchange', () => batteryLevel = Math.round(b.level * 100));
+        });
+    }
+
+    // ── Device orientation for heading ──────────────────────────────────────
+    if (typeof DeviceOrientationEvent !== 'undefined') {
+        const handler = function(e) {
+            const h = e.webkitCompassHeading ?? (e.alpha !== null ? (360 - e.alpha) : null);
+            if (h !== null) lastHeading = Math.round(h);
+        };
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            // iOS — wait for user gesture (compass button handles this)
+        } else {
+            window.addEventListener('deviceorientation', handler, true);
+        }
+    }
+
+    // ── GPS watch ────────────────────────────────────────────────────────────
+    function startTracking() {
+        if (!navigator.geolocation) return;
+        setGpsDot('active');
+
+        navigator.geolocation.watchPosition(function(pos) {
+            lastLat     = pos.coords.latitude;
+            lastLng     = pos.coords.longitude;
+            lastSpeed   = pos.coords.speed;
+            lastPingTime = Date.now();
+            clearTimeout(deadReckonTimer);
+            scheduleDeadReckoning();
+            sendPing(false);
+        }, function(err) {
+            setGpsDot('error');
+        }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
+    }
+
+    // ── Dead reckoning ───────────────────────────────────────────────────────
+    function scheduleDeadReckoning() {
+        deadReckonTimer = setTimeout(function() {
+            if (lastLat === null || lastLng === null) return;
+            // Extrapolate using last heading and speed
+            const elapsed = (Date.now() - lastPingTime) / 1000;
+            const speed   = lastSpeed || 0;
+            const dist    = speed * elapsed;
+            if (dist < 5 || lastHeading === null) {
+                sendPing(true); // no movement, just mark as DR
+                return;
+            }
+            const R       = 6371000;
+            const dLat    = (dist * Math.cos(lastHeading * Math.PI / 180)) / R * (180 / Math.PI);
+            const dLng    = (dist * Math.sin(lastHeading * Math.PI / 180)) / (R * Math.cos(lastLat * Math.PI / 180)) * (180 / Math.PI);
+            lastLat      += dLat;
+            lastLng      += dLng;
+            sendPing(true);
+            scheduleDeadReckoning();
+        }, 35000); // after 35s without GPS fix, dead reckon
+    }
+
+    // ── Send ping ────────────────────────────────────────────────────────────
+    function sendPing(isDr) {
+        if (lastLat === null) return;
+        const body = {
+            lat:      lastLat,
+            lng:      lastLng,
+            accuracy: null,
+            heading:  lastHeading,
+            speed:    lastSpeed,
+            battery:  batteryLevel,
+        };
+
+        fetch(PING_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: JSON.stringify(body),
+        })
+        .then(r => r.json())
+        .then(function(data) {
+            if (!data.ok) return;
+
+            // Handle incoming messages
+            (data.messages || []).forEach(function(msg) {
+                if (shownMessageIds.has(msg.id)) return;
+                markSeen(msg.id);
+                showMessageBanner(msg);
+            });
+
+            // Geofence alert
+            if (data.geofence_alert) {
+                showGeofenceAlert(data.geofence_alert);
+            }
+
+            // Welfare check prompt
+            if (data.welfare_prompt && !pendingWelfareId) {
+                pendingWelfareId = data.welfare_prompt.response_id;
+                showWelfarePrompt(pendingWelfareId);
+            }
+        })
+        .catch(() => {});
+    }
+
+    // Ping every 30s regardless of GPS events
+    setInterval(function() { if (lastLat !== null) sendPing(false); }, 30000);
+
+    // ── Message banner ───────────────────────────────────────────────────────
+    function showMessageBanner(msg) {
+        // Vibrate for urgent
+        if (msg.type === 'urgent' && navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
+
+        const banner = document.createElement('div');
+        banner.className = `nc-message-banner ${msg.type}`;
+
+        let bodyHtml = `<div><div style="font-size:10px;opacity:.75;margin-bottom:2px;">NET CONTROL MESSAGE</div>${msg.body}</div>`;
+        if (msg.type === 'frequency_change' && msg.payload) {
+            bodyHtml += `<div style="margin-top:.3rem;font-size:12px;opacity:.9;">📻 Switch to: <strong>${msg.payload.frequency || '—'}</strong> ${msg.payload.mode || ''} ${msg.payload.ctcss ? '· CTCSS '+msg.payload.ctcss : ''}</div>`;
+        }
+
+        const ackBtn = msg.requires_ack
+            ? `<button class="nc-banner-ack" onclick="ackMessage(${msg.id}, this.closest('.nc-message-banner'))">✓ Acknowledge</button>`
+            : `<button class="nc-banner-ack" onclick="this.closest('.nc-message-banner').remove()">✕</button>`;
+
+        banner.innerHTML = bodyHtml + ackBtn;
+        document.body.prepend(banner);
+
+        if (!msg.requires_ack) setTimeout(() => { if (banner.parentNode) banner.remove(); }, 15000);
+    }
+
+    window.ackMessage = function(id, banner) {
+        markSeen(id);
+        fetch(ACK_URL(id), {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        }).then(() => { if (banner && banner.parentNode) banner.remove(); });
+    };
+
+    // ── Geofence alert ───────────────────────────────────────────────────────
+    function showGeofenceAlert(alert) {
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        showMessageBanner({
+            id: 'geofence_' + Date.now(),
+            type: 'warning',
+            body: `⚠ You are ${alert.distance_m}m from your assigned position (${alert.radius_m}m radius). Please check your location.`,
+            requires_ack: false,
+        });
+    }
+
+    // ── Welfare prompt ───────────────────────────────────────────────────────
+    function showWelfarePrompt(responseId) {
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+        const prompt = document.createElement('div');
+        prompt.className = 'welfare-prompt';
+        prompt.innerHTML = `
+            <div>
+                <div style="font-size:11px;opacity:.7;margin-bottom:2px;">WELFARE CHECK — NET CONTROL</div>
+                <div>Please confirm you are OK</div>
+            </div>
+            <button class="welfare-ok-btn" onclick="respondWelfare(${responseId}, this.closest('.welfare-prompt'))">✓ I'm OK</button>
+        `;
+        document.body.appendChild(prompt);
+
+        // Auto-dismiss after 10 min
+        setTimeout(() => { if (prompt.parentNode) prompt.remove(); pendingWelfareId = null; }, 600000);
+    }
+
+    window.respondWelfare = function(id, el) {
+        fetch(WEL_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: JSON.stringify({ response_id: id }),
+        }).then(() => {
+            if (el && el.parentNode) el.remove();
+            pendingWelfareId = null;
+        });
+    };
+
+    // ── GPS status dot ───────────────────────────────────────────────────────
+    function setGpsDot(state) {
+        const dot = document.getElementById('gps-status-dot');
+        if (dot) { dot.className = 'gps-dot ' + state; }
+    }
+
+    // Start tracking
+    startTracking();
+})();
+</script>
+
+{{-- SOS Button --}}
+<div class="sos-btn-wrap">
+    <button class="sos-btn" onclick="triggerSos()">
+        <span style="font-size:18px;">🆘</span>
+        <span>SOS</span>
+    </button>
+</div>
+
+{{-- GPS status indicator injected into top bar --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const bar = document.querySelector('.top-bar');
+    if (bar) {
+        const dot = document.createElement('div');
+        dot.className = 'gps-status';
+        dot.innerHTML = '<div class="gps-dot" id="gps-status-dot"></div><span>GPS</span>';
+        dot.style.cssText = 'position:absolute;top:.45rem;right:.75rem;';
+        bar.style.position = 'relative';
+        bar.appendChild(dot);
+    }
+});
+
+function triggerSos() {
+    if (!confirm('🆘 SEND SOS ALERT?
+
+This will immediately alert Net Control with your location.
+
+Only use in a genuine emergency.')) return;
+
+    const note = prompt('Optional: Describe the emergency (or leave blank)') || '';
+    const TOKEN = '{{ $assignment->briefing_token }}';
+    const CSRF  = '{{ csrf_token() }}';
+
+    const send = function(lat, lng) {
+        fetch(`/operator-brief/${TOKEN}/sos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: JSON.stringify({ lat, lng, message: note }),
+        })
+        .then(r => r.json())
+        .then(function(d) {
+            if (d.ok) {
+                // Show persistent SOS banner
+                const banner = document.createElement('div');
+                banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#C8102E;color:#fff;padding:1rem;text-align:center;font-weight:bold;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,.4);';
+                banner.textContent = '🆘 SOS ALERT SENT — Net Control has been notified';
+                document.body.prepend(banner);
+                if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
+            }
+        })
+        .catch(() => alert('SOS sent (connection issue — please also call Net Control directly)'));
+    };
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => send(pos.coords.latitude, pos.coords.longitude),
+            ()  => send(null, null),
+            { timeout: 5000 }
+        );
+    } else {
+        send(null, null);
+    }
+}
+</script>
+@endif
 </body>
 </html>

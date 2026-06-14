@@ -233,3 +233,16 @@ Stack trace:
 [25-May-2026 21:11:33 Europe/London] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/raynetliverpool/public_html/vendor/laravel/framework/src/Illuminate/Foundation/AliasLoader.php on line 72
 [31-May-2026 14:01:07 Europe/London] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 20480 bytes) in /home/raynetliverpool/public_html/app/Http/Controllers/OpsMapController.php on line 341
 [31-May-2026 14:01:18 Europe/London] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 20480 bytes) in /home/raynetliverpool/public_html/app/Http/Controllers/OpsMapController.php on line 341
+[02-Jun-2026 11:05:39 Europe/London] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 20480 bytes) in /home/raynetliverpool/public_html/app/Http/Controllers/OpsMapController.php on line 341
+[02-Jun-2026 11:05:39 Europe/London] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 65536 bytes) in /home/raynetliverpool/public_html/vendor/composer/ClassLoader.php on line 576
+[09-Jun-2026 10:20:25 Europe/London] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/raynetliverpool/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php on line 406
+[09-Jun-2026 10:22:09 Europe/London] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/raynetliverpool/public_html/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/HasAttributes.php on line 683
+[09-Jun-2026 14:13:02 Europe/London] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/raynetliverpool/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php on line 413
+[09-Jun-2026 14:15:03 Europe/London] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/raynetliverpool/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 507
+[09-Jun-2026 14:15:32 Europe/London] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/raynetliverpool/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Renderer/Exception.php on line 118
+[09-Jun-2026 14:16:19 Europe/London] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/raynetliverpool/public_html/vendor/laravel/framework/src/Illuminate/Foundation/FileBasedMaintenanceMode.php on line 7
+[09-Jun-2026 14:16:23 Europe/London] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/raynetliverpool/public_html/vendor/laravel/framework/src/Illuminate/View/ViewName.php on line 15
+[09-Jun-2026 14:18:01 Europe/London] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/raynetliverpool/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Renderer/Exception.php on line 118
+[14-Jun-2026 15:09:40 UTC] PHP Warning:  Module "sodium" is already loaded in Unknown on line 0
+[14-Jun-2026 15:09:41 UTC] PHP Warning:  Module "sodium" is already loaded in Unknown on line 0
+[14-Jun-2026 15:11:24 UTC] PHP Warning:  Module "sodium" is already loaded in Unknown on line 0

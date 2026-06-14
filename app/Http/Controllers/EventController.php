@@ -33,7 +33,11 @@ class EventController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        return view('events.show', compact('event'));
+        $assignments = $event->assignments()
+            ->whereNotNull('lat')->whereNotNull('lng')
+            ->with('user:id,callsign')
+            ->get(['id','user_id','lat','lng','callsign','location_name','role']);
+        return view('events.show', compact('event', 'assignments'));
     }
 
     /**

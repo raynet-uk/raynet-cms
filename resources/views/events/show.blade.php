@@ -356,6 +356,7 @@ a:hover { text-decoration: underline; }
             $jsPolyName = e($event->event_polygon_name ?? 'Site Boundary');
             $jsRoute    = $hasRoute ? json_encode(is_array($event->event_route) ? $event->event_route : json_decode($event->event_route,true)) : 'null';
             $jsPois     = $hasPois ? json_encode(is_array($event->event_pois) ? $event->event_pois : json_decode($event->event_pois,true)) : 'null';
+            $jsAssignments = json_encode($assignments->map(fn($a) => ['callsign'=>$a->callsign ?: ($a->user->callsign ?? null),'location_name'=>$a->location_name,'role'=>$a->role,'lat'=>(float)$a->lat,'lng'=>(float)$a->lng])->values());
             $mapBadges  = array_keys(array_filter(['📍 Pin'=>$hasPin,'⬡ Boundary'=>$hasPolygon,'〰 Route'=>$hasRoute,'🚩 POIs'=>$hasPois]));
             $poisDecoded= $hasPois ? (is_array($event->event_pois) ? $event->event_pois : json_decode($event->event_pois,true)) : [];
             $poiEmojis  = ['entrance'=>'🚪','exit'=>'🚪','car_park'=>'🅿','medical'=>'🩺','control'=>'📡','hazard'=>'⚠','info'=>'ℹ','custom'=>'🚩'];
@@ -363,7 +364,7 @@ a:hover { text-decoration: underline; }
 
         <div class="rn-map-wrap">
             <div class="rn-map-toolbar">
-                <button class="rn-map-tool-btn" id="rn-sat-btn" onclick="toggleSat()">🛰 Satellite</button>
+                
                 <button class="rn-map-tool-btn" id="rn-grid-btn" onclick="toggleGridMode()" style="color:#7dd3fc;border-color:rgba(125,211,252,.3);">⊞ Grid Locator</button>
                 <button class="rn-map-tool-btn" onclick="toggleFull()">⛶ Fullscreen</button>
                 @if(count($mapBadges))
@@ -712,6 +713,8 @@ a:hover { text-decoration: underline; }
     window._rnEventMap = map;
     streetLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(map);
     satLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri',maxZoom:19});
+    topoLayer=L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{attribution:'© OpenTopoMap contributors',maxZoom:17});
+    L.control.layers({'Street':streetLayer,'Satellite':satLayer,'Topographic':topoLayer},{},{position:'topright'}).addTo(map);
     var bounds=L.featureGroup().addTo(map);
 
     if(HAS_POLY&&POLYGON_GEO&&POLYGON_GEO.coordinates){
@@ -967,8 +970,7 @@ function toggleMRsvp(id) {
     if (!wasOpen) {
         panel.classList.add('is-open');
         setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 40);
-    }
-}
+    }}
 </script>
 @endif
 
@@ -1029,6 +1031,7 @@ function setRsvp(status){
             return;
         }
         if (el) el.style.display = 'none';
+        window._pubAllCoords = allCoords;
         renderPubElevChart(d.elevation, sample);
     })
     .catch(function() {
@@ -1122,6 +1125,173 @@ function renderPubElevChart(elevs, coords) {
         '<span><strong>⬇</strong> ' + Math.round(loss) + ' m descent</span>' +
         '<span><strong>🏔</strong> ' + Math.round(maxE) + ' m high</span>' +
         '<span><strong>🏞</strong> ' + Math.round(minE) + ' m low</span>';
+
+    // ── Operator markers (members only) ──
+    var ops = {!! auth()->check() ? $jsAssignments : '[]' !!};
+    if (ops && ops.length) {
+        var colours = ['#C8102E','#f59e0b','#059669','#7c3aed','#0ea5e9','#db2777','#ea580c'];
+        ops.forEach(function(op, oi) {
+            if (!op.lat || !op.lng) return;
+            // Use full allCoords for position, sample coords for elevation only
+            // allCoords are [lat, lng] pairs
+            var allC = window._pubAllCoords || coords;
+
+            // Find nearest point on full route
+            var bestAllIdx = 0, bestAllDist = Infinity;
+            var cosLat = Math.cos(op.lat * Math.PI / 180);
+            for (var ai = 0; ai < allC.length; ai++) {
+                var dlat = (allC[ai][0] - op.lat) * 111320;
+                var dlng = (allC[ai][1] - op.lng) * cosLat * 111320;
+                var d = dlat*dlat + dlng*dlng;
+                if (d < bestAllDist) { bestAllDist = d; bestAllIdx = ai; }
+            }
+
+            // Build cumDist for full route and get fraction at bestAllIdx
+            var fullCumDist = [0];
+            for (var fi = 1; fi < allC.length; fi++) {
+                var fdlat = (allC[fi][0] - allC[fi-1][0]) * 111320;
+                var fdlng = (allC[fi][1] - allC[fi-1][1]) * Math.cos(allC[fi][0]*Math.PI/180) * 111320;
+                fullCumDist.push(fullCumDist[fi-1] + Math.sqrt(fdlat*fdlat + fdlng*fdlng));
+            }
+            var frac = fullCumDist[bestAllIdx] / (fullCumDist[fullCumDist.length-1] || 1);
+
+            // Find closest sampled index for elevation lookup only
+            var bestIdx = 0, bestSampDist = Infinity;
+            for (var si = 0; si < coords.length; si++) {
+                var sdlat = (coords[si][0] - op.lat) * 111320;
+                var sdlng = (coords[si][1] - op.lng) * cosLat * 111320;
+                var sd = sdlat*sdlat + sdlng*sdlng;
+                if (sd < bestSampDist) { bestSampDist = sd; bestIdx = si; }
+            }
+            var markerX = pad.left + frac * iW;
+            var markerElev = elevs[bestIdx];
+            var markerY = pad.top + iH - ((markerElev - minE) / range) * iH;
+            var colour = colours[oi % colours.length];
+            var label = op.callsign || op.location_name || ('Op '+(oi+1));
+
+            // Vertical dashed line down to baseline
+            ctx.save();
+            ctx.setLineDash([3,3]);
+            ctx.strokeStyle = colour;
+            ctx.lineWidth = 1.5;
+            ctx.globalAlpha = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(markerX, pad.top + iH);
+            ctx.lineTo(markerX, markerY);
+            ctx.stroke();
+            ctx.restore();
+
+            // Diamond marker on the elevation line
+            ctx.save();
+            ctx.fillStyle = colour;
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(markerX, markerY - 6);
+            ctx.lineTo(markerX + 5, markerY);
+            ctx.lineTo(markerX, markerY + 6);
+            ctx.lineTo(markerX - 5, markerY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+
+            // Callsign label + elevation
+            ctx.save();
+            ctx.font = 'bold 8px Arial';
+            ctx.fillStyle = colour;
+            ctx.textAlign = 'center';
+            var labelY = markerY - 10;
+            if (labelY < pad.top + 8) labelY = markerY + 16;
+            ctx.fillText(label, markerX, labelY);
+            ctx.font = '7px Arial';
+            ctx.fillStyle = '#666';
+            ctx.fillText(Math.round(markerElev)+'m', markerX, labelY + 9);
+            ctx.restore();
+        });
+    }
+
+    // ── Elevation scrubber → map marker ──────────────────────────────
+    var _eSnap = {elevs:elevs, coords:coords, cumDist:cumDist, pad:pad, minE:minE, range:range, iW:iW, iH:iH};
+    window._pubElevSnap = _eSnap;
+
+    if (!window._pubElevMarker) {
+        window._pubElevMarker = L.circleMarker([0,0], {
+            radius:8, color:'#fff', fillColor:'#7c3aed',
+            fillOpacity:1, weight:2, pane:'markerPane'
+        });
+    }
+
+    // Only attach listeners once — guard with a flag
+    if (!canvas._scrubBound) {
+        canvas._scrubBound = true;
+
+        canvas.addEventListener('mousemove', function(e) {
+            var s = window._pubElevSnap;
+            if (!s) return;
+            var rect = canvas.getBoundingClientRect();
+            var scaleX = canvas.width / rect.width;
+            var mx = (e.clientX - rect.left) * scaleX;
+            var frac = Math.max(0, Math.min(1, (mx - s.pad.left) / s.iW));
+            var idx = Math.round(frac * (s.elevs.length - 1));
+            idx = Math.max(0, Math.min(s.elevs.length - 1, idx));
+            var ex = s.pad.left + (idx / (s.elevs.length - 1)) * s.iW;
+            var ey = s.pad.top + s.iH - ((s.elevs[idx] - s.minE) / s.range) * s.iH;
+
+            // Redraw base chart then overlay scrubber
+            renderPubElevChart(s.elevs, s.coords);
+            var cv = document.getElementById('pub-elev-chart');
+            var cx = cv.getContext('2d');
+
+            // Vertical dashed line
+            cx.save();
+            cx.strokeStyle = 'rgba(124,58,237,.45)';
+            cx.lineWidth = 1;
+            cx.setLineDash([4,3]);
+            cx.beginPath(); cx.moveTo(ex, s.pad.top); cx.lineTo(ex, s.pad.top + s.iH); cx.stroke();
+            cx.restore();
+
+            // Dot on line
+            cx.save();
+            cx.fillStyle = '#7c3aed';
+            cx.strokeStyle = '#fff';
+            cx.lineWidth = 2;
+            cx.beginPath(); cx.arc(ex, ey, 5, 0, Math.PI * 2); cx.fill(); cx.stroke();
+            cx.restore();
+
+            // Elevation label
+            cx.save();
+            cx.font = 'bold 10px Arial';
+            cx.fillStyle = '#fff';
+            cx.strokeStyle = '#7c3aed';
+            cx.lineWidth = 3;
+            var lbl = Math.round(s.elevs[idx]) + 'm';
+            var lx = ex + 8, ly = ey - 8;
+            if (lx + 30 > cv.width) lx = ex - 38;
+            if (ly < s.pad.top + 10) ly = ey + 18;
+            cx.strokeText(lbl, lx, ly);
+            cx.fillStyle = '#fff';
+            cx.fillText(lbl, lx, ly);
+            cx.restore();
+
+            // Move map marker
+            var map = window._rnEventMap;
+            if (map && s.coords[idx]) {
+                window._pubElevMarker.setLatLng([s.coords[idx][0], s.coords[idx][1]]);
+                if (!map.hasLayer(window._pubElevMarker)) window._pubElevMarker.addTo(map);
+            }
+        });
+
+        canvas.addEventListener('mouseleave', function() {
+            var map = window._rnEventMap;
+            if (map && window._pubElevMarker && map.hasLayer(window._pubElevMarker)) {
+                window._pubElevMarker.remove();
+            }
+            if (window._pubElevSnap) {
+                renderPubElevChart(window._pubElevSnap.elevs, window._pubElevSnap.coords);
+            }
+        });
+    }
 }
 </script>
 @endif

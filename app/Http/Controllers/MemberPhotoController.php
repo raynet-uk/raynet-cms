@@ -157,6 +157,20 @@ class MemberPhotoController extends Controller {
         $user = auth()->user();
         $photo->update(['status' => 'pending']);
         AuditLogger::log('photo.submitted', $user, "Photo #{$photo->id} submitted for approval", ['photo_id' => $photo->id]);
+        return back()->with('photo_success', 'Photo submitted for approval.');
+    }
+
+    public function submitAllDrafts() {
+        $user = auth()->user();
+        $drafts = \App\Models\Photo::where('user_id', $user->id)->where('status', 'draft')->get();
+        if ($drafts->isEmpty()) {
+            return back()->with('photo_success', 'No draft photos to submit.');
+        }
+        foreach ($drafts as $photo) {
+            $photo->update(['status' => 'pending']);
+        }
+        $count = $drafts->count();
+        AuditLogger::log('photo.submitted', $user, "Submitted {$count} photo(s) for approval", ['count' => $count]);
         try {
             $approvers = \App\Models\User::permission('approve photos')->get()
                 ->merge(\App\Models\User::role(['admin','super-admin'])->get())
@@ -165,17 +179,20 @@ class MemberPhotoController extends Controller {
                 if ($approver->email && $approver->id !== $user->id) {
                     \Illuminate\Support\Facades\Mail::send('emails.photo-pending', [
                         'uploader'   => $user,
-                        'count'      => 1,
+                        'count'      => $count,
                         'groupName'  => \App\Helpers\RaynetSetting::groupName(),
                         'approveUrl' => url('/members/photo-approval'),
-                    ], function($m) use ($approver) {
-                        $m->to($approver->email, $approver->name)
-                          ->subject('Photo awaiting approval — ' . \App\Helpers\RaynetSetting::groupName());
+                    ], function($m) use ($approver, $count) {
+                        $subject = $count > 1
+                            ? "{$count} photos awaiting approval — " . \App\Helpers\RaynetSetting::groupName()
+                            : 'Photo awaiting approval — ' . \App\Helpers\RaynetSetting::groupName();
+                        $m->to($approver->email, $approver->name)->subject($subject);
                     });
                 }
             }
         } catch (\Throwable $e) {}
-        return back()->with('photo_success', 'Photo submitted for approval.');
+        $msg = $count > 1 ? "{$count} photos submitted for approval." : "Photo submitted for approval.";
+        return back()->with('photo_success', $msg);
     }
 
     public function notifyApprovers(Request $request) {

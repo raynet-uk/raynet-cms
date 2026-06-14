@@ -115,7 +115,16 @@
     {{-- My photos grid --}}
     @php $myPhotos = ($myPhotos ?? collect())->load('tags'); @endphp
     @if($myPhotos->isNotEmpty())
-        <div class="section-title">Your Uploads ({{ $myPhotos->count() }})</div>
+        @php $draftCount = $myPhotos->where('status', 'draft')->count(); @endphp
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem;">
+            <div class="section-title" style="margin-bottom:0;">Your Uploads ({{ $myPhotos->count() }})</div>
+            @if($draftCount > 0)
+                <form method="POST" action="{{ route('members.photos.submit-all') }}" onsubmit="return confirm('Submit all {{ $draftCount }} draft photo(s) for approval?')">
+                    @csrf
+                    <button type="submit" style="background:#065f46;color:#fff;border:none;padding:.45rem 1rem;border-radius:6px;font-weight:600;cursor:pointer;">✓ Submit All Drafts ({{ $draftCount }})</button>
+                </form>
+            @endif
+        </div>
         <div class="photo-grid">
             @foreach($myPhotos as $photo)
             <div class="photo-card">

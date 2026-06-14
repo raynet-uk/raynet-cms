@@ -592,6 +592,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
         <button class="tab-btn"        onclick="switchTab('attendance')" id="tabbtn-attendance"><span class="tab-icon">✅</span> Attendance</button>
         <button class="tab-btn" onclick="switchTab('availability')" id="tabbtn-availability"><span class="tab-icon">📣</span> Availability</button>
         <button class="tab-btn" onclick="switchTab('bulkfill')" id="tabbtn-bulkfill"><span class="tab-icon">⚡</span> Bulk Fill</button>
+        <a href="/admin/events/{{ $event->id }}/live" class="tab-btn" style="background:var(--red);color:#fff;border-radius:5px;text-decoration:none;margin-left:auto;flex-shrink:0;" target="_blank"><span class="tab-icon">⚡</span> Live Ops</a>
     </div>
 </div>
 
@@ -970,7 +971,7 @@ body{background:var(--grey);color:var(--text);font-family:var(--font);font-size:
                     <span style="font-size:11px;font-weight:bold;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;">Operations Map — {{ $event->title }}</span>
                     <div style="margin-left:auto;display:flex;gap:.5rem;flex-wrap:wrap;">
                         <button class="btn btn-ghost" onclick="resetMapView()" style="padding:.3rem .75rem;">⌂ Reset</button>
-                        <button class="btn btn-ghost" onclick="toggleSatellite()" id="sat-btn" style="padding:.3rem .75rem;">🛰 Satellite</button>
+                        
                         <button class="btn btn-ghost" onclick="toggleHeatmap()" id="heatmap-btn" style="padding:.3rem .75rem;" title="Operator density heatmap">🌡 Density</button>
                         <button class="btn btn-ghost" onclick="toggleGapDetector()" id="gap-btn" style="padding:.3rem .75rem;" title="Coverage gap detector">🕳 Gaps</button>
                         <button class="btn btn-ghost" onclick="toggleBearingTool()" id="bearing-btn" style="padding:.3rem .75rem;" title="Alt+hover for bearing/distance">🧭 Bearing</button>
@@ -2065,6 +2066,8 @@ function initMap() {
     theMap = L.map('leaflet-map',{center:[EVENT_CENTRE.lat,EVENT_CENTRE.lng],zoom:13});
     tileStreet = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(theMap);
     tileSat    = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri',maxZoom:19});
+    tileTopo   = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{attribution:'© OpenTopoMap contributors',maxZoom:17});
+    L.control.layers({'Street':tileStreet,'Satellite':tileSat,'Topographic':tileTopo},{},{position:'topright'}).addTo(theMap);
 
     if (EVENT_POLYGON) { addEventPolygon(); }
     if (EVENT_ROUTES && EVENT_ROUTES.length) { EVENT_ROUTES.forEach(r => addEventRoute(r)); }

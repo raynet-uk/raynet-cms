@@ -388,18 +388,30 @@ Route::get('/admin/remote-help/login', [\App\Http\Controllers\Admin\RemoteHelpCo
 Route::get('/operator-brief-test/{token}', function(string $token) {
     $assignment = App\Models\EventAssignment::with(['user','event','event.type'])
         ->where('briefing_token', $token)->firstOrFail();
-    // Temporarily override attendance status to allow check-in UI to show
-    $assignment->attendance_status = 'not_arrived';
+    // Force checked_in so tracking/SOS/messages all render
+    $assignment->attendance_status = 'checked_in';
     // Override event date to today so canCheckIn() passes
     if ($assignment->event) {
         $assignment->event->starts_at = now()->timezone('Europe/London');
     }
     $event = $assignment->event;
-    $eventPolygon = null;
-    $eventPin = null;
+    $eventPolygon = $event->event_polygon ? (is_array($event->event_polygon) ? $event->event_polygon : json_decode($event->event_polygon, true)) : null;
+    $eventPin = ($event->event_lat && $event->event_lng) ? ['lat' => (float)$event->event_lat, 'lng' => (float)$event->event_lng] : null;
     $eventPois = $event->event_pois ? (is_array($event->event_pois) ? $event->event_pois : json_decode($event->event_pois, true)) : null;
-    $eventRoute = null;
-    return view('operator.brief', compact('assignment','eventPolygon','eventPin','eventPois','eventRoute'));
+    $eventRoute = $event->event_route ? (is_array($event->event_route) ? $event->event_route : json_decode($event->event_route, true)) : null;
+    $eventAssignments = $event->assignments()
+        ->whereNotNull('lat')->whereNotNull('lng')
+        ->with('user:id,callsign,name')
+        ->get(['id','user_id','lat','lng','callsign','location_name','role'])
+        ->map(fn($a) => [
+            'callsign'      => $a->callsign ?: ($a->user->callsign ?? null),
+            'location_name' => $a->location_name,
+            'role'          => $a->role,
+            'lat'           => (float)$a->lat,
+            'lng'           => (float)$a->lng,
+            'is_me'         => $a->id === $assignment->id,
+        ])->values()->toArray();
+    return view('operator.brief', compact('assignment','eventPolygon','eventPin','eventPois','eventRoute','eventAssignments'));
 })->name('operator.brief.test');
 
 Route::prefix('operator-brief')->group(function () {
@@ -527,6 +539,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/members/photos/{photo}/url',     [\App\Http\Controllers\MemberPhotoController::class, 'getUrl'])  ->name('members.photos.url');
     Route::post('/members/photos/{photo}/rotate',  [\App\Http\Controllers\MemberPhotoController::class, 'rotate']) ->name('members.photos.rotate');
     Route::post('/members/photos/{photo}/submit', [\App\Http\Controllers\MemberPhotoController::class, 'submitForApproval'])->name('members.photos.submit');
+    Route::post('/members/photos/submit-all', [\App\Http\Controllers\MemberPhotoController::class, 'submitAllDrafts'])->name('members.photos.submit-all');
     Route::post('/members/photos/notify', [\App\Http\Controllers\MemberPhotoController::class, 'notifyApprovers'])->name('members.photos.notify');
     Route::post('/members/photos',           [\App\Http\Controllers\MemberPhotoController::class, 'store'])  ->name('members.photos.store');
     Route::patch('/members/photos/{photo}',  [\App\Http\Controllers\MemberPhotoController::class, 'update'])->name('members.photos.update');
@@ -1538,4 +1551,22 @@ Route::middleware(['web','auth','admin'])->prefix('admin/events')->name('admin.e
     Route::get('/station-log/export-pdf',  [\App\Http\Controllers\EventAdminController::class, 'stationLogExportPdf'])->name('station-log.export-pdf');
     Route::delete('/station-log/{id}',    [\App\Http\Controllers\EventAdminController::class, 'stationLogDestroy'])->name('station-log.destroy');
     Route::post('/station-log/clear',     [\App\Http\Controllers\EventAdminController::class, 'stationLogClear'])  ->name('station-log.clear');
+});
+
+// ── Operator Tracking — public (token-gated) ──────────────────────────────
+Route::prefix('operator-brief')->group(function () {
+    Route::post('/{token}/ping',        [\App\Http\Controllers\OperatorTrackingController::class, 'ping'])       ->name('operator.tracking.ping');
+    Route::post('/{token}/sos',         [\App\Http\Controllers\OperatorTrackingController::class, 'sos'])        ->name('operator.tracking.sos');
+    Route::post('/{token}/ack/{msgId}', [\App\Http\Controllers\OperatorTrackingController::class, 'ackMessage']) ->name('operator.tracking.ack');
+    Route::post('/{token}/welfare-ok',  [\App\Http\Controllers\OperatorTrackingController::class, 'welfareOk']) ->name('operator.tracking.welfare-ok');
+});
+
+// ── Live Ops — admin ──────────────────────────────────────────────────────
+Route::middleware(['auth'])->prefix('admin/events/{eventId}')->group(function () {
+    Route::get( '/live',           [\App\Http\Controllers\OperatorTrackingController::class, 'liveDashboard']) ->name('admin.events.live');
+    Route::get( '/live/state',     [\App\Http\Controllers\OperatorTrackingController::class, 'liveState'])     ->name('admin.events.live.state');
+    Route::post('/live/message',   [\App\Http\Controllers\OperatorTrackingController::class, 'sendMessage'])   ->name('admin.events.live.message');
+    Route::post('/live/sos/{id}/resolve', [\App\Http\Controllers\OperatorTrackingController::class, 'resolveSos']) ->name('admin.events.live.sos.resolve');
+    Route::post('/live/welfare',   [\App\Http\Controllers\OperatorTrackingController::class, 'setWelfareCheck']) ->name('admin.events.live.welfare');
+    Route::get( '/live/replay',    [\App\Http\Controllers\OperatorTrackingController::class, 'replayData'])    ->name('admin.events.live.replay');
 });

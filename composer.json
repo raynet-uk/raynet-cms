@@ -12,6 +12,7 @@
         "laravel/tinker": "^2.10.1",
         "league/commonmark": "^2.7",
         "php-mqtt/client": "^2.3",
+        "romalytar/yammi-audit-log-laravel": "^2.0",
         "spatie/laravel-permission": "^6.0"
     },
     "require-dev": {
