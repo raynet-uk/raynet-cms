@@ -53,6 +53,11 @@ class AppServiceProvider extends ServiceProvider
             $current = AlertStatus::query()->orderByDesc('updated_at')->first();
             $view->with('alertStatus', $current);
         });
+        // Restrict yammi audit-log dashboard to super admins only
+        Gate::define('viewAuditLog', function ($user) {
+            return $user->isSuperAdmin();
+        });
+
         // Record login history
         Event::listen(Login::class,  RecordLoginHistory::class);
         Event::listen(Failed::class, RecordLoginFailure::class);
