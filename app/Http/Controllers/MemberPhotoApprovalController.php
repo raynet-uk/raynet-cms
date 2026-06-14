@@ -53,26 +53,54 @@ class MemberPhotoApprovalController extends Controller {
                     $m->to($photo->user->email, $photo->user->name)
                       ->subject('Your photo has been approved — ' . \App\Helpers\RaynetSetting::groupName());
                 });
-
-            // Notify admins for L2 approval
-            $admins = \App\Models\User::role(['admin','super-admin'])->get();
-            $groupName = \App\Helpers\RaynetSetting::groupName();
-            $approveUrl = url('/members/photo-approval');
-            foreach ($admins as $admin) {
-                if ($admin->email) {
-                    Mail::send('emails.photo-l2-pending', [
-                        'photo'      => $photo,
-                        'uploader'   => $photo->user,
-                        'approver'   => $user,
-                        'groupName'  => $groupName,
-                        'approveUrl' => $approveUrl,
-                    ], function($m) use ($admin, $groupName) {
-                        $m->to($admin->email, $admin->name)
-                          ->subject('Photo awaiting public approval (L2) — ' . $groupName);
-                    });
-                }
-            }
             } catch (\Throwable $e) {}
+        }
+
+        // ── Grouped L2 notification (debounced, one email per 5 min) ──────
+        if (!$wasApproved) {
+            try {
+                $cacheKey = 'l2_pending_notify';
+                $pending  = \Illuminate\Support\Facades\Cache::get($cacheKey, []);
+
+                $pending[] = [
+                    'photo_id'      => $photo->id,
+                    'uploader_name' => $photo->user?->name ?? 'Unknown',
+                    'approver_name' => $user->name,
+                ];
+
+                if (count($pending) === 1) {
+                    \Illuminate\Support\Facades\Cache::put($cacheKey, $pending, now()->addMinutes(5));
+                    dispatch(function () use ($cacheKey) {
+                        $batch = \Illuminate\Support\Facades\Cache::pull($cacheKey, []);
+                        if (empty($batch)) return;
+
+                        $count      = count($batch);
+                        $groupName  = \App\Helpers\RaynetSetting::groupName();
+                        $approveUrl = url('/members/photo-approval');
+                        $admins     = \App\Models\User::role(['admin','super-admin'])->get();
+
+                        foreach ($admins as $admin) {
+                            if ($admin->email) {
+                                \Illuminate\Support\Facades\Mail::send('emails.photo-l2-pending', [
+                                    'batch'      => $batch,
+                                    'count'      => $count,
+                                    'groupName'  => $groupName,
+                                    'approveUrl' => $approveUrl,
+                                ], function ($m) use ($admin, $count, $groupName) {
+                                    $subject = $count > 1
+                                        ? "{$count} photos awaiting public approval (L2) — {$groupName}"
+                                        : "Photo awaiting public approval (L2) — {$groupName}";
+                                    $m->to($admin->email, $admin->name)->subject($subject);
+                                });
+                            }
+                        }
+                    })->delay(now()->addMinutes(5));
+                } else {
+                    \Illuminate\Support\Facades\Cache::put($cacheKey, $pending, now()->addMinutes(5));
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('L2 photo notify failed: ' . $e->getMessage());
+            }
         }
 
         return back()->with('success', 'Photo approved for members area.');
